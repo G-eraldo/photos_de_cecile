@@ -1,0 +1,14 @@
+# *
+User-agent: *
+Disallow: /
+
+
+# Googlebot
+User-agent: Googlebot
+Disallow: /
+
+# Host
+Host: https://les-photos-de-cecile-l7f5.vercel.app/
+
+# Sitemaps
+Sitemap: https://les-photos-de-cecile-l7f5.vercel.app/sitemap.xml
