@@ -38,7 +38,7 @@ onUnmounted(() => {
       <div :class="cn(
         'mx-auto mt-2 px-4 transition-all duration-300 sm:px-6 lg:px-12',
         isScrolled
-          ? 'max-w-4xl rounded-2xl border border-[#D9D2CF] bg-white/95 shadow-xl backdrop-blur-lg lg:px-5'
+          ? 'max-w-4xl rounded-2xl border border-[#D9D2CF] bg-white/95 backdrop-blur-lg lg:px-5'
           : 'max-w-6xl'
       )">
 
@@ -51,7 +51,7 @@ onUnmounted(() => {
               'flex items-center font-playfair text-xl transition-colors duration-300 sm:text-2xl',
               isScrolled
                 ? 'text-[#5A3419]'
-                : 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]',
+                : 'text-white',
               'hover:text-[#C9A227]'
             ]">
               Les Photos de Cécile
@@ -64,7 +64,7 @@ onUnmounted(() => {
                 'relative z-50 flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-300 lg:hidden',
                 isScrolled
                   ? 'text-[#5A3419]'
-                  : 'text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]',
+                  : 'text-amber-100',
                 'hover:text-[#C9A227]'
               ]" @click="menuState = !menuState">
 
@@ -88,7 +88,7 @@ onUnmounted(() => {
                   'block font-medium transition-colors duration-300',
                   isScrolled
                     ? 'text-[#5A3419]'
-                    : 'text-[#F2F0EF] drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]',
+                    : 'text-white',
                   'hover:text-[#C9A227]'
                 ]">
                   {{ item.name }}

@@ -1,12 +1,14 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
-import { CalendarDays, Mail } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { CalendarDays, Mail } from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+
 
 const route = useRoute();
 const prestation = computed(() => typeof route.query.prestation === 'string' ? route.query.prestation : '');
@@ -17,6 +19,8 @@ const date = ref('');
 const heure = ref('');
 const message = ref('');
 const pending = ref(false);
+const conditionsAccepted = ref(false);
+const socialUsage = ref('');
 
 const availability = ref([]);
 const reservations = ref([]);
@@ -114,11 +118,31 @@ const submit = async () => {
     return;
   }
 
+  if (!conditionsAccepted.value) {
+    toast.error('Vous devez accepter les conditions de vente pour continuer.');
+    return;
+  }
+
+  if (!socialUsage.value) {
+    toast.error('Merci de choisir si vous autorisez ou non l’utilisation des photos sur les réseaux sociaux.');
+    return;
+  }
+
   pending.value = true;
   try {
     const response = await $fetch('/api/calendar/reservations', {
       method: 'POST',
-      body: { nom: nom.value, prenom: prenom.value, email: email.value, prestation: prestation.value || 'Séance photo', date: date.value, heure: heure.value, message: message.value },
+      body: {
+        nom: nom.value,
+        prenom: prenom.value,
+        email: email.value,
+        prestation: prestation.value || 'Séance photo',
+        date: date.value,
+        heure: heure.value,
+        message: message.value,
+        conditionsAccepted: conditionsAccepted.value,
+        socialUsage: socialUsage.value,
+      },
     });
 
     if (response.success) {
@@ -129,8 +153,8 @@ const submit = async () => {
     } else {
       toast.error(response.message);
     }
-  } catch {
-    toast.error("Une erreur est survenue lors de l'envoi. Veuillez réessayer.");
+  } catch (error) {
+    toast.error(error?.data?.statusMessage || error?.statusMessage || "Une erreur est survenue lors de l'envoi. Veuillez réessayer.");
   } finally {
     pending.value = false;
   }
@@ -144,26 +168,34 @@ const submit = async () => {
       <CardTitle class="text-xl md:text-2xl font-bold text-[#613213]">Réserver une séance</CardTitle>
     </div>
     <CardDescription class="mb-6 text-[#9e8b8b]">
-      Les créneaux affichés sont ceux définis par Cécile dans son agenda. Chaque rendez-vous dure deux heures et sera confirmé après vérification.
+      Les créneaux affichés sont ceux définis par Cécile dans son agenda. Chaque rendez-vous dure deux heures et sera
+      confirmé après vérification.
     </CardDescription>
 
     <form class="space-y-4 text-[#9e8b8b]" @submit.prevent="submit">
       <p v-if="prestation" class="text-sm">Prestation choisie : <strong>{{ prestation }}</strong></p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="grid gap-2"><Label for="reservation-nom">Votre nom</Label><Input id="reservation-nom" v-model="nom" required /></div>
-        <div class="grid gap-2"><Label for="reservation-prenom">Votre prénom</Label><Input id="reservation-prenom" v-model="prenom" required /></div>
+        <div class="grid gap-2"><Label for="reservation-nom">Votre nom</Label><Input id="reservation-nom" v-model="nom"
+            required /></div>
+        <div class="grid gap-2"><Label for="reservation-prenom">Votre prénom</Label><Input id="reservation-prenom"
+            v-model="prenom" required /></div>
       </div>
-      <div class="grid gap-2"><Label for="reservation-email">Votre email</Label><Input id="reservation-email" v-model="email" type="email" required /></div>
+      <div class="grid gap-2"><Label for="reservation-email">Votre email</Label><Input id="reservation-email"
+          v-model="email" type="email" required /></div>
       <div class="rounded-lg border p-4">
         <div class="flex items-center justify-between mb-4">
-          <Button type="button" variant="ghost" size="sm" aria-label="Mois précédent" @click="changeMonth(-1)">‹</Button>
+          <Button type="button" variant="ghost" size="sm" aria-label="Mois précédent"
+            @click="changeMonth(-1)">‹</Button>
           <p class="font-medium capitalize text-[#613213]">{{ calendarMonthLabel }}</p>
           <Button type="button" variant="ghost" size="sm" aria-label="Mois suivant" @click="changeMonth(1)">›</Button>
         </div>
         <div class="grid grid-cols-7 gap-1 text-center text-xs">
           <span v-for="weekDay in weekDays" :key="weekDay" class="py-2 font-medium">{{ weekDay }}</span>
           <div v-for="(day, index) in calendarDays" :key="day?.value || `empty-${index}`" class="aspect-square">
-            <Button v-if="day" type="button" size="sm" :variant="date === day.value ? 'default' : 'ghost'" :disabled="!day.available || loadingCalendar" :class="['h-full w-full p-0', day.available ? 'font-semibold' : 'opacity-30']" @click="selectDate(day.value)">
+            <Button v-if="day" type="button" size="sm" :variant="date === day.value ? 'default' : 'ghost'"
+              :disabled="!day.available || loadingCalendar"
+              :class="['h-full w-full p-0', day.available ? 'font-semibold' : 'opacity-30']"
+              @click="selectDate(day.value)">
               {{ day.number }}
             </Button>
           </div>
@@ -175,14 +207,75 @@ const submit = async () => {
       <div class="grid gap-2">
         <Label>Créneau souhaité <span v-if="selectedDateLabel">— {{ selectedDateLabel }}</span></Label>
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <Button v-for="slot in availableSlots" :key="slot.value" type="button" :variant="heure === slot.value ? 'default' : 'outline'" @click="heure = slot.value">
+          <Button v-for="slot in availableSlots" :key="slot.value" type="button"
+            :variant="heure === slot.value ? 'default' : 'outline'" @click="heure = slot.value">
             {{ slot.label }}
           </Button>
         </div>
-        <p v-if="date && !availableSlots.length" class="text-sm">Aucun créneau de deux heures n’est disponible ce jour-là.</p>
+        <p v-if="date && !availableSlots.length" class="text-sm">Aucun créneau de deux heures n’est disponible ce
+          jour-là.</p>
       </div>
-      <div class="grid gap-2"><Label for="reservation-message">Précisions (facultatif)</Label><Textarea id="reservation-message" v-model="message" placeholder="Lieu, formule choisie, vos disponibilités…" /></div>
-      <div class="flex justify-center"><Button type="submit" :disabled="pending"><Mail class="mr-2 h-4 w-4" />{{ pending ? 'Envoi en cours…' : 'Envoyer ma demande' }}</Button></div>
+      <div class="grid gap-2"><Label for="reservation-message">Précisions (facultatif)</Label><Textarea
+          id="reservation-message" v-model="message" placeholder="Lieu, formule choisie, vos disponibilités…" /></div>
+      <!-- CONDITIONS DE VENTE -->
+      <div class="space-y-4 rounded-lg border border-[#E6DFDD] bg-[#FAF8F7] p-4">
+
+        <div class="flex items-start gap-3">
+          <Checkbox id="conditions-accepted" v-model="conditionsAccepted" required />
+          <Label for="conditions-accepted" class="text-sm leading-6 text-[#676463]">
+            J’ai lu et j’accepte les
+            <NuxtLink to="/conditions-de-vente" target="_blank"
+              class="font-medium text-[#613213] underline underline-offset-2 transition-colors hover:text-[#C9A227]">
+              conditions de vente
+            </NuxtLink>
+            de la prestation.
+            <span class="text-red-500">*</span>
+          </Label>
+        </div>
+
+
+        <!-- UTILISATION DES PHOTOS -->
+        <div class="border-t border-[#E6DFDD] pt-4">
+
+          <p class="mb-3 text-sm font-medium text-[#613213]">
+            Utilisation des photos sur les réseaux sociaux
+            <span class="text-red-500">*</span>
+          </p>
+
+          <p class="mb-4 text-xs leading-5 text-[#8F8C85]">
+            L’utilisation des photos sur les réseaux sociaux permet à la photographe
+            de mettre en avant son travail.
+          </p>
+
+          <div class="space-y-3">
+
+            <RadioGroup v-model="socialUsage" default-value="autorise">
+              <div class="flex items-center space-x-2">
+                <RadioGroupItem id="r1" value="autorise" />
+                <Label for="r1" class="cursor-pointer text-sm text-[#676463]">J’autorise l’utilisation de mes photos sur
+                  les réseaux
+                  sociaux.</Label>
+              </div>
+              <div class="flex items-center space-x-2">
+                <RadioGroupItem id="r2" value="n_autorise_pas" />
+                <Label for="r2" class="cursor-pointer text-sm text-[#676463]">Je n’autorise pas l’utilisation de mes
+                  photos
+                  sur les réseaux
+                  sociaux.</Label>
+              </div>
+            </RadioGroup>
+
+          </div>
+
+        </div>
+
+      </div>
+      <div class="flex justify-center">
+        <Button type="submit" :disabled="pending || !conditionsAccepted || !socialUsage">
+          <Mail class="mr-2 h-4 w-4" />
+          {{ pending ? 'Envoi en cours…' : 'Envoyer ma demande' }}
+        </Button>
+      </div>
     </form>
   </Card>
 </template>
