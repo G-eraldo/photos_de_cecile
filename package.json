@@ -1,6 +1,10 @@
 {
   "name": "photos_de_cecile",
   "type": "module",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=22.19.0"
+  },
   "private": true,
   "scripts": {
     "build": "nuxt build",
