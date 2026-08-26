@@ -1,51 +1,94 @@
 <script setup>
-import { Card, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardDescription, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { ref } from 'vue';
+import { toast } from 'vue-sonner';
+
+const nom = ref('');
+const prenom = ref('');
+const email = ref('');
+const message = ref('');
+const messageError = ref('');
+const pending = ref(false);
+
+const validateAndSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!message.value || message.value.trim().length < 2) {
+    messageError.value = "Votre message est trop court. Veuillez écrire un message plus détaillé.";
+    return;
+  }
+
+  messageError.value = "";
+  pending.value = true;
+
+  try {
+    const data = await $fetch('/api/contact', {
+      method: 'POST',
+      body: {
+        nom: nom.value,
+        prenom: prenom.value,
+        email: email.value,
+        message: message.value
+      }
+    });
+
+    if (data.success) {
+      toast.success(data.message);
+      // reset form
+      nom.value = '';
+      prenom.value = '';
+      email.value = '';
+      message.value = '';
+    } else {
+      toast.error(data.message);
+    }
+  } catch (err) {
+    toast.error("Une erreur est survenue lors de l'envoi. Veuillez réessayer.");
+  } finally {
+    pending.value = false;
+  }
+};
 </script>
 
 <template>
-  <Card class="max-w-5xl mx-auto p-4 md:p-6 mt-12">
-    <CardTitle class="text-2xl font-bold mb-4 text-[#613213]">
-      Prestations
+  <Card class="max-w-2xl mx-auto p-4 md:p-6 mt-32">
+    <CardTitle class="text-xl md:text-2xl font-bold mb-4 text-[#613213]">
+      Contactez-moi
     </CardTitle>
-    <div class="flex flex-col lg:flex-row gap-6">
-      <div class="w-full lg:w-1/2 aspect-3/4 md:aspect-4/3 lg:aspect-video overflow-hidden">
-        <NuxtImg class="w-full h-full object-cover object-top rounded-lg mt-5 shadow-2xl" src="/images/prestation.png"
-          alt="Séance de bain thérapeutique pour bébé" />
+    <CardDescription class="mb-4 md:mb-6 text-[#9e8b8b]">
+      Pour toute demande, n'hésitez pas à m'écrire. Je serai ravie de vous
+      répondre rapidement.
+    </CardDescription>
+    <form @submit="validateAndSubmit" class="space-y-4 md:space-y-6 text-[#9e8b8b]">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid w-full items-center gap-2">
+          <Label for="nom">Votre nom</Label>
+          <Input type="text" id="nom" v-model="nom" placeholder="Dupont" />
+        </div>
+        <div class="grid w-full items-center gap-2">
+          <Label for="prenom">Votre prénom</Label>
+          <Input type="text" id="prenom" v-model="prenom" placeholder="Jean" />
+        </div>
       </div>
-      <CardContent class="w-full lg:w-1/2 text-[#9e8b8b] leading-8 font-playfair py-4 md:py-8 text-base md:text-lg">
-        <CardTitle
-          class="text-base md:text-2xl font-bold mb-4 text-[#613213] w-full whitespace-nowrap overflow-hidden text-ellipsis">
-          Bain thérapeutique photographié
-        </CardTitle>
-        <p class="hover:text-[#613213] transition-colors duration-300 mb-5 text-justify">
-          La séance se déroule à Rivery avec Hyn'Odysée bien naître et dure
-          environ 1h30 parfois plus selon bébé.
-        </p>
-        <p class="hover:text-[#613213] transition-colors duration-300 mb-5 text-justify">
-          Le bain thérapeutique est un soin qui permet au bébé de retrouver
-          les sensations connues de sa vie intra-utérine. Emmailloté dans une
-          eau chaude, il est libre de ses mouvements et retrouve le bien-être
-          du ventre maternel.
-        </p>
-        <p class="hover:text-[#613213] transition-colors duration-300 mb-5 text-justify">
-          Plongé dans ses souvenirs, le retrait du lange représente pour lui
-          le moment de la naissance. Il refait le passage entre les deux
-          mondes plus en douceur. Ce bain permet parfois de libérer des
-          émotions pour le bébé et pour la maman, surtout lorsque
-          l'accouchement n'est pas celui qui était souhaité...
-        </p>
-        <p class="hover:text-[#613213] transition-colors duration-300 mb-5 text-justify">
-          C'est Hélène qui s'occupera de réaliser le bain thérapeutique. Elle
-          est auxiliaire de puériculture en maternité et s'est formée à
-          l'école du bien naître de Sonia Krief.
-        </p>
-      </CardContent>
-    </div>
-    <CardFooter class="flex justify-center">
-      <Button as-child class="items-center">
-        <NuxtLink to="/prestations">Découvrir toutes nos prestations</NuxtLink>
-      </Button>
-    </CardFooter>
+      <div class="grid w-full items-center gap-2">
+        <Label for="email">Votre email</Label>
+        <Input type="email" id="email" v-model="email" placeholder="jean.dupont@example.com" />
+      </div>
+      <div class="grid w-full gap-2">
+        <Label for="message">Votre message</Label>
+        <Textarea required placeholder="Écrivez votre message ici..." id="message" v-model="message"
+          :class="['min-h-37.5', messageError ? 'border-red-500' : '']" @input="messageError = ''" />
+        <p v-if="messageError" class="text-red-500 text-sm mt-1">{{ messageError }}</p>
+      </div>
+      <div class="flex justify-center">
+        <Button type="submit" :disabled="pending">
+          {{ pending ? 'Envoi en cours...' : 'Envoyer' }}
+        </Button>
+      </div>
+    </form>
   </Card>
 </template>

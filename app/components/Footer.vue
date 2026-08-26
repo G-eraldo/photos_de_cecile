@@ -9,7 +9,7 @@ const links = [
 </script>
 
 <template>
-  <footer class="font-poppins py-8 sm:py-16 md:py-32">
+  <footer class="font-poppins py-8 sm:py-16 md:py-2">
     <div class="mx-auto max-w-5xl px-4 sm:px-6">
       <div class="flex items-center justify-center gap-2">
         <NuxtImg src="/images/logo.svg" alt="Cécile Logo" width="32" height="32" />
@@ -49,8 +49,12 @@ const links = [
         </a>
       </div>
       <span class="block text-center text-sm text-[#9e8b8b]">
-        © {{ new Date().getFullYear() }} Les photos de Cécile, tous droits
-        réservés - site édité par La fabrique du web
+        © {{ new Date().getFullYear() }} Les photos de Cécile, <span class="text-[#676463]">tous droits
+          réservés</span> -
+        <NuxtLink to="https://lafabriqueducode.fr" target="_blank" rel="noopener noreferrer"
+          aria-label="La fabrique du code" class="text-[#9e8b8b] hover:text-primary block">
+          <span class="text-[#676463]">site édité par</span> La fabrique du code
+        </NuxtLink>
       </span>
     </div>
   </footer>
