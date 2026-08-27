@@ -24,7 +24,7 @@ onMounted(() => {
 
             <div class="mb-10 text-center">
 
-                <p class="mb-2 font-poppins text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#5A3419]">
+                <p class="mb-2 font-playfair text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-[#5A3419]">
                     Témoignages
                 </p>
 

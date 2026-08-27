@@ -6,7 +6,7 @@ import Maps from './Maps.vue';
 
 <template>
   <Card class="max-w-5xl mx-auto p-4 md:p-8 mt-12 shadow-lg bg-white/90 backdrop-blur-sm">
-    <CardTitle class="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-[#613213] text-center">
+    <CardTitle class="text-2xl md:text-3xl font-bold mb-6 font-playfair md:mb-8 text-[#613213] text-center">
       Envie d'immortaliser vos moments ?
     </CardTitle>
     <div class="flex flex-col md:flex-row gap-8 md:gap-12">

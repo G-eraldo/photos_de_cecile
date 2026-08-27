@@ -17,7 +17,7 @@ import { cn } from '~/lib/utils';
 
 <template>
   <Card class="max-w-6xl mx-auto p-4 md:p-6 mt-32">
-    <CardTitle class="text-xl md:text-2xl font-bold mb-4 text-[#613213]">
+    <CardTitle class="text-xl md:text-2xl font-bold mb-4 text-[#613213] font-playfair">
       Prestations
     </CardTitle>
     <div class="mt-4 md:mt-6">

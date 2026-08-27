@@ -6,7 +6,8 @@ import { cn } from '~/lib/utils'
 const menuItems = [
   { name: 'À propos', href: '/a-propos' },
   { name: 'Prestations', href: '/prestations' },
-  { name: 'Tirages photos', href: '/tirage-photo' },
+  { name: 'Portfolio', href: '/portfolio' },
+  { name: 'Tirages photos', href: '/tirages-photo' },
   { name: 'Contact', href: '/contact' },
 ]
 
@@ -48,11 +49,7 @@ onUnmounted(() => {
           <div class="flex w-full items-center justify-between lg:w-auto">
 
             <NuxtLink to="/" aria-label="Accueil" :class="[
-              'flex items-center font-playfair text-xl transition-colors duration-300 sm:text-2xl',
-              isScrolled
-                ? 'text-[#5A3419]'
-                : 'text-white',
-              'hover:text-[#C9A227]'
+              'flex items-center font-playfair text-xl transition-colors duration-300 sm:text-2xl text-[#5A3419] hover:text-[#C9A227]'
             ]">
               Les Photos de Cécile
             </NuxtLink>
@@ -61,11 +58,7 @@ onUnmounted(() => {
             <!-- BURGER MOBILE -->
             <button type="button" :aria-label="menuState ? 'Fermer le menu' : 'Ouvrir le menu'"
               :aria-expanded="menuState" :class="[
-                'relative z-50 flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-300 lg:hidden',
-                isScrolled
-                  ? 'text-[#5A3419]'
-                  : 'text-amber-100',
-                'hover:text-[#C9A227]'
+                'relative z-50 flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-300 lg:hidden text-[#5A3419] hover:text-[#C9A227]',
               ]" @click="menuState = !menuState">
 
               <X v-if="menuState" class="size-7" />
@@ -85,11 +78,7 @@ onUnmounted(() => {
               <li v-for="(item, index) in menuItems" :key="index">
 
                 <NuxtLink :to="item.href" :class="[
-                  'block font-medium transition-colors duration-300',
-                  isScrolled
-                    ? 'text-[#5A3419]'
-                    : 'text-white',
-                  'hover:text-[#C9A227]'
+                  'block font-medium transition-colors duration-300 text-[#5A3419] hover:text-[#C9A227] font-playfair'
                 ]">
                   {{ item.name }}
                 </NuxtLink>

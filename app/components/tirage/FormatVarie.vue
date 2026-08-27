@@ -20,7 +20,7 @@ const presta = [
 
 <template>
   <Card class="max-w-5xl mx-auto p-4 md:p-6 mt-16 md:mt-32">
-    <CardTitle class="text-xl md:text-2xl font-bold mb-4 text-[#613213]">
+    <CardTitle class="text-xl md:text-2xl font-bold mb-4 text-[#613213] font-playfair">
       Une gamme de formats variés
     </CardTitle>
     <CardDescription class="text-[#9e8b8b]">
@@ -28,7 +28,8 @@ const presta = [
     </CardDescription>
     <div class="flex flex-col md:flex-row gap-6 mt-6">
       <CardContent class="w-full md:w-1/2 h-75 md:h-125">
-        <NuxtImg src="/images/format.png" class="w-full h-full object-cover object-top rounded-lg" alt="Formats disponibles" />
+        <NuxtImg src="/images/format.png" class="w-full h-full object-cover object-top rounded-lg"
+          alt="Formats disponibles" />
       </CardContent>
       <CardContent class="w-full md:w-1/2">
         <div class="grid gap-4">
