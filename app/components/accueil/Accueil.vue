@@ -117,11 +117,11 @@ onUnmounted(() => {
       </div>
 
       <!-- Flèche précédente -->
-      <button type="button" aria-label="Photo précédente"
+      <!-- <button type="button" aria-label="Photo précédente"
         class="absolute left-6 top-1/2 z-20 flex h-11.5 w-11.5 -translate-y-1/2 items-center justify-center border border-white/35 bg-[#333333]/55 text-2xl text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white hover:bg-[#333333]/75 max-sm:left-3 max-sm:h-9.5 max-sm:w-9.5"
         @click="previousSlide(); startAutoplay()">
         ‹
-      </button>
+      </button> -->
 
       <!-- Texte -->
       <div class="relative z-20">
@@ -139,11 +139,11 @@ onUnmounted(() => {
       </div>
 
       <!-- Flèche suivante -->
-      <button type="button" aria-label="Photo suivante"
+      <!-- <button type="button" aria-label="Photo suivante"
         class="absolute right-6 top-1/2 z-20 flex h-11.5 w-11.5 -translate-y-1/2 items-center justify-center border border-white/35 bg-[#333333]/55 text-2xl text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white hover:bg-[#333333]/75 max-sm:right-3 max-sm:h-9.5 max-sm:w-9.5"
         @click="nextSlide(); startAutoplay()">
         ›
-      </button>
+      </button> -->
 
       <!-- Dots -->
       <div class="absolute bottom-6.5 left-1/2 z-20 flex -translate-x-1/2 gap-2.5">

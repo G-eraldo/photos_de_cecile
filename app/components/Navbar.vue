@@ -48,27 +48,28 @@ onUnmounted(() => {
           <!-- LOGO + BURGER -->
           <div class="flex w-full items-center justify-between lg:w-auto">
 
-            <NuxtLink to="/" aria-label="Accueil" :class="[
-              'flex items-center font-playfair text-xl transition-colors duration-300 sm:text-2xl text-[#5A3419] hover:text-[#C9A227]'
-            ]">
+            <NuxtLink to="/" aria-label="Accueil" :class="cn(
+              'flex items-center font-playfair text-xl transition-all duration-300 sm:text-2xl',
+              isScrolled
+                ? 'text-[#5A3419] hover:text-[#C9A227]'
+                : 'text-white mix-blend-difference hover:text-white'
+            )">
               Les Photos de Cécile
             </NuxtLink>
 
-
             <!-- BURGER MOBILE -->
             <button type="button" :aria-label="menuState ? 'Fermer le menu' : 'Ouvrir le menu'"
-              :aria-expanded="menuState" :class="[
-                'relative z-50 flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-300 lg:hidden text-[#5A3419] hover:text-[#C9A227]',
-              ]" @click="menuState = !menuState">
-
+              :aria-expanded="menuState" :class="cn(
+                'relative z-50 flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300 lg:hidden',
+                isScrolled
+                  ? 'text-[#5A3419] hover:text-[#C9A227]'
+                  : 'text-white mix-blend-difference'
+              )" @click="menuState = !menuState">
               <X v-if="menuState" class="size-7" />
-
               <Menu v-else class="size-7" />
-
             </button>
 
           </div>
-
 
           <!-- NAVIGATION DESKTOP -->
           <div class="hidden lg:block" :class="isScrolled ? 'lg:mr-0' : ''">
@@ -77,9 +78,12 @@ onUnmounted(() => {
 
               <li v-for="(item, index) in menuItems" :key="index">
 
-                <NuxtLink :to="item.href" :class="[
-                  'block font-medium transition-colors duration-300 text-[#5A3419] hover:text-[#C9A227] font-playfair'
-                ]">
+                <NuxtLink :to="item.href" :class="cn(
+                  'block font-medium font-playfair transition-all duration-300',
+                  isScrolled
+                    ? 'text-[#5A3419] hover:text-[#C9A227]'
+                    : 'text-white mix-blend-difference hover:text-white'
+                )">
                   {{ item.name }}
                 </NuxtLink>
 
@@ -88,7 +92,6 @@ onUnmounted(() => {
             </ul>
 
           </div>
-
 
           <!-- MENU MOBILE -->
           <div v-if="menuState"
