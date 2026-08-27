@@ -103,6 +103,8 @@ const formatPrice = (price) => {
 
     <div v-if="prestationsList.length" class="mt-4 md:mt-6">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <!-- Card prestation -->
         <Card v-for="prestas in prestationsList" :key="prestas.id || prestas.documentId"
           class="p-4 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-[#f8f4f1] flex flex-col">
           <!-- Image -->
@@ -111,17 +113,39 @@ const formatPrice = (price) => {
 
           <!-- Contenu -->
           <div class="flex flex-col flex-1 mt-4">
+
+            <!-- Nom -->
             <CardContent class="p-0 font-bold text-lg mb-3 text-[#613213] font-playfair">
               {{ prestas.nom }}
             </CardContent>
 
+            <!-- Description -->
             <CardContent class="p-0 font-medium text-sm text-[#9e8b8b] mb-5">
               {{ prestas.description }}
             </CardContent>
 
+            <!-- Guide canin uniquement pour Animaux de compagnie -->
+            <div v-if="prestas.nom === 'Animaux de compagnie'"
+              class="mb-5 rounded-lg border border-[#e4d8d2] bg-[#f8f4f1] p-4">
+              <p class="text-sm font-semibold text-[#613213] mb-1">
+                🐾 Bien préparer votre séance
+              </p>
+
+              <p class="text-xs text-[#9e8b8b] leading-relaxed mb-3">
+                Découvrez les conseils de Cécile pour préparer votre
+                chien avant la séance photo.
+              </p>
+
+              <a href="/guides/guide-canin.pdf" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center text-sm font-semibold text-[#613213] hover:underline">
+                📖 Consulter le guide →
+              </a>
+            </div>
+
             <!-- Formules -->
             <div v-if="prestas.formules.length" class="mb-5">
               <div class="space-y-1">
+
                 <div v-for="formule in prestas.formules" :key="formule.id"
                   class="flex items-center justify-between gap-3 text-sm">
                   <span class="text-[#613213] font-medium">
@@ -132,6 +156,7 @@ const formatPrice = (price) => {
                     {{ formatPrice(formule.prix) }}
                   </span>
                 </div>
+
               </div>
             </div>
 
@@ -143,6 +168,7 @@ const formatPrice = (price) => {
             <!-- Bouton -->
             <div class="mt-auto flex justify-center">
               <Dialog>
+
                 <DialogTrigger :class="cn(
                   buttonVariants(),
                   'cursor-pointer'
@@ -152,20 +178,44 @@ const formatPrice = (price) => {
 
                 <DialogContent class="max-w-[90vw] max-h-[90vh] overflow-y-auto md:max-w-3xl">
                   <DialogHeader>
+
                     <DialogTitle class="text-[#613213] text-xl md:text-2xl font-bold mb-4">
                       {{ prestas.nom }}
                     </DialogTitle>
 
                     <div class="space-y-6 text-left">
+
                       <!-- Description -->
                       <DialogDescription v-if="prestas.description" class="text-[#9e8b8b] whitespace-pre-line">
                         {{ prestas.description }}
                       </DialogDescription>
 
+                      <!-- Guide canin uniquement pour Animaux de compagnie -->
+                      <div v-if="prestas.nom === 'Animaux de compagnie'"
+                        class="rounded-xl border border-[#e4d8d2] bg-[#f8f4f1] p-5">
+                        <h3 class="text-lg font-bold text-[#613213] font-playfair mb-2">
+                          🐾 Bien préparer votre séance
+                        </h3>
+
+                        <p class="text-sm text-[#9e8b8b] leading-relaxed mb-4">
+                          Découvrez les conseils de Cécile pour préparer
+                          votre chien avant la séance photo et faire de ce
+                          moment une expérience agréable pour vous deux.
+                        </p>
+
+                        <Button as-child variant="outline">
+                          <a href="/guides/guide-canin.pdf" target="_blank" rel="noopener noreferrer">
+                            📖 Consulter le guide
+                          </a>
+                        </Button>
+                      </div>
+
                       <!-- Formules -->
                       <div v-if="prestas.formules.length" class="space-y-4">
+
                         <div v-for="formule in prestas.formules" :key="formule.id"
                           class="border rounded-lg p-4 border-[#e4d8d2]">
+
                           <!-- Nom + prix -->
                           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
                             <h3 class="text-lg font-bold text-[#613213] font-playfair">
@@ -182,6 +232,7 @@ const formatPrice = (price) => {
 
                           <!-- Informations -->
                           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-[#9e8b8b]">
+
                             <!-- Nombre de photos -->
                             <div v-if="formule.nombre_photos" class="flex flex-col">
                               <span class="font-semibold text-[#613213]">
@@ -203,6 +254,7 @@ const formatPrice = (price) => {
                                 {{ formule.duree }}
                               </span>
                             </div>
+
                           </div>
 
                           <!-- Détails formule -->
@@ -223,7 +275,9 @@ const formatPrice = (price) => {
                               {{ formule.acompte_pourcentage }} %
                             </span>
                           </div>
+
                         </div>
+
                       </div>
 
                       <!-- Corporate / prestation sans formule -->
@@ -232,6 +286,7 @@ const formatPrice = (price) => {
                           Un devis personnalisé sera proposé après échange.
                         </p>
                       </div>
+
                       <!-- Pack -->
                       <div v-if="prestas.pack" class="mt-2 pt-6 border-t border-[#e4d8d2]">
                         <h3 class="text-lg font-bold text-[#613213] font-playfair mb-3">
@@ -242,8 +297,10 @@ const formatPrice = (price) => {
                           {{ prestas.pack }}
                         </p>
                       </div>
+
                       <!-- Actions -->
                       <div class="flex flex-wrap gap-3 pt-2">
+
                         <Button as-child>
                           <NuxtLink to="/contact">
                             <Mail class="mr-2 h-4 w-4" />
@@ -262,12 +319,13 @@ const formatPrice = (price) => {
                             Réserver
                           </NuxtLink>
                         </Button>
-                      </div>
 
+                      </div>
 
                     </div>
                   </DialogHeader>
 
+                  <!-- Footer -->
                   <DialogFooter>
                     <DialogClose as-child>
                       <Button>
@@ -275,11 +333,14 @@ const formatPrice = (price) => {
                       </Button>
                     </DialogClose>
                   </DialogFooter>
+
                 </DialogContent>
               </Dialog>
             </div>
+
           </div>
         </Card>
+
       </div>
     </div>
 
@@ -295,7 +356,8 @@ const formatPrice = (price) => {
         </p>
 
         <p>
-          Les tarifs comprennent la retouche artistique et le traitement des photos.
+          Les tarifs comprennent la retouche artistique et le traitement
+          des photos.
         </p>
 
         <p>
@@ -304,8 +366,8 @@ const formatPrice = (price) => {
         </p>
 
         <p>
-          Les photos sont livrées en haute définition dans un délai de 2 mois via
-          une galerie en ligne privée (3 mois pour les mariages).
+          Les photos sont livrées en haute définition dans un délai de 2 mois
+          via une galerie en ligne privée (3 mois pour les mariages).
         </p>
       </div>
     </div>
@@ -314,5 +376,6 @@ const formatPrice = (price) => {
     <div v-else class="py-12 text-center text-[#9e8b8b]">
       Aucune prestation disponible pour le moment.
     </div>
+
   </Card>
 </template>

@@ -9,8 +9,10 @@ import { Card, CardContent, CardTitle } from '@/components/ui/card';
     </CardTitle>
     <div class="flex flex-col md:flex-row gap-6">
       <div class="w-full md:w-1/2 aspect-3/4 md:aspect-video">
-        <NuxtImg src="/images/profil.png" class="w-full h-full object-cover object-top rounded-lg shadow-2xl"
-          alt="Photo de profil" width="500" height="500" />
+        <NuxtImg
+          src="https://res.cloudinary.com/dlnbsf2ed/image/upload/v1787854215/Les_photos_de_Ce%CC%81cile_sysncy.jpg"
+          class="w-full h-full object-cover object-top rounded-lg shadow-2xl" alt="Photo de profil" width="500"
+          height="500" />
       </div>
       <CardContent class="w-full md:w-1/2 text-[#9e8b8b] leading-8 font-playfair py-4 md:py-8 text-base md:text-lg">
         <p class="hover:text-[#613213] transition-colors duration-300 mb-5 text-justify">

@@ -31,6 +31,16 @@ const formatDate = (date) => {
   }).format(parsed);
 };
 
+const getSignatureDate = () => {
+  const now = new Date();
+
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(now);
+};
+
 const formatSocialUsage = (socialUsage) => {
   if (socialUsage === "autorise") {
     return "☒ J’autorise l’utilisation des photos sur les réseaux sociaux";
@@ -199,6 +209,7 @@ export async function generateContractPdf({
 
     y -= 2;
   };
+
   const drawCheckbox = (text, checked = false) => {
     ensureSpace(22);
 
@@ -218,6 +229,7 @@ export async function generateContractPdf({
 
     y -= 3;
   };
+
   addPage();
 
   // -------------------------------------------------------
@@ -302,7 +314,6 @@ export async function generateContractPdf({
   y -= 18;
 
   drawText(`Nom / Prénom : ${safe(prenom)} ${safe(nom)}`);
-  drawText(`Adresse : ${safe(adresse)}`);
   drawText(`Téléphone : ${safe(telephone)}`);
   drawText(`Email : ${safe(email)}`);
 
@@ -385,6 +396,7 @@ export async function generateContractPdf({
   drawBullet(
     "En cas d’annulation par le Client : l’acompte versé reste acquis au Photographe.",
   );
+
   drawBullet(
     "Un report pourra être envisagé en fonction des disponibilités du Photographe.",
   );
@@ -510,8 +522,11 @@ export async function generateContractPdf({
   drawParagraph("Sont notamment interdits :");
 
   drawBullet("Filtres appliqués via des applications ou réseaux sociaux");
+
   drawBullet("Retouches ou modifications colorimétriques");
+
   drawBullet("Recadrages altérant l’image");
+
   drawBullet("Ajout de texte, logo ou graphisme.");
 
   drawParagraph(
@@ -549,6 +564,7 @@ export async function generateContractPdf({
   );
 
   drawBullet("Le Client s’engage à ne pas effectuer de captures d’écran");
+
   drawBullet(
     "Seules les images finales téléchargeables sont destinées à être utilisées.",
   );
@@ -641,8 +657,15 @@ export async function generateContractPdf({
 
   y -= 10;
 
+  // -------------------------------------------------------
+  // ENGAGEMENT DU CLIENT
+  // -------------------------------------------------------
+
+  const clientFullName = `${safe(prenom)} ${safe(nom)}`;
+  const signatureDate = getSignatureDate();
+
   drawParagraph(
-    "Je soussigné(e) ____________________________ atteste avoir lu les informations stipulées dans le contrat et m’engage à les respecter.",
+    `Je soussigné(e) ${clientFullName} atteste avoir lu les informations stipulées dans le contrat et m’engage à les respecter.`,
   );
 
   y -= 8;
@@ -651,7 +674,7 @@ export async function generateContractPdf({
   // SIGNATURES
   // -------------------------------------------------------
 
-  ensureSpace(120);
+  ensureSpace(160);
 
   page.drawText("Signature et date du client :", {
     x: marginLeft,
@@ -669,8 +692,49 @@ export async function generateContractPdf({
     color: COLORS.brown,
   });
 
-  y -= 70;
+  y -= 25;
 
+  // Nom client
+  page.drawText(clientFullName, {
+    x: marginLeft,
+    y,
+    size: 10,
+    font: boldFont,
+    color: COLORS.text,
+  });
+
+  // Nom photographe
+  page.drawText("DELLENBACH Cécile", {
+    x: pageWidth / 2 + 10,
+    y,
+    size: 10,
+    font: boldFont,
+    color: COLORS.text,
+  });
+
+  y -= 18;
+
+  // Date client
+  page.drawText(`Date : ${signatureDate}`, {
+    x: marginLeft,
+    y,
+    size: 9,
+    font: regularFont,
+    color: COLORS.grey,
+  });
+
+  // Date photographe
+  page.drawText(`Date : ${signatureDate}`, {
+    x: pageWidth / 2 + 10,
+    y,
+    size: 9,
+    font: regularFont,
+    color: COLORS.grey,
+  });
+
+  y -= 50;
+
+  // Ligne signature client
   page.drawLine({
     start: {
       x: marginLeft,
@@ -684,6 +748,7 @@ export async function generateContractPdf({
     color: COLORS.grey,
   });
 
+  // Ligne signature photographe
   page.drawLine({
     start: {
       x: pageWidth / 2 + 10,
@@ -694,6 +759,24 @@ export async function generateContractPdf({
       y,
     },
     thickness: 1,
+    color: COLORS.grey,
+  });
+
+  y -= 25;
+
+  page.drawText("Signature du client", {
+    x: marginLeft,
+    y,
+    size: 8,
+    font: italicFont,
+    color: COLORS.grey,
+  });
+
+  page.drawText("Signature du photographe", {
+    x: pageWidth / 2 + 10,
+    y,
+    size: 8,
+    font: italicFont,
     color: COLORS.grey,
   });
 
