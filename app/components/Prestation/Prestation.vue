@@ -124,24 +124,6 @@ const formatPrice = (price) => {
               {{ prestas.description }}
             </CardContent>
 
-            <!-- Guide canin uniquement pour Animaux de compagnie -->
-            <div v-if="prestas.nom === 'Animaux de compagnie'"
-              class="mb-5 rounded-lg border border-[#e4d8d2] bg-[#f8f4f1] p-4">
-              <p class="text-sm font-semibold text-[#613213] mb-1">
-                🐾 Bien préparer votre séance
-              </p>
-
-              <p class="text-xs text-[#9e8b8b] leading-relaxed mb-3">
-                Découvrez les conseils de Cécile pour préparer votre
-                chien avant la séance photo.
-              </p>
-
-              <a href="/guides/guide-canin.pdf" target="_blank" rel="noopener noreferrer"
-                class="inline-flex items-center text-sm font-semibold text-[#613213] hover:underline">
-                📖 Consulter le guide →
-              </a>
-            </div>
-
             <!-- Formules -->
             <div v-if="prestas.formules.length" class="mb-5">
               <div class="space-y-1">
@@ -189,26 +171,6 @@ const formatPrice = (price) => {
                       <DialogDescription v-if="prestas.description" class="text-[#9e8b8b] whitespace-pre-line">
                         {{ prestas.description }}
                       </DialogDescription>
-
-                      <!-- Guide canin uniquement pour Animaux de compagnie -->
-                      <div v-if="prestas.nom === 'Animaux de compagnie'"
-                        class="rounded-xl border border-[#e4d8d2] bg-[#f8f4f1] p-5">
-                        <h3 class="text-lg font-bold text-[#613213] font-playfair mb-2">
-                          🐾 Bien préparer votre séance
-                        </h3>
-
-                        <p class="text-sm text-[#9e8b8b] leading-relaxed mb-4">
-                          Découvrez les conseils de Cécile pour préparer
-                          votre chien avant la séance photo et faire de ce
-                          moment une expérience agréable pour vous deux.
-                        </p>
-
-                        <Button as-child variant="outline">
-                          <a href="/guides/guide-canin.pdf" target="_blank" rel="noopener noreferrer">
-                            📖 Consulter le guide
-                          </a>
-                        </Button>
-                      </div>
 
                       <!-- Formules -->
                       <div v-if="prestas.formules.length" class="space-y-4">
