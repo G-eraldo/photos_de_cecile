@@ -57,5 +57,11 @@ export default defineNuxtConfig({
     public: {
       maptilerApiKey: "",
     },
+    strapi: {
+      url: process.env.STRAPI_URL || "http://localhost:1337",
+      prefix: "/api",
+      admin: "/admin",
+      version: "v5",
+    },
   },
 });
