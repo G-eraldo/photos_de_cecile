@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     "shadcn-nuxt",
     "@nuxtjs/seo",
     "nuxt-og-image",
+    "@nuxtjs/strapi",
   ],
 
   site: {
