@@ -194,6 +194,7 @@ onUnmounted(() => {
           Qui suis-je ?
         </h2>
 
+        <div class="mx-auto my-5 h-px w-17.5 bg-[#676463]" />
         <div class="mx-auto max-w-190 text-[1.1rem] leading-[1.85] text-[#676463]">
 
           <p class="mb-5">
