@@ -30,6 +30,7 @@ const {
 } = await useAsyncData('prestations', () =>
   find('prestations', {
     populate: '*',
+    sort: ['ordre:asc'],
     filters: {
       actif: {
         $eq: true,
@@ -102,6 +103,34 @@ const formatPrice = (price) => {
     </CardTitle>
 
     <div v-if="prestationsList.length" class="mt-4 md:mt-6">
+
+      <!-- Informations communes à toutes les prestations -->
+      <div v-if="prestationsList.length" class="mb-10 pt-8 border-t border-[#e4d8d2]">
+        <h3 class="text-lg md:text-xl font-bold text-[#613213] font-playfair mb-4">
+          Informations
+        </h3>
+
+        <div class="space-y-2 text-sm md:text-base text-[#9e8b8b] leading-relaxed">
+          <p>
+            Toutes les photos livrées sont retouchées.
+          </p>
+
+          <p>
+            Les tarifs comprennent la retouche artistique et le traitement
+            des photos.
+          </p>
+
+          <p>
+            Pour les séances en dehors d’Amiens, des frais de déplacement de
+            0,40 €/km (aller-retour) sont appliqués.
+          </p>
+
+          <p>
+            Les photos sont livrées en haute définition dans un délai de 2 mois
+            via une galerie en ligne privée (3 mois pour les mariages).
+          </p>
+        </div>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
         <!-- Card prestation -->
@@ -303,34 +332,6 @@ const formatPrice = (price) => {
           </div>
         </Card>
 
-      </div>
-    </div>
-
-    <!-- Informations communes à toutes les prestations -->
-    <div v-if="prestationsList.length" class="mt-10 pt-8 border-t border-[#e4d8d2]">
-      <h3 class="text-lg md:text-xl font-bold text-[#613213] font-playfair mb-4">
-        Informations
-      </h3>
-
-      <div class="space-y-2 text-sm md:text-base text-[#9e8b8b] leading-relaxed">
-        <p>
-          Toutes les photos livrées sont retouchées.
-        </p>
-
-        <p>
-          Les tarifs comprennent la retouche artistique et le traitement
-          des photos.
-        </p>
-
-        <p>
-          Pour les séances en dehors d’Amiens, des frais de déplacement de
-          0,40 €/km (aller-retour) sont appliqués.
-        </p>
-
-        <p>
-          Les photos sont livrées en haute définition dans un délai de 2 mois
-          via une galerie en ligne privée (3 mois pour les mariages).
-        </p>
       </div>
     </div>
 

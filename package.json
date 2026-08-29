@@ -15,7 +15,7 @@
     "start": "node .output/server/index.mjs"
   },
   "dependencies": {
-    "@lucide/vue": "^1.34.0",
+    "@lucide/vue": "^1.37.0",
     "@maptiler/leaflet-maptilersdk": "^4.1.1",
     "@nuxt/eslint": "^1.15.1",
     "@nuxt/fonts": "^0.14.0",

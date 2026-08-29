@@ -8,6 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { CalendarDays, Mail } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import Select from './ui/select/Select.vue';
+import SelectTrigger from './ui/select/SelectTrigger.vue';
+import SelectContent from './ui/select/SelectContent.vue';
+import SelectGroup from './ui/select/SelectGroup.vue';
+import SelectItem from './ui/select/SelectItem.vue';
+import SelectValue from './ui/select/SelectValue.vue';
 
 
 const route = useRoute();
@@ -182,6 +188,48 @@ const submit = async () => {
       </div>
       <div class="grid gap-2"><Label for="reservation-email">Votre email</Label><Input id="reservation-email"
           v-model="email" type="email" required /></div>
+      <div class="grid gap-2 ">
+        <Select>
+          <SelectTrigger class="w-full">
+            <SelectValue placeholder="Sélectionner un lieu de prise de vue" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="amiens">
+                Parc à Amiens : 0€
+              </SelectItem>
+              <SelectItem value="bois-creuse">
+                Bois de creuse / bois magneux : 5€ de frais km
+              </SelectItem>
+              <SelectItem value="etang-barrette">
+                Étang de la barrette : 15€
+              </SelectItem>
+              <SelectItem value="fort-mahon">
+                Plage de fort Mahon / Quend : 50€ de frais km
+              </SelectItem>
+              <SelectItem value="ruines">
+                Ruines de château : 30€
+              </SelectItem>
+              <SelectItem value="lille">
+                Lille : 75€
+              </SelectItem>
+              <SelectItem value="paris">
+                Paris : 75€
+              </SelectItem>
+              <SelectItem value="rouen">
+                Rouen : 75€
+              </SelectItem>
+              <SelectItem value="st-quentin">
+                St Quentin : 75€
+              </SelectItem>
+              <SelectItem value="autre">
+                Autre a spécifier et/ ou à domicile
+              </SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
       <div class="rounded-lg border p-4">
         <div class="flex items-center justify-between mb-4">
           <Button type="button" variant="ghost" size="sm" aria-label="Mois précédent"
