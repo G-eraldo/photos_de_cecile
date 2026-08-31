@@ -78,6 +78,12 @@
 - [x] Alterner les thèmes dans l’ordre des 18 premières images.
 - [x] Enregistrer les marqueurs de sélection dans Strapi après validation finale.
 
+## Portfolio — grille de l’album
+
+- [x] Répartir automatiquement les photos selon leur format pour équilibrer les trois colonnes de l’album.
+- [x] Ajuster les sources responsive à la nouvelle largeur des vignettes.
+- [x] Vérifier la compilation Nuxt.
+
 ## Revue
 
 - `npm run build` passe dans `photos_de_cecile`.
@@ -104,3 +110,4 @@
 - Le portfolio sélectionne maintenant automatiquement une variante de 480, 800, 1 200 ou 1 600 px selon la taille réellement affichée et l’écran. La qualité du Worker reste à 88, et le premier lot de l’album est limité à 12 images.
 - L’intertitre intermédiaire du portfolio a été supprimé pour former un seul album continu. Les six photos d’ouverture peuvent être choisies et ordonnées dans la légende Strapi avec les marqueurs `#portfolio-une-1` à `#portfolio-une-6`. `npm run build` passe.
 - Les 18 premières images sont désormais choisies dans Strapi et ordonnées par les marqueurs `#portfolio-une-1` à `#portfolio-une-18` : 4 animaux, 2 images de chacun des sept autres thèmes retenus et aucune image de baptême. Toutes proviennent exclusivement des sous-dossiers du dossier Portfolio ; l’ordre alterne les thèmes.
+- L’album répartit désormais automatiquement les photos selon leur format afin d’équilibrer les trois colonnes sans recadrage et sans large zone vide. Les `srcset` sont ajustés au tiers de largeur ; `npm run build` passe.

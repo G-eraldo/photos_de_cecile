@@ -25,6 +25,21 @@ const visibleAlbumCount = ref(albumBatchSize);
 const featuredPhotos = computed(() => photos.value.slice(0, 6));
 const albumPhotos = computed(() => photos.value.slice(6));
 const displayedAlbumPhotos = computed(() => albumPhotos.value.slice(0, visibleAlbumCount.value));
+const albumColumns = computed(() => {
+  const columns = Array.from({ length: 3 }, () => ({ height: 0, photos: [] }));
+
+  displayedAlbumPhotos.value.forEach((photo) => {
+    const ratio = photo.width && photo.height ? photo.height / photo.width : 1.25;
+    const shortestColumn = columns.reduce((shortest, column) =>
+      column.height < shortest.height ? column : shortest
+    );
+
+    shortestColumn.photos.push(photo);
+    shortestColumn.height += ratio;
+  });
+
+  return columns.map((column) => column.photos);
+});
 const hasMorePhotos = computed(() => displayedAlbumPhotos.value.length < albumPhotos.value.length);
 const showMorePhotos = () => {
   visibleAlbumCount.value += albumBatchSize;
@@ -102,12 +117,12 @@ const featuredLayouts = [
 
     <section v-if="albumPhotos.length" aria-label="Toutes les photos"
       class="mx-auto mt-5 max-w-7xl px-5 sm:mt-6 sm:px-8 lg:px-12">
-      <div class="columns-1 gap-4 sm:columns-2 lg:columns-3 lg:gap-5">
+      <div class="columns-1 gap-4 sm:hidden">
         <a v-for="photo in displayedAlbumPhotos" :key="photo.id" :href="photo.url" target="_blank"
           rel="noopener noreferrer" :aria-label="`Ouvrir ${photo.alt} en grand format`"
-          class="group relative mb-4 block break-inside-avoid overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl lg:mb-5">
+          class="group relative mb-4 block break-inside-avoid overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
           <img :src="photo.thumbnailUrl" :srcset="photo.thumbnailSrcset"
-            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw" :alt="photo.alt" :width="photo.width"
+            sizes="(max-width: 639px) 100vw, 33vw" :alt="photo.alt" :width="photo.width"
             :height="photo.height" loading="lazy" decoding="async"
             class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]">
           <span
@@ -117,6 +132,23 @@ const featuredLayouts = [
             </span>
           </span>
         </a>
+      </div>
+      <div class="hidden gap-5 sm:grid sm:grid-cols-3">
+        <div v-for="(column, columnIndex) in albumColumns" :key="columnIndex" class="space-y-5">
+          <a v-for="photo in column" :key="photo.id" :href="photo.url" target="_blank"
+            rel="noopener noreferrer" :aria-label="`Ouvrir ${photo.alt} en grand format`"
+            class="group relative block overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <img :src="photo.thumbnailUrl" :srcset="photo.thumbnailSrcset" sizes="33vw" :alt="photo.alt"
+              :width="photo.width" :height="photo.height" loading="lazy" decoding="async"
+              class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]">
+            <span
+              class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/35 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100">
+              <span class="rounded-full bg-white/90 p-2 text-[#613213]" aria-hidden="true">
+                <ExternalLink class="size-4" />
+              </span>
+            </span>
+          </a>
+        </div>
       </div>
       <div v-if="hasMorePhotos" class="mt-10 text-center">
         <Button variant="outline" class="border-[#b9957f] bg-transparent px-7 text-[#613213] hover:bg-[#f1e9e5]"
