@@ -9,12 +9,12 @@ import { CalendarDays, Mail } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
 import Select from './ui/select/Select.vue';
-import SelectTrigger from './ui/select/SelectTrigger.vue';
 import SelectContent from './ui/select/SelectContent.vue';
 import SelectGroup from './ui/select/SelectGroup.vue';
 import SelectItem from './ui/select/SelectItem.vue';
+import SelectTrigger from './ui/select/SelectTrigger.vue';
 import SelectValue from './ui/select/SelectValue.vue';
-
+const { find } = useStrapi()
 
 const route = useRoute();
 const prestation = computed(() => typeof route.query.prestation === 'string' ? route.query.prestation : '');
@@ -27,6 +27,8 @@ const message = ref('');
 const pending = ref(false);
 const conditionsAccepted = ref(false);
 const socialUsage = ref('');
+const forfait = ref('');
+const phone = ref('');
 
 const availability = ref([]);
 const reservations = ref([]);
@@ -119,8 +121,13 @@ const loadAvailability = async () => {
 onMounted(loadAvailability);
 
 const submit = async () => {
-  if (!nom.value || !prenom.value || !email.value || !date.value || !heure.value) {
+  if (!nom.value || !prenom.value || !email.value || !date.value || !heure.value || !phone.value) {
     toast.error('Merci de renseigner vos coordonnées, la date et le créneau souhaités.');
+    return;
+  }
+
+  if (!forfait.value) {
+    toast.error('Merci de choisir une formule.');
     return;
   }
 
@@ -148,6 +155,8 @@ const submit = async () => {
         message: message.value,
         conditionsAccepted: conditionsAccepted.value,
         socialUsage: socialUsage.value,
+        telephone: phone.value,
+        forfait: forfait.value,
       },
     });
 
@@ -165,6 +174,46 @@ const submit = async () => {
     pending.value = false;
   }
 };
+
+const {
+  data: prestations,
+  error,
+} = await useAsyncData('prestations', () =>
+  find('prestations', {
+    populate: '*',
+    sort: ['ordre:asc'],
+    filters: {
+      actif: {
+        $eq: true,
+      },
+    },
+  })
+)
+
+const prestationsList = computed(() => {
+  if (!prestations.value?.data) {
+    return []
+  }
+
+  return prestations.value.data.map((prestation) => {
+    const formules = prestation.Formule || prestation.formule || []
+
+    return {
+      ...prestation,
+      formules: Array.isArray(formules)
+        ? [...formules].sort(
+          (a, b) => (a.ordre ?? 0) - (b.ordre ?? 0)
+        )
+        : [],
+    }
+  })
+})
+
+const selectedPrestation = computed(() =>
+  prestationsList.value.find((item) => item.nom === prestation.value) || null
+)
+
+const formules = computed(() => selectedPrestation.value?.formules || [])
 </script>
 
 <template>
@@ -188,6 +237,24 @@ const submit = async () => {
       </div>
       <div class="grid gap-2"><Label for="reservation-email">Votre email</Label><Input id="reservation-email"
           v-model="email" type="email" required /></div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid gap-2"><Label for="reservation-forfait">Votre formule</Label>
+          <Select v-model="forfait" :disabled="!formules.length">
+            <SelectTrigger class="w-full">
+              <SelectValue :placeholder="formules.length ? 'Sélectionner une formule' : 'Aucune formule disponible'" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem v-for="formule in formules" :key="formule.id" :value="formule.nom">
+                  {{ formule.nom }} — {{ Number(formule.prix).toLocaleString('fr-FR') }} €
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div class="grid gap-2"><Label for="reservation-phone">Votre téléphone</Label><Input id="reservation-phone"
+            v-model="phone" type="tel" required /></div>
+      </div>
       <div class="grid gap-2 ">
         <Select>
           <SelectTrigger class="w-full">
@@ -321,7 +388,7 @@ const submit = async () => {
       <div class="flex justify-center">
         <Button type="submit" :disabled="pending || !conditionsAccepted || !socialUsage">
           <Mail class="mr-2 h-4 w-4" />
-          {{ pending ? 'Envoi en cours…' : 'Envoyer ma demande' }}
+          {{ pending ? 'Envoi en cours…' : 'Réserver ma seance' }}
         </Button>
       </div>
     </form>

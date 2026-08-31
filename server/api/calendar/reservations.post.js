@@ -33,9 +33,17 @@ export default defineEventHandler(async (event) => {
   } = body || {};
 
   if (
-    ![nom, prenom, email, prestation, date, heure, socialUsage].every(
-      (value) => typeof value === "string" && value.trim(),
-    )
+    ![
+      nom,
+      prenom,
+      email,
+      prestation,
+      forfait,
+      date,
+      heure,
+      socialUsage,
+      telephone,
+    ].every((value) => typeof value === "string" && value.trim())
   ) {
     throw createError({
       statusCode: 400,
@@ -117,8 +125,8 @@ export default defineEventHandler(async (event) => {
       Authorization: `Bearer ${accessToken}`,
     },
     body: {
-      summary: `Réservation — ${prestation.trim()}`,
-      description: `Client : ${prenom.trim()} ${nom.trim()}\nEmail : ${email.trim()}${
+      summary: `Réservation — ${prestation.trim()} (${forfait.trim()})`,
+      description: `Client : ${prenom.trim()} ${nom.trim()}\nEmail : ${email.trim()}\nTéléphone : ${telephone?.trim() || "Non renseigné"}\nPrestation : ${prestation.trim()}\nFormule : ${forfait.trim()}${
         message?.trim() ? `\nPrécisions : ${message.trim()}` : ""
       }\nConditions acceptées : ${conditionsAccepted}\nUsage des photos : ${socialUsage}`,
 
@@ -147,7 +155,7 @@ export default defineEventHandler(async (event) => {
     date,
     lieu: lieu?.trim() || "",
     heure,
-    forfait: forfait?.trim() || prestation.trim(),
+    forfait: forfait.trim(),
     socialUsage,
   });
 
