@@ -9,7 +9,7 @@ useSeoMeta({
 import { Button } from '@/components/ui/button'
 import { Card, CardDescription, CardTitle } from '@/components/ui/card'
 import { CheckCircle2, Clock3, XCircle } from 'lucide-vue-next'
-import { computed, onBeforeUnmount, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
 
 const route = useRoute()
 const reference = computed(() => typeof route.query.reference === 'string' ? route.query.reference : '')
@@ -20,14 +20,26 @@ const { data, pending, error, refresh } = await useAsyncData(
 )
 
 let refreshTimer
+let redirectTimer
+let stopConfirmationWatch
 
 onMounted(() => {
   refreshTimer = window.setInterval(() => {
     if (data.value?.statut === 'en_attente') refresh()
   }, 3000)
+
+  stopConfirmationWatch = watch(isConfirmed, (confirmed) => {
+    if (confirmed) {
+      redirectTimer = window.setTimeout(() => navigateTo('/'), 7000)
+    }
+  }, { immediate: true })
 })
 
-onBeforeUnmount(() => window.clearInterval(refreshTimer))
+onBeforeUnmount(() => {
+  window.clearInterval(refreshTimer)
+  window.clearTimeout(redirectTimer)
+  stopConfirmationWatch?.()
+})
 
 const isConfirmed = computed(() => data.value?.statut === 'paye')
 const isFailed = computed(() => ['echoue', 'expire', 'annule'].includes(data.value?.statut))
@@ -45,6 +57,8 @@ const isFailed = computed(() => ['echoue', 'expire', 'annule'].includes(data.val
       <CheckCircle2 class="mx-auto h-12 w-12 text-green-600" />
       <CardTitle class="font-playfair text-2xl text-[#613213]">Votre séance est confirmée</CardTitle>
       <CardDescription>Votre acompte a été reçu. Le créneau est ajouté à l’agenda et le contrat vous est envoyé par e-mail.</CardDescription>
+      <p class="text-sm text-[#9e8b8b]">Redirection vers l’accueil dans quelques secondes…</p>
+      <Button as-child variant="outline"><NuxtLink to="/">Revenir à l’accueil</NuxtLink></Button>
     </div>
 
     <div v-else-if="isFailed" class="space-y-4 py-4">

@@ -35,6 +35,12 @@
 - [x] Vérifier que la page de confirmation est incluse dans le build Nuxt.
 - [ ] Renseigner les variables serveur de paiement sur le déploiement public et redéployer.
 
+## Paiement Mollie — confirmation cliente et agenda
+
+- [x] Rediriger automatiquement la cliente vers l’accueil après confirmation.
+- [x] Indiquer dans Google Calendar que l’acompte est payé.
+- [x] Vérifier la compilation Nuxt.
+
 ## Revue
 
 - `npm run build` passe dans `photos_de_cecile`.
@@ -49,3 +55,4 @@
 - `npm run build` passe dans `photos_de_cecile` après ajout des frais kilométriques à l’acompte Mollie.
 - `npm run build` passe après correction du routage `/reservation/confirmation` ; la page de confirmation est présente dans le bundle.
 - L’API publique de statut retourne actuellement `503 Le paiement n’est pas encore configuré.` : les variables serveur du déploiement public sont incomplètes ou non appliquées, ce qui empêche aussi le webhook Mollie de confirmer cette réservation.
+- `npm run build` passe après ajout de la redirection de confirmation et de la mention d’acompte payé dans Google Calendar.

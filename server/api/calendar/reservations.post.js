@@ -125,7 +125,7 @@ export const completeReservation = async (event, body) => {
     },
     body: {
       summary: `Réservation — ${prestation.trim()} (${forfait.trim()})`,
-      description: `Client : ${prenom.trim()} ${nom.trim()}\nEmail : ${email.trim()}\nTéléphone : ${telephone?.trim() || "Non renseigné"}\nPrestation : ${prestation.trim()}\nFormule : ${forfait.trim()}${
+      description: `Client : ${prenom.trim()} ${nom.trim()}\nEmail : ${email.trim()}\nTéléphone : ${telephone?.trim() || "Non renseigné"}\nPrestation : ${prestation.trim()}\nFormule : ${forfait.trim()}\nAcompte : payé${
         message?.trim() ? `\nPrécisions : ${message.trim()}` : ""
       }\nConditions acceptées : ${conditionsAccepted}\nUsage des photos : ${socialUsage}`,
 
