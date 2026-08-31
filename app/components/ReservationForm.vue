@@ -29,6 +29,7 @@ const conditionsAccepted = ref(false);
 const socialUsage = ref('');
 const forfait = ref('');
 const phone = ref('');
+const lieu = ref('');
 
 const availability = ref([]);
 const reservations = ref([]);
@@ -157,6 +158,7 @@ const submit = async () => {
         socialUsage: socialUsage.value,
         telephone: phone.value,
         forfait: forfait.value,
+        lieu: lieu.value,
       },
     });
 
