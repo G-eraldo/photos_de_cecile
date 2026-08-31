@@ -20,8 +20,9 @@ const {
 } = await useAsyncData('portfolio-photos', () => $fetch('/api/portfolio'));
 
 const photos = computed(() => data.value?.photos || []);
-const albumBatchSize = 18;
-const visibleAlbumCount = ref(albumBatchSize);
+const initialAlbumCount = 20;
+const albumBatchSize = 12;
+const visibleAlbumCount = ref(initialAlbumCount);
 const featuredPhotos = computed(() => photos.value.slice(0, 6));
 const albumPhotos = computed(() => photos.value.slice(6));
 const displayedAlbumPhotos = computed(() => albumPhotos.value.slice(0, visibleAlbumCount.value));
