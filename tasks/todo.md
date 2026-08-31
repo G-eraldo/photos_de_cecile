@@ -14,6 +14,15 @@
 - [x] Mettre à jour l’API pour valider et enregistrer la formule.
 - [x] Vérifier la compilation après la mise à jour de l’API.
 
+## Paiement d’acompte Mollie
+
+- [x] Définir le flux sécurisé de paiement et de confirmation par webhook.
+- [ ] Créer la collection Strapi `reservation`.
+- [ ] Créer le paiement Mollie et rediriger la cliente vers le checkout.
+- [ ] Confirmer une réservation après paiement, sans doublon, puis créer l’événement et envoyer l’e-mail.
+- [ ] Ajouter la page de retour de paiement et les variables de déploiement requises.
+- [ ] Vérifier les deux applications.
+
 ## Revue
 
 - `npm run build` passe dans `photos_de_cecile`.

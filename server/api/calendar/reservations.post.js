@@ -327,6 +327,18 @@ export default defineEventHandler(async (event) => {
                   </strong>
                   ${prestation.trim()}
                 </p>
+                <p style="margin:0;">
+                  <strong style="color:#5A3419;">
+                    Formule :
+                  </strong>
+                  ${forfait.trim()}
+                </p>
+                <p style="margin:0;">
+                  <strong style="color:#5A3419;">
+                    Lieu :
+                  </strong>
+                  ${lieu.trim()}
+                </p>
 
               </div>
 
