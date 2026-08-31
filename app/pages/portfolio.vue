@@ -100,14 +100,7 @@ const featuredLayouts = [
     </section>
 
     <section v-if="albumPhotos.length" aria-label="Toutes les photos"
-      class="mx-auto mt-20 max-w-7xl px-5 sm:mt-28 sm:px-8 lg:px-12">
-      <div class="mb-8 flex flex-col gap-3 border-b border-[#d9cac2] pb-5 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.25em] text-[#9e8b8b]">L’album complet</p>
-          <h2 class="mt-2 font-playfair text-3xl text-[#613213] sm:text-4xl">Encore plus d’histoires</h2>
-        </div>
-        <p class="text-sm text-[#786b68]">Chaque photo s’ouvre en grand format.</p>
-      </div>
+      class="mx-auto mt-5 max-w-7xl px-5 sm:mt-6 sm:px-8 lg:px-12">
       <div class="columns-1 gap-4 sm:columns-2 lg:columns-3 lg:gap-5">
         <a v-for="photo in displayedAlbumPhotos" :key="photo.id" :href="photo.url" target="_blank"
           rel="noopener noreferrer" :aria-label="`Ouvrir ${photo.alt} en grand format`"

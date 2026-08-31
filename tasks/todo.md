@@ -66,6 +66,12 @@
 - [x] Fournir des sources responsives selon la largeur réellement affichée.
 - [x] Conserver une qualité adaptée à la présentation photo et limiter le premier lot à 12 images.
 
+## Portfolio — album unique et sélection éditoriale
+
+- [x] Retirer l’intertitre qui sépare visuellement l’album sans toucher à la disposition des photos.
+- [x] Permettre de choisir et d’ordonner les six premières photos depuis la médiathèque Strapi.
+- [x] Vérifier la compilation et documenter la méthode de sélection.
+
 ## Revue
 
 - `npm run build` passe dans `photos_de_cecile`.
@@ -90,3 +96,4 @@
 - Le portfolio mélange maintenant les médias dans un ordre stable afin d’éviter les blocs de photos similaires, notamment plusieurs images noir et blanc à la suite.
 - Le portfolio utilise désormais le Worker Cloudflare pour des formats de 1 600 px dans la sélection et 1 200 px dans l’album ; le clic conserve l’accès à l’original. La variable serveur `PORTFOLIO_IMAGE_ORIGIN` configure le domaine du Worker. `npm run build` passe.
 - Le portfolio sélectionne maintenant automatiquement une variante de 480, 800, 1 200 ou 1 600 px selon la taille réellement affichée et l’écran. La qualité du Worker reste à 88, et le premier lot de l’album est limité à 12 images.
+- L’intertitre intermédiaire du portfolio a été supprimé pour former un seul album continu. Les six photos d’ouverture peuvent être choisies et ordonnées dans la légende Strapi avec les marqueurs `#portfolio-une-1` à `#portfolio-une-6`. `npm run build` passe.

@@ -50,6 +50,29 @@ const hashName = (name) => {
 const mixPhotos = (photos) =>
   [...photos].sort((first, second) => hashName(first.name) - hashName(second.name));
 
+const isFeaturedPhoto = (file) =>
+  /#portfolio-une(?:-\d+)?\b/i.test(`${file.alternativeText || ""} ${file.caption || ""}`);
+
+const getFeaturedPosition = (file) => {
+  const match = `${file.alternativeText || ""} ${file.caption || ""}`.match(/#portfolio-une-(\d+)\b/i);
+  return match ? Number(match[1]) : Number.MAX_SAFE_INTEGER;
+};
+
+const prioritizeFeaturedPhotos = (photos) => {
+  const mixedPhotos = mixPhotos(photos);
+
+  const featuredPhotos = mixedPhotos
+    .filter(isFeaturedPhoto)
+    .sort((first, second) => getFeaturedPosition(first) - getFeaturedPosition(second));
+
+  return [...featuredPhotos, ...mixedPhotos.filter((photo) => !isFeaturedPhoto(photo))];
+};
+
+const getAltText = (file) =>
+  `${file.alternativeText || ""} ${file.caption || ""}`
+    .replace(/#portfolio-une(?:-\d+)?\b/gi, "")
+    .trim() || "Photo du portfolio de Cécile";
+
 export default defineEventHandler(async () => {
   const { strapiUrl, strapiToken } = getStrapiConfig();
   const imageDeliveryOrigin = getImageDeliveryOrigin();
@@ -59,10 +82,10 @@ export default defineEventHandler(async () => {
   const files = Array.isArray(response) ? response : response.data || [];
 
   return {
-    photos: mixPhotos(files.filter((file) => file.mime?.startsWith("image/") && file.url))
+    photos: prioritizeFeaturedPhotos(files.filter((file) => file.mime?.startsWith("image/") && file.url))
       .map((file) => ({
         id: file.id,
-        alt: file.alternativeText?.trim() || file.caption?.trim() || "Photo du portfolio de Cécile",
+        alt: getAltText(file),
         height: file.height,
         name: file.name,
         featuredSrcset: getResponsiveSrcset(file.url, [800, 1200, 1600], imageDeliveryOrigin),
