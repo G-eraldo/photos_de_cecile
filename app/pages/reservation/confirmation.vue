@@ -56,16 +56,21 @@ const isFailed = computed(() => ['echoue', 'expire', 'annule'].includes(data.val
     <div v-else-if="isConfirmed" class="space-y-4 py-4">
       <CheckCircle2 class="mx-auto h-12 w-12 text-green-600" />
       <CardTitle class="font-playfair text-2xl text-[#613213]">Votre séance est confirmée</CardTitle>
-      <CardDescription>Votre acompte a été reçu. Le créneau est ajouté à l’agenda et le contrat vous est envoyé par e-mail.</CardDescription>
+      <CardDescription>Votre acompte a été reçu. Le créneau est réservé et le contrat vous est envoyé par e-mail.
+      </CardDescription>
       <p class="text-sm text-[#9e8b8b]">Redirection vers l’accueil dans quelques secondes…</p>
-      <Button as-child variant="outline"><NuxtLink to="/">Revenir à l’accueil</NuxtLink></Button>
+      <Button as-child variant="outline">
+        <NuxtLink to="/">Revenir à l’accueil</NuxtLink>
+      </Button>
     </div>
 
     <div v-else-if="isFailed" class="space-y-4 py-4">
       <XCircle class="mx-auto h-12 w-12 text-red-600" />
       <CardTitle class="font-playfair text-2xl text-[#613213]">Le paiement n’a pas abouti</CardTitle>
       <CardDescription>Votre créneau n’est pas confirmé. Vous pouvez recommencer votre réservation.</CardDescription>
-      <Button as-child><NuxtLink to="/reservation">Revenir à la réservation</NuxtLink></Button>
+      <Button as-child>
+        <NuxtLink to="/reservation">Revenir à la réservation</NuxtLink>
+      </Button>
     </div>
 
     <div v-else class="space-y-4 py-4">
