@@ -242,10 +242,10 @@ export const completeReservation = async (event, body) => {
               <img
                 src="cid:logo-cecile"
                 alt="Les Photos de Cécile"
-                width="300"
+                width="160"
                 style="
                   display:block;
-                  width:300px;
+                  width:160px;  
                   max-width:100%;
                   height:auto;
                   margin:0 auto 18px;
@@ -483,6 +483,7 @@ export const completeReservation = async (event, body) => {
 export default defineEventHandler(async (event) => {
   throw createError({
     statusCode: 410,
-    statusMessage: "Utilisez le paiement d’acompte pour confirmer une réservation.",
+    statusMessage:
+      "Utilisez le paiement d’acompte pour confirmer une réservation.",
   });
 });

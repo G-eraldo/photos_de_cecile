@@ -47,6 +47,25 @@
 - [x] Rendre la recherche de formule compatible avec les relations Strapi v5.
 - [x] Vérifier la compilation Nuxt et consigner la revue.
 
+## Portfolio — album photo
+
+- [x] Examiner les médias et définir une mosaïque unique, sans catégories.
+- [x] Charger les photos du dossier Portfolio de Strapi avec leurs liens Cloudflare.
+- [x] Créer la page portfolio responsive, accessible et optimisée.
+- [x] Vérifier la compilation et le rendu de la page.
+
+## Portfolio — diffusion optimisée par Cloudflare
+
+- [x] Valider que le Worker et son domaine `images-photodececile` répondent avec une image transformée.
+- [x] Générer les URLs de vignettes optimisées côté serveur sans exposer de configuration sensible.
+- [x] Utiliser des tailles adaptées dans la mosaïque tout en conservant le lien vers l’original.
+- [x] Documenter la variable de déploiement et vérifier la compilation Nuxt.
+
+## Portfolio — chargement adaptatif
+
+- [x] Fournir des sources responsives selon la largeur réellement affichée.
+- [x] Conserver une qualité adaptée à la présentation photo et limiter le premier lot à 12 images.
+
 ## Revue
 
 - `npm run build` passe dans `photos_de_cecile`.
@@ -63,3 +82,11 @@
 - L’API publique de statut retourne actuellement `503 Le paiement n’est pas encore configuré.` : les variables serveur du déploiement public sont incomplètes ou non appliquées, ce qui empêche aussi le webhook Mollie de confirmer cette réservation.
 - `npm run build` passe après ajout de la redirection de confirmation et de la mention d’acompte payé dans Google Calendar.
 - La réservation transmet maintenant les identifiants de la prestation et de la formule à l’API : la validation côté serveur ne dépend plus d’un libellé strict. `npm run build` passe et le calcul d’acompte d’une formule nouvellement ajoutée a été vérifié avec un test ciblé.
+- Le portfolio charge les images de la médiathèque Strapi via une route serveur authentifiée, renvoie uniquement leurs URLs publiques Cloudflare et les affiche dans une mosaïque responsive. Chaque image ouvre le fichier original dans un nouvel onglet. `npm run build` passe.
+- Correction du portfolio : l’endpoint Upload installé ne prend pas en charge les filtres de dossier et ignore la pagination. Une requête unique, sans paramètre, renvoie les médias et évite l’erreur 400 ainsi que les doublons.
+- Les vignettes portfolio privilégient maintenant le format Strapi `large`, au lieu de `medium`, pour conserver une image nette dans la mosaïque tout en évitant le téléchargement immédiat des originaux.
+- Refonte éditoriale du portfolio : les originaux Cloudflare sont désormais affichés avec chargement différé, accompagnés d’une composition d’ouverture dynamique et d’un album complet en colonnes.
+- Performance du portfolio : la page charge une seule image en priorité et affiche le reste de l’album par lots de 18 à la demande, afin de préserver la qualité originale sans ralentir le premier affichage.
+- Le portfolio mélange maintenant les médias dans un ordre stable afin d’éviter les blocs de photos similaires, notamment plusieurs images noir et blanc à la suite.
+- Le portfolio utilise désormais le Worker Cloudflare pour des formats de 1 600 px dans la sélection et 1 200 px dans l’album ; le clic conserve l’accès à l’original. La variable serveur `PORTFOLIO_IMAGE_ORIGIN` configure le domaine du Worker. `npm run build` passe.
+- Le portfolio sélectionne maintenant automatiquement une variante de 480, 800, 1 200 ou 1 600 px selon la taille réellement affichée et l’écran. La qualité du Worker reste à 88, et le premier lot de l’album est limité à 12 images.

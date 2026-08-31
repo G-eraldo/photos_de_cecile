@@ -2,3 +2,9 @@
 
 - For Nuxt nested routes, use `pages/section/index.vue` for the collection page when `pages/section/[slug].vue` is also present. A sibling `pages/section.vue` becomes the route parent and must contain `<NuxtPage />`; otherwise it masks child routes.
 - For every new nested Nuxt route, verify the parent route does not mask it before testing the payment redirect in production.
+- This Strapi Upload plugin does not accept REST relation filters for media folders and returns its complete media list in one response. Do not apply collection-type filters or pagination loops to `/api/upload/files`; inspect the deployed endpoint before using query parameters.
+- For a photographer’s portfolio, never assume Strapi-derived formats meet the required visual quality. Verify the rendered result; when they are visibly compressed, use the Cloudflare original with lazy loading and a stronger editorial layout.
+- Full-quality photography originals can be tens of megabytes. Preserve quality, but keep the initial portfolio set small and reveal later photos in explicit batches so the first view remains responsive.
+- A portfolio sourced from upload order can visibly group photos with a similar treatment. Apply a stable deterministic mix based on file names so the page stays varied without changing at every visit.
+- Enabling Cloudflare Transformations does not guarantee that a custom R2 hostname accepts the URL transformation path. Verify a transformed response; if it fails, use a dedicated Worker domain with `cf.image` and keep its URL configurable through a server environment variable.
+- When the user prioritizes both performance and photographic quality, do not lower compression by default. First use responsive `srcset`, modern automatic formats, lazy loading, and a small initial batch so the browser downloads only the pixels the screen can display.
