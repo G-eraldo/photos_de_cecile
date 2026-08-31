@@ -146,8 +146,7 @@ function decreaseQuantity() {
           </div>
         </div>
 
-        <Card
-          class="max-w-xl gap-0! border-[#d8cec6]! bg-white! p-7! shadow-[0_18px_45px_rgba(80,61,48,0.12)] md:p-10!">
+        <div class="max-w-xl p-7!">
           <p class="text-xs uppercase tracking-[0.24em] text-[#907762]">La boutique</p>
           <h1 class="mt-3 font-playfair text-4xl leading-tight md:text-5xl">{{ product.titre }}</h1>
           <p class="mt-4 font-playfair text-xl">À partir de {{ product.prix }} €</p>
@@ -190,7 +189,7 @@ function decreaseQuantity() {
             au panier</button>
           <p class="mt-3 text-center text-xs text-[#806957]">La commande et le téléversement de vos photos seront
             bientôt disponibles.</p>
-        </Card>
+        </div>
       </div>
     </div>
   </div>

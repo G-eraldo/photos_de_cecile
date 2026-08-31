@@ -132,6 +132,11 @@ const submit = async () => {
     return;
   }
 
+  if (!lieu.value) {
+    toast.error('Merci de choisir un lieu de prise de vue.');
+    return;
+  }
+
   if (!conditionsAccepted.value) {
     toast.error('Vous devez accepter les conditions de vente pour continuer.');
     return;
@@ -144,7 +149,7 @@ const submit = async () => {
 
   pending.value = true;
   try {
-    const response = await $fetch('/api/calendar/reservations', {
+    const response = await $fetch('/api/payments/mollie/create', {
       method: 'POST',
       body: {
         nom: nom.value,
@@ -162,14 +167,12 @@ const submit = async () => {
       },
     });
 
-    if (response.success) {
-      toast.success(response.emailSent ? 'Votre réservation est confirmée. Un e-mail vient de vous être envoyé.' : 'Votre réservation est confirmée.');
-      message.value = '';
-      heure.value = '';
-      await loadAvailability();
-    } else {
-      toast.error(response.message);
+    if (response.checkoutUrl) {
+      window.location.assign(response.checkoutUrl);
+      return;
     }
+
+    toast.error('Impossible de créer le paiement de l’acompte.');
   } catch (error) {
     toast.error(error?.data?.statusMessage || error?.statusMessage || "Une erreur est survenue lors de l'envoi. Veuillez réessayer.");
   } finally {
@@ -216,6 +219,32 @@ const selectedPrestation = computed(() =>
 )
 
 const formules = computed(() => selectedPrestation.value?.formules || [])
+const fraisKilometriques = {
+  amiens: 0,
+  'bois-creuse': 5,
+  'etang-barrette': 15,
+  'fort-mahon': 50,
+  ruines: 30,
+  lille: 75,
+  paris: 75,
+  rouen: 75,
+  'st-quentin': 75,
+  autre: 0,
+}
+const formuleSelectionnee = computed(() => formules.value.find((item) => item.nom === forfait.value) || null)
+const fraisKilometriquesSelectionnes = computed(() => fraisKilometriques[lieu.value] ?? 0)
+const montantAcompte = computed(() => {
+  const prix = Number(formuleSelectionnee.value?.prix)
+  const pourcentage = Number(formuleSelectionnee.value?.acompte_pourcentage ?? 30)
+
+  if (!Number.isFinite(prix) || !Number.isFinite(pourcentage) || prix <= 0 || pourcentage <= 0) return null
+
+  return (prix * pourcentage) / 100 + fraisKilometriquesSelectionnes.value
+})
+const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
 </script>
 
 <template>
@@ -258,8 +287,9 @@ const formules = computed(() => selectedPrestation.value?.formules || [])
             v-model="phone" type="tel" required /></div>
       </div>
       <div class="grid gap-2 ">
-        <Select>
-          <SelectTrigger class="w-full">
+        <Label for="reservation-lieu">Lieu de prise de vue</Label>
+        <Select v-model="lieu">
+          <SelectTrigger id="reservation-lieu" class="w-full">
             <SelectValue placeholder="Sélectionner un lieu de prise de vue" />
           </SelectTrigger>
           <SelectContent>
@@ -390,7 +420,7 @@ const formules = computed(() => selectedPrestation.value?.formules || [])
       <div class="flex justify-center">
         <Button type="submit" :disabled="pending || !conditionsAccepted || !socialUsage">
           <Mail class="mr-2 h-4 w-4" />
-          {{ pending ? 'Envoi en cours…' : 'Réserver ma seance' }}
+          {{ pending ? 'Redirection vers le paiement…' : montantAcompte ? `Payer l’acompte de ${formatPrice(montantAcompte)} €` : 'Réserver ma séance' }}
         </Button>
       </div>
     </form>

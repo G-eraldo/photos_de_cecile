@@ -73,7 +73,7 @@ const products = computed(() => {
       </div>
     </section>
 
-    <section id="collection" class="bg-[#333333] px-6 py-16 md:py-24">
+    <section id="collection" class="bg-[#413D31] px-6 py-16 md:py-24">
       <div class="mx-auto max-w-6xl">
         <div class="mb-10 max-w-2xl md:mb-14">
           <p class="text-xs uppercase tracking-[0.24em] text-[#d8c9b7]">La collection</p>

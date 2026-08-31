@@ -12,9 +12,8 @@ import {
 const hasOverlap = (start, end, otherStart, otherEnd) =>
   start < otherEnd && end > otherStart;
 
-export default defineEventHandler(async (event) => {
+export const completeReservation = async (event, body) => {
   const config = useRuntimeConfig(event);
-  const body = await readBody(event);
 
   const {
     nom,
@@ -337,7 +336,7 @@ export default defineEventHandler(async (event) => {
                   <strong style="color:#5A3419;">
                     Lieu :
                   </strong>
-                  ${lieu.trim()}
+                  ${lieu?.trim() || "À préciser"}
                 </p>
 
               </div>
@@ -479,4 +478,11 @@ export default defineEventHandler(async (event) => {
     success: true,
     emailSent,
   };
+};
+
+export default defineEventHandler(async (event) => {
+  throw createError({
+    statusCode: 410,
+    statusMessage: "Utilisez le paiement d’acompte pour confirmer une réservation.",
+  });
 });

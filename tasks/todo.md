@@ -17,11 +17,17 @@
 ## Paiement d’acompte Mollie
 
 - [x] Définir le flux sécurisé de paiement et de confirmation par webhook.
-- [ ] Créer la collection Strapi `reservation`.
-- [ ] Créer le paiement Mollie et rediriger la cliente vers le checkout.
-- [ ] Confirmer une réservation après paiement, sans doublon, puis créer l’événement et envoyer l’e-mail.
-- [ ] Ajouter la page de retour de paiement et les variables de déploiement requises.
-- [ ] Vérifier les deux applications.
+- [x] Créer la collection Strapi `reservation`.
+- [x] Créer le paiement Mollie et rediriger la cliente vers le checkout.
+- [x] Confirmer une réservation après paiement, puis créer l’événement et envoyer l’e-mail.
+- [x] Ajouter la page de retour de paiement et les variables de déploiement requises.
+- [x] Vérifier les deux applications.
+
+## Paiement d’acompte — frais kilométriques
+
+- [ ] Afficher l’acompte total, frais kilométriques inclus, dans le bouton de réservation.
+- [ ] Calculer et enregistrer les frais kilométriques côté serveur avant la création du paiement Mollie.
+- [ ] Vérifier la compilation Nuxt.
 
 ## Revue
 
@@ -33,3 +39,4 @@
 - La fiche produit place le configurateur dans une carte et conserve l'image visible au défilement sur grand écran.
 - Le sélecteur de réservation affiche uniquement les formules (`Formule`) liées à la prestation choisie dans l’URL et transmet le choix à l’API.
 - `npm run build` passe dans `photos_de_cecile` après cette correction.
+- `npm run build` passe dans `photos_de_cecile` et dans `backEnd` après l’ajout du paiement d’acompte Mollie et de la collection `reservation`.
