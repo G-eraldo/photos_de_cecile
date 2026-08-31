@@ -20,7 +20,7 @@ const {
 } = await useAsyncData('portfolio-photos', () => $fetch('/api/portfolio'));
 
 const photos = computed(() => data.value?.photos || []);
-const albumBatchSize = 12;
+const albumBatchSize = 18;
 const visibleAlbumCount = ref(albumBatchSize);
 const featuredPhotos = computed(() => photos.value.slice(0, 6));
 const albumPhotos = computed(() => photos.value.slice(6));
@@ -86,8 +86,9 @@ const featuredLayouts = [
           rel="noopener noreferrer" :aria-label="`Ouvrir ${photo.alt} en grand format`"
           :class="['group relative overflow-hidden rounded-xl bg-[#2c1b13] shadow-sm sm:rounded-2xl', featuredLayouts[index]]">
           <img :src="photo.featuredUrl" :srcset="photo.featuredSrcset"
-            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 50vw" :alt="photo.alt" :width="photo.width" :height="photo.height"
-            :loading="index === 0 ? 'eager' : 'lazy'" :fetchpriority="index === 0 ? 'high' : 'auto'" decoding="async"
+            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 50vw" :alt="photo.alt" :width="photo.width"
+            :height="photo.height" :loading="index === 0 ? 'eager' : 'lazy'"
+            :fetchpriority="index === 0 ? 'high' : 'auto'" decoding="async"
             class="h-full w-full object-cover transition duration-700 group-hover:scale-105">
           <span
             class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/45 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100">
@@ -106,8 +107,9 @@ const featuredLayouts = [
           rel="noopener noreferrer" :aria-label="`Ouvrir ${photo.alt} en grand format`"
           class="group relative mb-4 block break-inside-avoid overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl lg:mb-5">
           <img :src="photo.thumbnailUrl" :srcset="photo.thumbnailSrcset"
-            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw" :alt="photo.alt" :width="photo.width" :height="photo.height" loading="lazy"
-            decoding="async" class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]">
+            sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw" :alt="photo.alt" :width="photo.width"
+            :height="photo.height" loading="lazy" decoding="async"
+            class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]">
           <span
             class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/35 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100">
             <span class="rounded-full bg-white/90 p-2 text-[#613213]" aria-hidden="true">

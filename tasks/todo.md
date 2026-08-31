@@ -72,6 +72,12 @@
 - [x] Permettre de choisir et d’ordonner les six premières photos depuis la médiathèque Strapi.
 - [x] Vérifier la compilation et documenter la méthode de sélection.
 
+## Portfolio — sélection des 18 images d’ouverture
+
+- [x] Choisir 2 images par dossier, sauf 4 animaux et 0 baptême.
+- [x] Alterner les thèmes dans l’ordre des 18 premières images.
+- [x] Enregistrer les marqueurs de sélection dans Strapi après validation finale.
+
 ## Revue
 
 - `npm run build` passe dans `photos_de_cecile`.
@@ -97,3 +103,4 @@
 - Le portfolio utilise désormais le Worker Cloudflare pour des formats de 1 600 px dans la sélection et 1 200 px dans l’album ; le clic conserve l’accès à l’original. La variable serveur `PORTFOLIO_IMAGE_ORIGIN` configure le domaine du Worker. `npm run build` passe.
 - Le portfolio sélectionne maintenant automatiquement une variante de 480, 800, 1 200 ou 1 600 px selon la taille réellement affichée et l’écran. La qualité du Worker reste à 88, et le premier lot de l’album est limité à 12 images.
 - L’intertitre intermédiaire du portfolio a été supprimé pour former un seul album continu. Les six photos d’ouverture peuvent être choisies et ordonnées dans la légende Strapi avec les marqueurs `#portfolio-une-1` à `#portfolio-une-6`. `npm run build` passe.
+- Les 18 premières images sont désormais choisies dans Strapi et ordonnées par les marqueurs `#portfolio-une-1` à `#portfolio-une-18` : 4 animaux, 2 images de chacun des sept autres thèmes retenus et aucune image de baptême. Toutes proviennent exclusivement des sous-dossiers du dossier Portfolio ; l’ordre alterne les thèmes.
