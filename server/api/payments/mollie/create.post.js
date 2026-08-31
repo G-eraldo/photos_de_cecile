@@ -45,7 +45,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const config = getMollieConfig();
-  const { amount: formulaDeposit, percentage } = await findFormula(config, details.prestation.trim(), details.forfait.trim());
+  const { amount: formulaDeposit, percentage } = await findFormula(config, {
+    prestationId: details.prestationId,
+    prestationName: details.prestation.trim(),
+    formuleId: details.formuleId,
+    formuleName: details.forfait.trim(),
+  });
   const fraisKilometriques = getTravelFee(details.lieu);
   const amount = (Number(formulaDeposit) + fraisKilometriques).toFixed(2);
   const reference = `r${randomUUID().replace(/-/g, "")}`;

@@ -41,6 +41,12 @@
 - [x] Indiquer dans Google Calendar que l’acompte est payé.
 - [x] Vérifier la compilation Nuxt.
 
+## Correction — nouvelle formule non réservable
+
+- [x] Identifier l’origine du refus de la formule dans l’API de paiement.
+- [x] Rendre la recherche de formule compatible avec les relations Strapi v5.
+- [x] Vérifier la compilation Nuxt et consigner la revue.
+
 ## Revue
 
 - `npm run build` passe dans `photos_de_cecile`.
@@ -56,3 +62,4 @@
 - `npm run build` passe après correction du routage `/reservation/confirmation` ; la page de confirmation est présente dans le bundle.
 - L’API publique de statut retourne actuellement `503 Le paiement n’est pas encore configuré.` : les variables serveur du déploiement public sont incomplètes ou non appliquées, ce qui empêche aussi le webhook Mollie de confirmer cette réservation.
 - `npm run build` passe après ajout de la redirection de confirmation et de la mention d’acompte payé dans Google Calendar.
+- La réservation transmet maintenant les identifiants de la prestation et de la formule à l’API : la validation côté serveur ne dépend plus d’un libellé strict. `npm run build` passe et le calcul d’acompte d’une formule nouvellement ajoutée a été vérifié avec un test ciblé.

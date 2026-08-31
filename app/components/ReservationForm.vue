@@ -163,6 +163,8 @@ const submit = async () => {
         socialUsage: socialUsage.value,
         telephone: phone.value,
         forfait: forfait.value,
+        prestationId: selectedPrestation.value?.documentId || selectedPrestation.value?.id || null,
+        formuleId: formuleSelectionnee.value?.id || null,
         lieu: lieu.value,
       },
     });

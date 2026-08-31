@@ -45,18 +45,39 @@ const strapiFetch = async (config, path, options = {}) =>
 
 export const getMollieConfig = getConfig;
 
-export const findFormula = async (config, prestationName, formuleName) => {
+const sameText = (first, second) =>
+  typeof first === "string" &&
+  typeof second === "string" &&
+  first.trim().localeCompare(second.trim(), "fr", { sensitivity: "base" }) === 0;
+
+export const findFormula = async (config, { prestationId, prestationName, formuleId, formuleName }) => {
   const query = new URLSearchParams({
-    "filters[nom][$eq]": prestationName,
     "filters[actif][$eq]": "true",
     "fields[0]": "nom",
+    "fields[1]": "documentId",
     "populate[Formule][fields][0]": "nom",
     "populate[Formule][fields][1]": "prix",
     "populate[Formule][fields][2]": "acompte_pourcentage",
+    "populate[Formule][fields][3]": "id",
   });
+
+  if (typeof prestationId === "string" && prestationId.trim()) {
+    query.set("filters[documentId][$eq]", prestationId.trim());
+  } else if (typeof prestationId === "number" && Number.isInteger(prestationId)) {
+    query.set("filters[id][$eq]", String(prestationId));
+  } else {
+    query.set("filters[nom][$eq]", prestationName);
+  }
+
   const response = await strapiFetch(config, `/prestations?${query.toString()}`);
   const prestation = response.data?.[0];
-  const formule = prestation?.Formule?.find((item) => item.nom === formuleName);
+  const formule = prestation?.Formule?.find((item) => {
+    if (typeof formuleId === "number" && Number.isInteger(formuleId)) {
+      return item.id === formuleId;
+    }
+
+    return sameText(item.nom, formuleName);
+  });
 
   if (!formule || !Number.isFinite(Number(formule.prix))) {
     throw createError({ statusCode: 400, statusMessage: "La formule sélectionnée est invalide." });
