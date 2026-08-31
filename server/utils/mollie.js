@@ -1,5 +1,18 @@
 const apiUrl = "https://api.mollie.com/v2/payments";
 
+const travelFees = {
+  amiens: 0,
+  "bois-creuse": 5,
+  "etang-barrette": 15,
+  "fort-mahon": 50,
+  ruines: 30,
+  lille: 75,
+  paris: 75,
+  rouen: 75,
+  "st-quentin": 75,
+  autre: 0,
+};
+
 const getConfig = () => {
   const apiKey = process.env.MOLLIE_API_KEY;
   const siteUrl = process.env.SITE_URL;
@@ -64,6 +77,14 @@ export const findFormula = async (config, prestationName, formuleName) => {
     percentage,
     formule,
   };
+};
+
+export const getTravelFee = (location) => {
+  if (!Object.hasOwn(travelFees, location)) {
+    throw createError({ statusCode: 400, statusMessage: "Le lieu de prise de vue est invalide." });
+  }
+
+  return travelFees[location];
 };
 
 export const createStoredReservation = (config, data) =>

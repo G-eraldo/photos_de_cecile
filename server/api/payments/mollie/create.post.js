@@ -5,6 +5,7 @@ import {
   createStoredReservation,
   findFormula,
   getMollieConfig,
+  getTravelFee,
   updateStoredReservation,
 } from "../../../utils/mollie.js";
 
@@ -18,6 +19,7 @@ const requiredFields = [
   "date",
   "heure",
   "socialUsage",
+  "lieu",
 ];
 
 const isNonEmptyString = (value) => typeof value === "string" && value.trim();
@@ -43,7 +45,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const config = getMollieConfig();
-  const { amount, percentage } = await findFormula(config, details.prestation.trim(), details.forfait.trim());
+  const { amount: formulaDeposit, percentage } = await findFormula(config, details.prestation.trim(), details.forfait.trim());
+  const fraisKilometriques = getTravelFee(details.lieu);
+  const amount = (Number(formulaDeposit) + fraisKilometriques).toFixed(2);
   const reference = `r${randomUUID().replace(/-/g, "")}`;
   const reservationDetails = {
     ...details,
@@ -54,6 +58,8 @@ export default defineEventHandler(async (event) => {
     prestation: details.prestation.trim(),
     forfait: details.forfait.trim(),
     acomptePourcentage: percentage,
+    fraisKilometriques,
+    montantAcompteFormule: Number(formulaDeposit),
   };
 
   const reservation = await createStoredReservation(config, {

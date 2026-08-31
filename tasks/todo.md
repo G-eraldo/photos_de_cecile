@@ -25,9 +25,15 @@
 
 ## Paiement d’acompte — frais kilométriques
 
-- [ ] Afficher l’acompte total, frais kilométriques inclus, dans le bouton de réservation.
-- [ ] Calculer et enregistrer les frais kilométriques côté serveur avant la création du paiement Mollie.
-- [ ] Vérifier la compilation Nuxt.
+- [x] Afficher l’acompte total, frais kilométriques inclus, dans le bouton de réservation.
+- [x] Calculer et enregistrer les frais kilométriques côté serveur avant la création du paiement Mollie.
+- [x] Vérifier la compilation Nuxt.
+
+## Paiement Mollie — retour de confirmation
+
+- [x] Corriger le routage de `/reservation/confirmation`.
+- [x] Vérifier que la page de confirmation est incluse dans le build Nuxt.
+- [ ] Renseigner les variables serveur de paiement sur le déploiement public et redéployer.
 
 ## Revue
 
@@ -40,3 +46,6 @@
 - Le sélecteur de réservation affiche uniquement les formules (`Formule`) liées à la prestation choisie dans l’URL et transmet le choix à l’API.
 - `npm run build` passe dans `photos_de_cecile` après cette correction.
 - `npm run build` passe dans `photos_de_cecile` et dans `backEnd` après l’ajout du paiement d’acompte Mollie et de la collection `reservation`.
+- `npm run build` passe dans `photos_de_cecile` après ajout des frais kilométriques à l’acompte Mollie.
+- `npm run build` passe après correction du routage `/reservation/confirmation` ; la page de confirmation est présente dans le bundle.
+- L’API publique de statut retourne actuellement `503 Le paiement n’est pas encore configuré.` : les variables serveur du déploiement public sont incomplètes ou non appliquées, ce qui empêche aussi le webhook Mollie de confirmer cette réservation.
