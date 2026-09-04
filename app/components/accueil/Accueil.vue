@@ -6,15 +6,15 @@ const isPaused = ref(false)
 
 const slides = [
   {
-    src: '/images/photo-illustra.jpg',
+    src: 'https://res.cloudinary.com/dlnbsf2ed/image/upload/v1787837561/naissance_46062b81e0.webp',
     alt: 'Photographie Les photos de Cécile'
   },
   {
-    src: '/images/accueil.png',
+    src: 'https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788510710/accueil_ctpwvj.webp',
     alt: 'Photographie Les photos de Cécile'
   },
   {
-    src: '/images/cta.png',
+    src: 'https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788510732/cta_z5i3fl.webp',
     alt: 'Photographie Les photos de Cécile'
   }
 ]

@@ -67,8 +67,8 @@ const products = computed(() => {
           </a>
         </div>
         <div class="order-1 aspect-4/5 overflow-hidden md:order-2">
-          <NuxtImg src="/images/impression.png" alt="Tirages photo sur papier d'art" class="h-full w-full object-cover"
-            sizes="sm:100vw md:50vw" />
+          <NuxtImg src="https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788510767/impression_gvwwoy.webp"
+            alt="Tirages photo sur papier d'art" class="h-full w-full object-cover" sizes="sm:100vw md:50vw" />
         </div>
       </div>
     </section>
@@ -98,8 +98,8 @@ const products = computed(() => {
     <section class="bg-[#E6DFDD] px-6 py-16 md:py-24">
       <Card class="mx-auto grid max-w-5xl gap-0! overflow-hidden! border-[#d8cec6]! bg-white! p-0! md:grid-cols-2">
         <div class="aspect-square overflow-hidden md:aspect-auto md:h-full">
-          <NuxtImg src="/images/format.png" alt="Détail d'un tirage photo" class="h-full w-full object-cover"
-            sizes="sm:100vw md:50vw" />
+          <NuxtImg src="https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788510788/format_uj2t7c.webp"
+            alt="Détail d'un tirage photo" class="h-full w-full object-cover" sizes="sm:100vw md:50vw" />
         </div>
         <div class="px-7 py-10 md:px-12 md:py-14">
           <p class="text-xs uppercase tracking-[0.24em] text-[#907762]">Un détail qui change tout</p>
