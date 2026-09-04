@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { Resend } from "resend";
 
+import { sendCecilePaymentNotification } from "./cecile-notification-email.js";
 import { generateOrderInvoicePdf } from "./generate-order-invoice-pdf.js";
 
 const escapeHtml = (value) =>
@@ -24,10 +25,11 @@ export async function sendOrderConfirmation({ reference, details, total }) {
     console.error(
       "RESEND_API_KEY est absente : la facture de commande ne peut pas être envoyée.",
     );
-    return false;
+    return { customerEmailSent: false, cecileEmailSent: false };
   }
 
   const invoice = await generateOrderInvoicePdf({ reference, details, total });
+  let customerEmailSent = true;
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
     const logoBuffer = await readFile(
@@ -38,7 +40,7 @@ export async function sendOrderConfirmation({ reference, details, total }) {
       .join(" · ");
 
     await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: process.env.RESEND_FROM_EMAIL,
       to: details.email,
       subject: "Confirmation de votre commande — Les Photos de Cécile",
       html: `
@@ -83,9 +85,17 @@ export async function sendOrderConfirmation({ reference, details, total }) {
         },
       ],
     });
-    return true;
   } catch (error) {
     console.error("Impossible d’envoyer la confirmation de commande.", error);
-    return false;
+    customerEmailSent = false;
   }
+
+  const cecileEmailSent = await sendCecilePaymentNotification({
+    type: "commande",
+    reference,
+    details,
+    total,
+  });
+
+  return { customerEmailSent, cecileEmailSent };
 }

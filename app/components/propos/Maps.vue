@@ -28,7 +28,8 @@ onMounted(async () => {
   marker.addTo(map);
 
   const config = useRuntimeConfig();
-  const apiKey = config.public.maptilerApiKey || '8PjQv4T11NqC8OOHL08C'; // Usually need a fallback if not provided
+  const apiKey = config.public.maptilerApiKey
+  if (!apiKey) return
 
   new MaptilerLayer({
     apiKey: apiKey,

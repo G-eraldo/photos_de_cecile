@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { Resend } from "resend";
 
+import { sendCecilePaymentNotification } from "../../utils/cecile-notification-email.js";
 import { generateContractPdf } from "../../utils/generate-contract-pdf.js";
 import {
   calendarEventsUrl,
@@ -11,6 +12,18 @@ import {
 
 const hasOverlap = (start, end, otherStart, otherEnd) =>
   start < otherEnd && end > otherStart;
+const escapeHtml = (value) =>
+  String(value || "").replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;",
+      })[character],
+  );
 
 export const completeReservation = async (event, body) => {
   const config = useRuntimeConfig(event);
@@ -29,6 +42,7 @@ export const completeReservation = async (event, body) => {
     message,
     conditionsAccepted,
     socialUsage,
+    reference,
   } = body || {};
 
   if (
@@ -177,6 +191,12 @@ export const completeReservation = async (event, body) => {
   }
 
   let emailSent = true;
+  const emailDetails = {
+    prenom: escapeHtml(prenom.trim()),
+    prestation: escapeHtml(prestation.trim()),
+    forfait: escapeHtml(forfait.trim()),
+    lieu: escapeHtml(lieu?.trim() || "À préciser"),
+  };
 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -210,7 +230,7 @@ export const completeReservation = async (event, body) => {
     }
 
     await resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: process.env.RESEND_FROM_EMAIL,
       to: email.trim(),
 
       subject: "Confirmation de votre réservation — Les Photos de Cécile",
@@ -281,7 +301,7 @@ export const completeReservation = async (event, body) => {
                 font-size:15px;
                 line-height:1.7;
               ">
-                Bonjour ${prenom.trim()},
+                Bonjour ${emailDetails.prenom},
               </p>
 
               <p style="
@@ -290,7 +310,7 @@ export const completeReservation = async (event, body) => {
               ">
                 Votre réservation pour une séance
                 <strong style="color:#5A3419;">
-                  ${prestation.trim()}
+                  ${emailDetails.prestation}
                 </strong>
                 a bien été enregistrée.
               </p>
@@ -324,19 +344,19 @@ export const completeReservation = async (event, body) => {
                   <strong style="color:#5A3419;">
                     Prestation :
                   </strong>
-                  ${prestation.trim()}
+                  ${emailDetails.prestation}
                 </p>
                 <p style="margin:0;">
                   <strong style="color:#5A3419;">
                     Formule :
                   </strong>
-                  ${forfait.trim()}
+                  ${emailDetails.forfait}
                 </p>
                 <p style="margin:0;">
                   <strong style="color:#5A3419;">
                     Lieu :
                   </strong>
-                  ${lieu?.trim() || "À préciser"}
+                  ${emailDetails.lieu}
                 </p>
 
               </div>
@@ -474,9 +494,16 @@ export const completeReservation = async (event, body) => {
     );
   }
 
+  const cecileEmailSent = await sendCecilePaymentNotification({
+    type: "reservation",
+    reference: reference || "Réservation",
+    details: body,
+  });
+
   return {
     success: true,
     emailSent,
+    cecileEmailSent,
   };
 };
 

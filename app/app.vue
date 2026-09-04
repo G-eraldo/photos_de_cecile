@@ -31,8 +31,8 @@ useHead({
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         name: "Cécile",
-        url: "https://les-photos-de-cecile-l7f5.vercel.app",
-        image: "/profil.png",
+        url: "https://photodececile.lafabriqueducode.fr",
+        image: "https://photodececile.lafabriqueducode.fr/profil.png",
         description: "Je photographie les moments de vie de façon authentique à Amiens & ses alentours. Grossesse, naissance, shooting boudoir, baptême, mariage, anniversaire, animaux de compagnie, couple, famille...",
         address: {
           "@type": "PostalAddress",

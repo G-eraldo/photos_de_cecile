@@ -148,6 +148,7 @@ export const findStoredOrder = async (config, field, value) => {
     "fields[2]": "mollie_payment_id",
     "fields[3]": "statut",
     "fields[4]": "details",
+    "fields[5]": "photo_privee",
     "pagination[pageSize]": "1",
   });
   const response = await strapiFetch(config, `/commandes?${query.toString()}`);

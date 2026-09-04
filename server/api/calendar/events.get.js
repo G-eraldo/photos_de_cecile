@@ -1,4 +1,7 @@
+import { enforceRateLimit } from "../../utils/request-security.js";
+
 export default defineEventHandler(async (event) => {
+  enforceRateLimit(event, { scope: "calendar-availability", limit: 90, windowMs: 15 * 60 * 1000 });
   const config = useRuntimeConfig(event);
 
   if (!config.googleCalendarApiKey || !config.googleCalendarId) {

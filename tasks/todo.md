@@ -1,5 +1,14 @@
 # Tirages photo
 
+## Conformité, notifications et référencement
+
+- [x] Envoyer une notification à Cécile après le paiement d'une commande ou d'une réservation.
+- [x] Ajouter les mentions légales et la politique de confidentialité adaptées au site.
+- [x] Auditer les cookies et traceurs réellement présents.
+- [x] Corriger l'URL canonique Nuxt SEO dans le fichier de configuration protégé après accord.
+- [x] Compléter les métadonnées SEO des pages et exclure les retours de paiement des moteurs.
+- [x] Auditer la sécurité applicative et consigner les priorités.
+
 ## Commande de tirages photo
 
 - [x] Auditer le flux de paiement existant et définir le parcours commande.
@@ -104,6 +113,12 @@
 - [x] Vérifier la compilation Nuxt.
 
 ## Revue
+
+- Les paiements Mollie confirmés envoient maintenant une notification distincte à Cécile pour les commandes de tirages et les réservations. `CECILE_NOTIFICATION_EMAIL` permet de remplacer l’adresse de réception ; à défaut, l’adresse professionnelle déjà publiée est utilisée. `RESEND_FROM_EMAIL` est aussi pris en compte.
+- Les pages `/mentions-legales` et `/politique-confidentialite` sont ajoutées et reliées depuis le pied de page. Elles décrivent les données réellement utilisées par les formulaires, Mollie, Resend, Google Calendar, Cloudflare R2, MapTiler et le widget d’avis.
+- Le widget Elfsight se charge automatiquement après consentement et lors des visites suivantes pendant six mois ; un refus est aussi mémorisé et peut être modifié. Le site ne dépose pas de cookie applicatif, d’audience ou publicitaire détecté dans le code hors ce choix de consentement.
+- Nuxt SEO est déjà installé. Les métadonnées, données structurées, URL canonique, `robots.txt` et sitemap pointent vers le domaine de production. Les retours de paiement sont exclus du sitemap et les fiches produits Strapi y sont ajoutées dynamiquement.
+- Sécurité : l’audit a relevé en priorité l’absence de limitation anti-abus sur les URL R2 signées, l’absence de validation binaire/antivirus des photos et l’interpolation non échappée dans les anciens e-mails de contact/réservation. `npm run build` passe après les modifications.
 
 - Les photos de commande sont désormais envoyées par URL R2 signée vers `cecile-uploads-prives`, sans passer par Nuxt ou Strapi. La commande conserve uniquement leurs métadonnées privées ; aucune URL publique n’est créée. Le CORS et les nouvelles variables requises sont documentés dans `docs/r2-private-uploads.md`.
 - La fiche de chaque tirage comporte désormais le formulaire de commande (nom, prénom, e-mail, adresse postale et photo) puis redirige vers Mollie. La commande est enregistrée dans Strapi avec l'instantané du produit, du prix, des options, de la quantité et la photo source ; le prix est relu côté serveur pour ne pas dépendre du navigateur.

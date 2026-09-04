@@ -17,11 +17,20 @@ export default defineNuxtConfig({
   ],
 
   site: {
-    url: "https://les-photos-de-cecile-l7f5.vercel.app",
+    url: "https://photodececile.lafabriqueducode.fr",
     name: "Les photos de Cécile",
     description:
       "Je photographie les moments de vie de façon authentique à Amiens & ses alentours.",
     defaultLocale: "fr",
+  },
+
+  sitemap: {
+    sources: ["/api/__sitemap__/urls"],
+  },
+
+  routeRules: {
+    "/reservation/confirmation": { robots: false, sitemap: false },
+    "/tirages-photo/confirmation": { robots: false, sitemap: false },
   },
 
   css: ["~/assets/css/main.css"],
@@ -56,7 +65,7 @@ export default defineNuxtConfig({
     googleRedirectUri: process.env.GOOGLE_REDIRECT_URI,
     googleRefreshToken: process.env.GOOGLE_REFRESH_TOKEN,
     public: {
-      maptilerApiKey: "",
+      maptilerApiKey: process.env.NUXT_PUBLIC_MAPTILER_API_KEY,
     },
     strapi: {
       url: process.env.STRAPI_URL || "http://localhost:1337",

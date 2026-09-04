@@ -8,6 +8,7 @@ import {
   getTravelFee,
   updateStoredReservation,
 } from "../../../utils/mollie.js";
+import { enforceRateLimit, enforceTrustedOrigin } from "../../../utils/request-security.js";
 
 const requiredFields = [
   "nom",
@@ -25,6 +26,8 @@ const requiredFields = [
 const isNonEmptyString = (value) => typeof value === "string" && value.trim();
 
 export default defineEventHandler(async (event) => {
+  enforceTrustedOrigin(event);
+  enforceRateLimit(event, { scope: "reservation-payment", limit: 5, windowMs: 15 * 60 * 1000 });
   const details = await readBody(event);
 
   if (!requiredFields.every((field) => isNonEmptyString(details?.[field]))) {

@@ -2,8 +2,9 @@
 definePageMeta({ layout: 'default' })
 
 useSeoMeta({
-  title: 'Confirmation de paiement | Les Photos de Cécile',
+  title: 'Confirmation de paiement',
   description: 'Confirmation de votre acompte de réservation.',
+  robots: 'noindex, nofollow',
 })
 
 import { Button } from '@/components/ui/button'

@@ -2,10 +2,13 @@ import { randomUUID } from "node:crypto";
 
 import { createMolliePayment, createStoredOrder, findProductForOrder, getMollieConfig, updateStoredOrder } from "../../../utils/mollie.js";
 import { inspectPrivateUpload, verifyPrivateUploadToken } from "../../../utils/r2-private.js";
+import { enforceRateLimit, enforceTrustedOrigin } from "../../../utils/request-security.js";
 
 const isText = (value, maximum = 500) => typeof value === "string" && value.trim() && value.trim().length <= maximum;
 
 export default defineEventHandler(async (event) => {
+  enforceTrustedOrigin(event);
+  enforceRateLimit(event, { scope: "order-payment", limit: 5, windowMs: 15 * 60 * 1000 });
   const details = await readBody(event);
   const nom = details?.nom || "";
   const prenom = details?.prenom || "";

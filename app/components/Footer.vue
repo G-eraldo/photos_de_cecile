@@ -5,6 +5,8 @@ const links = [
   // { title: "Prestations", href: "/prestations" },
   { title: "Tirages photos", href: "/tirages-photo" },
   { title: "Contact", href: "/contact" },
+  { title: "Mentions légales", href: "/mentions-legales" },
+  { title: "Confidentialité", href: "/politique-confidentialite" },
 ];
 </script>
 

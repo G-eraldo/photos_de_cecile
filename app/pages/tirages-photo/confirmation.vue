@@ -7,8 +7,9 @@ import { computed, onBeforeUnmount, onMounted, watch } from 'vue'
 definePageMeta({ layout: 'default' })
 
 useSeoMeta({
-  title: 'Confirmation de commande | Les Photos de Cécile',
+  title: 'Confirmation de commande',
   description: 'Confirmation du paiement de votre commande de tirages photo.',
+  robots: 'noindex, nofollow',
 })
 
 const route = useRoute()

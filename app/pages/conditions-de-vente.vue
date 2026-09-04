@@ -1,13 +1,9 @@
 <script setup>
-useHead({
-  title: 'Conditions de vente — Les photos de Cécile',
-  meta: [
-    {
-      name: 'description',
-      content:
-        'Conditions de vente et contrat de prestation photographique des Photos de Cécile.'
-    }
-  ]
+definePageMeta({ layout: 'default' })
+
+useSeoMeta({
+  title: 'Conditions de vente',
+  description: 'Conditions de vente et contrat de prestation photographique des Photos de Cécile.',
 })
 </script>
 
@@ -621,4 +617,3 @@ useHead({
 
   </main>
 </template>
-
