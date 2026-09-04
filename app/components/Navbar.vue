@@ -8,6 +8,7 @@ const menuItems = [
   { name: 'Prestations', href: '/prestations' },
   { name: 'Portfolio', href: '/portfolio' },
   { name: 'Tirages photos', href: '/tirages-photo' },
+  { name: 'Offrir', href: '/offrir' },
   { name: 'Contact', href: '/contact' },
 ]
 

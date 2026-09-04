@@ -1,5 +1,25 @@
 # Tirages photo
 
+## Bon cadeau
+
+- [ ] Remplacer la page `/offrir` par le configurateur de bon cadeau statique.
+- [ ] Créer le paiement Mollie sécurisé et enregistrer le bon cadeau dans Strapi.
+- [ ] Adapter les confirmations e-mail et le retour de paiement au bon cadeau.
+- [ ] Compiler Nuxt et Strapi, puis consigner la revue.
+
+## Incident — portfolio indisponible
+
+- [x] Reproduire l’échec de récupération des médias via Strapi et identifier la cause.
+- [ ] Redémarrer/redéployer le service Strapi dans l’hébergeur (bloqué : accès à la console d’hébergement requis).
+- [x] Vérifier le démarrage local de Strapi et l’accès à PostgreSQL.
+
+## Correctif — images du portfolio bloquées
+
+- [x] Identifier la CSP comme origine du blocage des images Cloudflare.
+- [x] Autoriser les deux domaines Cloudflare du portfolio dans `img-src`.
+- [ ] Compiler le frontend et redéployer la correction.
+
+
 ## Conformité, notifications et référencement
 
 - [x] Envoyer une notification à Cécile après le paiement d'une commande ou d'une réservation.

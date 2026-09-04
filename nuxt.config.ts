@@ -1,7 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite";
 
-const strapiOrigin = (process.env.STRAPI_URL || "https://back-cecile.lafabriqueducode.fr").replace(/\/$/, "");
+const strapiOrigin = (
+  process.env.STRAPI_URL || "https://back-cecile.lafabriqueducode.fr"
+).replace(/\/$/, "");
 const r2Origin = process.env.R2_ACCOUNT_ID
   ? `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`
   : "";
@@ -13,7 +15,9 @@ const connectSources = [
   "https://static.elfsight.com",
   "https://*.elfsight.com",
   "https://*.elfsightcdn.com",
-].filter(Boolean).join(" ");
+]
+  .filter(Boolean)
+  .join(" ");
 
 export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
@@ -47,12 +51,13 @@ export default defineNuxtConfig({
     "/tirages-photo/confirmation": { robots: false, sitemap: false },
     "/**": {
       headers: {
-        "Content-Security-Policy": `default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://static.elfsight.com https://elfsightcdn.com https://*.elfsightcdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com https://*.maptiler.com; connect-src ${connectSources} https://elfsightcdn.com https://*.elfsightcdn.com; frame-src https://*.mollie.com https://*.elfsight.com; upgrade-insecure-requests`,
+        "Content-Security-Policy": `default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://static.elfsight.com https://elfsightcdn.com https://*.elfsightcdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com https://*.maptiler.com https://media-photodececile.lafabriqueducode.fr https://images-photodececile.lafabriqueducode.fr; connect-src ${connectSources} https://elfsightcdn.com https://*.elfsightcdn.com; frame-src https://*.mollie.com https://*.elfsight.com; upgrade-insecure-requests`,
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
         "Referrer-Policy": "strict-origin-when-cross-origin",
-        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+        "Permissions-Policy":
+          "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
       },
     },
   },
