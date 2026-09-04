@@ -20,7 +20,7 @@ const prestations = [
 ]
 const deliveryChoices = [
   { value: 'email', label: 'Par e-mail', description: 'Le bon cadeau PDF personnalisé est envoyé après paiement.' },
-  { value: 'courrier', label: 'Par courrier +5 €', description: 'Le PDF est aussi envoyé par e-mail, puis le bon est préparé pour l’envoi.' },
+  { value: 'courrier', label: 'Par courrier +5 €', description: 'Cécile préparera votre bon cadeau et vous l’enverra par courrier.' },
 ]
 const hasEmoji = (value) => /[\p{Extended_Pictographic}\p{Regional_Indicator}]/u.test(value)
 
@@ -97,8 +97,9 @@ async function submitGiftCard() {
               alt="Aperçu du bon cadeau personnalisé" width="6336" height="9504" decoding="async"
               class="h-full w-full object-cover" />
           </div>
-          <p class="mt-3 text-center text-xs text-[#806957]">Le bon personnalisé sera envoyé au format PDF après
-            paiement.</p>
+          <p class="mt-3 text-center text-xs text-[#806957]">
+            {{ delivery === 'courrier' ? 'Cécile préparera votre bon cadeau et vous l’enverra par courrier.' : 'Le bon personnalisé sera envoyé au format PDF après paiement.' }}
+          </p>
         </div>
 
         <div class="max-w-xl p-7!">

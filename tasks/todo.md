@@ -35,6 +35,12 @@
 - [x] Reprendre exactement le comportement sticky de la fiche `/tirages-photo/[slug]` pour l’aperçu.
 - [x] Vérifier la compilation Nuxt.
 
+## Bon cadeau - envoi par courrier
+
+- [x] Ne joindre le PDF du bon cadeau qu’en cas d’envoi par e-mail.
+- [x] Adapter les messages de confirmation et de la page au traitement par courrier par Cécile.
+- [x] Vérifier la compilation Nuxt.
+
 ## Correctif bon cadeau — confirmation et notification
 
 - [x] Corriger le routage de la confirmation après Mollie.
@@ -179,6 +185,8 @@
 - [x] Vérifier la compilation Nuxt.
 
 ## Revue
+
+- Envoi par courrier du 4 septembre 2026 : un bon cadeau choisi par courrier ne génère ni ne joint de PDF au message cliente ; seule la facture acquittée reste jointe. La page et l’e-mail indiquent que Cécile prépare puis expédie le bon à l’adresse fournie. `npm run build` passe dans Nuxt.
 
 - Comportement photo bon cadeau du 4 septembre 2026 : l’aperçu utilise désormais la même structure (`sticky`, position et ratio) que la fiche `/tirages-photo/[slug]`, en gardant l’URL directe de l’image. `npm run build` passe dans Nuxt.
 

@@ -26,3 +26,4 @@
 - Lorsqu’une image distante très haute résolution est utilisée directement dans une page, fixer son ratio et ses dimensions intrinsèques, puis demander un décodage asynchrone : sinon son chargement provoque un décalage de mise en page et peut dégrader le défilement.
 - Ne pas utiliser `sticky` sur une image d’aperçu quand le parcours demandé est un défilement synchronisé avec le formulaire : les deux colonnes doivent rester dans le flux normal de la page.
 - Lorsque l’utilisateur demande que l’aperçu reproduise la fiche produit, reprendre sa structure et ses classes existantes à l’identique plutôt que d’ajouter une logique de sticky spécifique.
+- Pour un bon cadeau expédié par courrier, ne pas joindre de version PDF au client : le branchement de livraison doit contrôler à la fois le texte et les pièces jointes de l’e-mail.
