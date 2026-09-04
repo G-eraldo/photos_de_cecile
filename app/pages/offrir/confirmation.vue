@@ -47,15 +47,20 @@ onBeforeUnmount(() => {
     <div v-else-if="isConfirmed" class="space-y-4 py-4">
       <CheckCircle2 class="mx-auto h-12 w-12 text-green-600" />
       <CardTitle class="font-playfair text-2xl text-[#613213]">Votre bon cadeau est confirmé</CardTitle>
-      <CardDescription>Votre paiement a été reçu. Une confirmation vient de vous être envoyée par e-mail.</CardDescription>
+      <CardDescription>Votre paiement a été reçu. Une confirmation vient de vous être envoyée par e-mail.
+      </CardDescription>
       <p class="text-sm text-[#9e8b8b]">Redirection vers les bons cadeaux dans quelques secondes…</p>
-      <Button as-child variant="outline"><NuxtLink to="/offrir">Revenir aux bons cadeaux</NuxtLink></Button>
+      <Button as-child variant="outline">
+        <NuxtLink to="/offrir">Revenir aux bons cadeaux</NuxtLink>
+      </Button>
     </div>
     <div v-else-if="isFailed" class="space-y-4 py-4">
       <XCircle class="mx-auto h-12 w-12 text-red-600" />
       <CardTitle class="font-playfair text-2xl text-[#613213]">Le paiement n’a pas abouti</CardTitle>
       <CardDescription>Votre bon cadeau n’est pas confirmé. Vous pouvez recommencer votre commande.</CardDescription>
-      <Button as-child><NuxtLink to="/offrir">Revenir aux bons cadeaux</NuxtLink></Button>
+      <Button as-child>
+        <NuxtLink to="/offrir">Revenir aux bons cadeaux</NuxtLink>
+      </Button>
     </div>
     <div v-else class="space-y-4 py-4">
       <Clock3 class="mx-auto h-12 w-12 text-[#C9A227]" />
