@@ -74,6 +74,11 @@
 - [x] Indiquer dans Google Calendar que l’acompte est payé.
 - [x] Vérifier la compilation Nuxt.
 
+## Connexion Google Agenda de Cécile
+
+- [x] Ajouter un assistant interne protégé pour autoriser le compte Google de Cécile et récupérer un refresh token sans le persister.
+- [x] Documenter les variables de déploiement et vérifier la compilation Nuxt.
+
 ## Correction — nouvelle formule non réservable
 
 - [x] Identifier l’origine du refus de la formule dans l’API de paiement.
@@ -121,8 +126,11 @@
 ## Revue
 
 - [x] Réservation payée : ne plus masquer une erreur de finalisation derrière « réservation introuvable », permettre une reprise sûre de Calendar et vérifier le build.
+- [x] Bloquer la création d’un paiement de réservation si le jeton Google ou le droit d’écriture Calendar n’est pas valide.
 
 - Correctif réservation payée du 4 septembre 2026 : une erreur de finalisation Calendar/e-mail ne fait plus répondre l’endpoint de statut en 500, donc la page ne prétend plus que la réservation est introuvable. L’état de reprise est retourné à la page et, après déploiement, une réservation payée en erreur est retentée à intervalle mesuré depuis sa page de confirmation. Les journaux serveur enregistrent désormais la cause technique exacte (référence, paiement, message et code) sans exposer ces informations à la cliente. `npm run build` passe dans Nuxt.
+
+- Diagnostic Calendar du 4 septembre 2026 : Google renvoie `invalid_grant` car `GOOGLE_REFRESH_TOKEN` est expiré ou révoqué. Le jeton doit être régénéré avec un compte ayant le droit d’écriture sur le calendrier, puis remplacé dans Dokploy et redéployé. Une vérification d’accès est maintenant effectuée avant de créer un paiement Mollie de réservation ; `npm run build` passe dans Nuxt.
 
 - Consentement avis du 4 septembre 2026 : le consentement Elfsight est demandé dans un bandeau global à la première arrivée. Après acceptation, les avis se chargent automatiquement à leur emplacement ; le bloc de consentement au milieu de la section avis est supprimé. Le refus évite toujours le chargement du service tiers. `npm run build` passe dans Nuxt.
 

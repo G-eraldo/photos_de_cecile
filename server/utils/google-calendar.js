@@ -28,3 +28,20 @@ export const getGoogleAccessToken = async (config) => {
 
 export const calendarEventsUrl = (calendarId) =>
   `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events`;
+
+export const ensureGoogleCalendarWriterAccess = async (config) => {
+  const accessToken = await getGoogleAccessToken(config);
+  const calendar = await $fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(config.googleCalendarId)}`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    },
+  );
+
+  if (!["owner", "writer"].includes(calendar.accessRole)) {
+    throw createError({
+      statusCode: 503,
+      statusMessage: "Le calendrier ne permet pas encore les réservations.",
+    });
+  }
+};

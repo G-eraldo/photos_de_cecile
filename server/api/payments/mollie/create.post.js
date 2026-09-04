@@ -8,6 +8,7 @@ import {
   getTravelFee,
   updateStoredReservation,
 } from "../../../utils/mollie.js";
+import { ensureGoogleCalendarWriterAccess } from "../../../utils/google-calendar.js";
 import { enforceRateLimit, enforceTrustedOrigin } from "../../../utils/request-security.js";
 
 const requiredFields = [
@@ -48,6 +49,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const config = getMollieConfig();
+  // Ne jamais encaisser un acompte si le compte Google ne peut pas créer le
+  // rendez-vous correspondant. Cette vérification ne modifie pas Calendar.
+  await ensureGoogleCalendarWriterAccess(useRuntimeConfig(event));
   const { amount: formulaDeposit, percentage } = await findFormula(config, {
     prestationId: details.prestationId,
     prestationName: details.prestation.trim(),
