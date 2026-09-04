@@ -29,11 +29,11 @@ export async function sendOrderConfirmation({ reference, details, total }) {
     return { customerEmailSent: false, cecileEmailSent: false };
   }
 
-  const invoice = await generateOrderInvoicePdf({ reference, details, total });
   const isGift = details.type === "bon_cadeau";
-  const voucher = isGift ? await generateGiftVoucherPdf({ details }) : null;
   let customerEmailSent = true;
   try {
+    const invoice = await generateOrderInvoicePdf({ reference, details, total });
+    const voucher = isGift ? await generateGiftVoucherPdf({ details }) : null;
     const resend = new Resend(process.env.RESEND_API_KEY);
     const logoBuffer = await readFile(
       resolve(process.cwd(), "public/images/logo-email.png"),

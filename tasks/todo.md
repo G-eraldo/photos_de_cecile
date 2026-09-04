@@ -160,6 +160,8 @@
 
 ## Revue
 
+- Correctif e-mail bon cadeau du 4 septembre 2026 : une emoji dans le message personnalisé provoquait une erreur d'encodage de la police PDF avant l'appel Resend ; aucun e-mail ne pouvait donc être envoyé. Le texte dessiné dans le PDF est maintenant nettoyé des caractères non pris en charge, tandis que le message stocké est conservé. La génération du PDF est exécutée dans le périmètre d'échec de l'e-mail cliente : une erreur future n'empêche plus la notification Cécile. Le PDF a été généré avec le message contenant `👌` et `npm run build` passe dans Nuxt.
+
 - Bon cadeau personnalisé du 4 septembre 2026 : les bons 5, 10 et 15 photos fournis sont intégrés et utilisés comme modèle PDF. Le formulaire choisit la prestation puis ne propose que les forfaits compatibles : Animaux (5/10/15 : 110/185/230 €), famille/couple/grossesse/portrait/boudoir (10/15 : 185/230 €) et naissance (10/15 : 250/295 €). Après paiement, le bon joint à l'e-mail remplit le bénéficiaire, l'offreur, le message et une validité d'un an. Le prix est recalculé et contrôlé côté serveur. Le PDF exemple a été rendu et inspecté visuellement ; `npm run build` passe dans Nuxt.
 
 - Correctif bon cadeau du 4 septembre 2026 : la page de confirmation était masquée par le fichier `pages/offrir.vue`. La page principale est maintenant `pages/offrir/index.vue`, donc `/offrir/confirmation` résout bien vers son écran dédié. La notification Cécile utilise désormais la variable actuelle, son ancien nom `CECILE_NOTIFICATION_EMAIL` ou l’adresse métier en dernier repli. Lorsqu’une notification interne seule a échoué, la page de confirmation la relance sans renvoyer l’e-mail cliente. `npm run build` passe dans Nuxt.

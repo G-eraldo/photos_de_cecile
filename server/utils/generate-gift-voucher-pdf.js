@@ -9,7 +9,14 @@ const templateNames = {
 }
 
 const formatDate = (date) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(date)
-const clampText = (value, maximum) => String(value || '').trim().slice(0, maximum)
+// Les polices PDF standards ne couvrent pas les emojis. Les retirer du seul
+// fichier PDF évite qu'un petit mot personnalisé empêche tout l'e-mail de partir.
+const clampText = (value, maximum) => String(value || '')
+  .normalize('NFKD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .replace(/[^\x20-\x7E\xA0-\xFF]/g, '')
+  .trim()
+  .slice(0, maximum)
 
 function wrapText(text, font, size, maximumWidth) {
   const lines = []

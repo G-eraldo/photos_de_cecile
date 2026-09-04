@@ -6,6 +6,7 @@
 - For Nuxt nested routes, use `pages/section/index.vue` for the collection page when `pages/section/[slug].vue` is also present. A sibling `pages/section.vue` becomes the route parent and must contain `<NuxtPage />`; otherwise it masks child routes.
 - For every new nested Nuxt route, verify the parent route does not mask it before testing the payment redirect in production.
 - For payment notifications, preserve the legacy recipient environment variable as a fallback and retry only the failed internal notification; never resend the customer confirmation.
+- User-provided messages can contain emojis that standard PDF fonts cannot encode. Sanitize only the PDF copy and keep PDF generation inside the customer-email failure boundary so it cannot block notification retries.
 - This Strapi Upload plugin does not accept REST relation filters for media folders and returns its complete media list in one response. Do not apply collection-type filters or pagination loops to `/api/upload/files`; inspect the deployed endpoint before using query parameters.
 - For a photographer’s portfolio, never assume Strapi-derived formats meet the required visual quality. Verify the rendered result; when they are visibly compressed, use the Cloudflare original with lazy loading and a stronger editorial layout.
 - Full-quality photography originals can be tens of megabytes. Preserve quality, but keep the initial portfolio set small and reveal later photos in explicit batches so the first view remains responsive.
