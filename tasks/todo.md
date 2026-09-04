@@ -128,6 +128,7 @@
 - [x] Réservation payée : ne plus masquer une erreur de finalisation derrière « réservation introuvable », permettre une reprise sûre de Calendar et vérifier le build.
 - [x] Bloquer la création d’un paiement de réservation si le jeton Google ou le droit d’écriture Calendar n’est pas valide.
 - [x] Autoriser l’iframe Elfsight après consentement et initialiser le widget sans chargement différé.
+- [x] Monter explicitement le script et le bloc Elfsight après consentement, selon le parcours SPA du fournisseur.
 
 - Correctif réservation payée du 4 septembre 2026 : une erreur de finalisation Calendar/e-mail ne fait plus répondre l’endpoint de statut en 500, donc la page ne prétend plus que la réservation est introuvable. L’état de reprise est retourné à la page et, après déploiement, une réservation payée en erreur est retentée à intervalle mesuré depuis sa page de confirmation. Les journaux serveur enregistrent désormais la cause technique exacte (référence, paiement, message et code) sans exposer ces informations à la cliente. `npm run build` passe dans Nuxt.
 

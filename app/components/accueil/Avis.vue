@@ -3,23 +3,29 @@ import { nextTick, onMounted, ref, watch } from 'vue'
 
 const { consent } = useReviewsConsent()
 const reviewsEnabled = ref(false)
+const reviewsLoadFailed = ref(false)
+const reviewsHost = ref(null)
+const widgetClass = 'elfsight-app-0326db88-58c9-43ed-96ae-19c0ac181935'
 
 async function enableReviews() {
+    if (reviewsEnabled.value) return
+
     reviewsEnabled.value = true
     await nextTick()
 
-    const existingScript = document.querySelector(
-        'script[src="https://static.elfsight.com/platform/platform.js"]'
-    )
+    if (!reviewsHost.value) return
 
-    if (!existingScript) {
-        const script = document.createElement('script')
+    // Elfsight recommande, pour une SPA, de monter le script et son bloc à
+    // l’emplacement exact du widget. Cela force le scan après le consentement.
+    const script = document.createElement('script')
+    const widget = document.createElement('div')
 
-        script.src = 'https://static.elfsight.com/platform/platform.js'
-        script.async = true
+    script.src = 'https://elfsightcdn.com/platform.js'
+    script.async = true
+    script.onerror = () => { reviewsLoadFailed.value = true }
+    widget.className = widgetClass
 
-        document.head.appendChild(script)
-    }
+    reviewsHost.value.replaceChildren(script, widget)
 }
 
 onMounted(() => {
@@ -46,7 +52,8 @@ onMounted(() => {
 
             </div>
 
-            <div v-if="reviewsEnabled" class="elfsight-app-0326db88-58c9-43ed-96ae-19c0ac181935" />
+            <div v-if="reviewsEnabled && !reviewsLoadFailed" ref="reviewsHost" class="min-h-24" />
+            <p v-else-if="reviewsLoadFailed" class="text-center text-sm leading-6 text-[#676463]">Les avis sont momentanément indisponibles.</p>
             <p v-else-if="consent === 'rejected'" class="text-center text-sm leading-6 text-[#676463]">Les avis tiers ne sont pas affichés, conformément à votre choix.</p>
 
         </div>
