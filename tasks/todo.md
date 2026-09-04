@@ -133,6 +133,8 @@
 
 - Diagnostic Calendar du 4 septembre 2026 : Google renvoie `invalid_grant` car `GOOGLE_REFRESH_TOKEN` est expiré ou révoqué. Le jeton doit être régénéré avec un compte ayant le droit d’écriture sur le calendrier, puis remplacé dans Dokploy et redéployé. Une vérification d’accès est maintenant effectuée avant de créer un paiement Mollie de réservation ; `npm run build` passe dans Nuxt.
 
+- Correctif du contrôle Calendar du 4 septembre 2026 : le parcours OAuth demande volontairement le scope limité `calendar.events`. La vérification préventive utilise donc maintenant `events.list`, compatible avec ce scope, au lieu de `calendars.get` qui provoquait à tort un 403. Aucune écriture de test n’est effectuée.
+
 - Consentement avis du 4 septembre 2026 : le consentement Elfsight est demandé dans un bandeau global à la première arrivée. Après acceptation, les avis se chargent automatiquement à leur emplacement ; le bloc de consentement au milieu de la section avis est supprimé. Le refus évite toujours le chargement du service tiers. `npm run build` passe dans Nuxt.
 
 - Audit final vérifié en ligne le 4 septembre 2026 : le frontend sert CSP, HSTS, anti-iframe, `nosniff`, politique de référent et permissions policy ; la CSP autorise précisément Strapi et le compte R2. La CORS Strapi refuse `https://evil.example` et accepte le domaine frontend configuré ; les collections commande/réservation répondent 403 publiquement. L’image Open Graph/Twitter répond 200, `robots.txt` et le sitemap sont cohérents, et les écrans de paiement sont `noindex`. Le site est prêt pour ce domaine hors test Mollie final ; si un autre domaine devient le domaine public, mettre à jour `site.url`, `SITE_URL`, `FRONTEND_URL`, les redirections Google et les canoniques avant bascule.

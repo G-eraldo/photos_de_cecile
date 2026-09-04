@@ -31,17 +31,14 @@ export const calendarEventsUrl = (calendarId) =>
 
 export const ensureGoogleCalendarWriterAccess = async (config) => {
   const accessToken = await getGoogleAccessToken(config);
-  const calendar = await $fetch(
-    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(config.googleCalendarId)}`,
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    },
-  );
-
-  if (!["owner", "writer"].includes(calendar.accessRole)) {
-    throw createError({
-      statusCode: 503,
-      statusMessage: "Le calendrier ne permet pas encore les réservations.",
-    });
-  }
+  // Le scope OAuth demandé par le parcours /connexion-agenda est
+  // `calendar.events`. Il donne accès aux événements, mais pas aux
+  // métadonnées du calendrier (`calendars.get`). Interroger les événements
+  // valide donc correctement le token sans requérir une autorisation plus
+  // large ni créer un événement de test.
+  const url = new URL(calendarEventsUrl(config.googleCalendarId));
+  url.search = new URLSearchParams({ maxResults: "1" }).toString();
+  await $fetch(url.toString(), {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
 };

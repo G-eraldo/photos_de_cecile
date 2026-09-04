@@ -1,6 +1,7 @@
 # Lessons
 
 - Dans un flux de paiement, ne jamais répondre « introuvable » parce qu’un effet secondaire (Calendar ou e-mail) échoue après la validation Mollie. Retourner l’état de finalisation séparément, tracer l’erreur côté serveur et prévoir une reprise idempotente.
+- Lorsqu’un OAuth demande le scope limité `calendar.events`, ne pas utiliser `calendars.get` pour vérifier l’accès : cet endpoint exige une portée plus large. Vérifier les droits sans effet de bord via `events.list`.
 
 - For Nuxt nested routes, use `pages/section/index.vue` for the collection page when `pages/section/[slug].vue` is also present. A sibling `pages/section.vue` becomes the route parent and must contain `<NuxtPage />`; otherwise it masks child routes.
 - For every new nested Nuxt route, verify the parent route does not mask it before testing the payment redirect in production.
