@@ -21,6 +21,8 @@ const formatPrice = (value) =>
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })} €`;
+const isEmail = (value) =>
+  typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 
 const detailRows = (rows) =>
   rows
@@ -47,12 +49,12 @@ export async function sendCecilePaymentNotification({
   }
 
   const isOrder = type === "commande";
-  // Les premiers déploiements utilisaient CECILE_NOTIFICATION_EMAIL. Garder
-  // ce nom en repli évite de perdre une notification si seule cette variable
-  // est présente dans l'environnement de production.
-  const recipient = process.env.RESEND_CECILE_NOTIFICATION_EMAIL
-    || process.env.CECILE_NOTIFICATION_EMAIL
-    || "lesphotosdececile80@gmail.com";
+  // La boîte professionnelle reste toujours destinataire. Une variable de
+  // déploiement mal renseignée ne doit pas faire disparaître une commande.
+  const recipient =
+    process.env.RESEND_CECILE_NOTIFICATION_EMAIL ||
+    process.env.CECILE_NOTIFICATION_EMAIL ||
+    "lesphotosdececile80@gmail.com";
 
   if (!process.env.RESEND_FROM_EMAIL) {
     console.error(
@@ -71,7 +73,12 @@ export async function sendCecilePaymentNotification({
         ["Adresse", details.adresse],
         ["Produit", details.produit],
         ["Format", details.format],
-        ["Options", Object.entries(details.options || {}).map(([name, value]) => `${name} : ${value}`).join(" · ")],
+        [
+          "Options",
+          Object.entries(details.options || {})
+            .map(([name, value]) => `${name} : ${value}`)
+            .join(" · "),
+        ],
         ["Quantité", details.quantite],
         ["Montant payé", formatPrice(total)],
       ]

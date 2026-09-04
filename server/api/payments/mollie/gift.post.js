@@ -9,6 +9,7 @@ const giftOffers = {
   naissance: { label: 'Naissance', prices: { 10: 250, 15: 295 } },
 }
 const isText = (value, maximum = 500) => typeof value === 'string' && value.trim() && value.trim().length <= maximum
+const hasEmoji = (value) => /[\p{Extended_Pictographic}\p{Regional_Indicator}]/u.test(value)
 
 export default defineEventHandler(async (event) => {
   enforceTrustedOrigin(event)
@@ -40,6 +41,9 @@ export default defineEventHandler(async (event) => {
   }
   if (message && !isText(message, 250)) {
     throw createError({ statusCode: 400, statusMessage: 'Le message ne peut pas dépasser 250 caractères.' })
+  }
+  if (hasEmoji(message)) {
+    throw createError({ statusCode: 400, statusMessage: 'Les emojis ne sont pas autorisés dans le message.' })
   }
 
   const price = offer.prices[photos]

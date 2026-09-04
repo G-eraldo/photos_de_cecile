@@ -15,6 +15,26 @@
 - [x] Générer le PDF personnalisé et le joindre à l'e-mail client après paiement.
 - [x] Générer un bon d'exemple, contrôler son rendu et compiler Nuxt.
 
+## Bon cadeau - aperçu
+
+- [x] Remplacer l'image d'aperçu de la page par l'URL de la photo fournie.
+- [x] Vérifier la compilation Nuxt.
+
+## Correctif bon cadeau - défilement
+
+- [x] Réserver l'espace de l'image distante et différer son décodage.
+- [x] Vérifier la compilation Nuxt.
+
+## Correctif bon cadeau - défilement unifié
+
+- [x] Retirer le positionnement fixe de l’aperçu afin que les deux colonnes défilent ensemble.
+- [x] Vérifier la compilation Nuxt.
+
+## Correctif bon cadeau - sticky limité
+
+- [ ] Garder l’aperçu fixe pendant les choix et le libérer au début de la personnalisation.
+- [ ] Vérifier la compilation Nuxt.
+
 ## Correctif bon cadeau — confirmation et notification
 
 - [x] Corriger le routage de la confirmation après Mollie.
@@ -159,6 +179,14 @@
 - [x] Vérifier la compilation Nuxt.
 
 ## Revue
+
+- Correctif défilement unifié du 4 septembre 2026 : l’aperçu du bon cadeau ne reste plus fixe sur desktop ; la photo complète et le formulaire défilent maintenant ensemble. `npm run build` passe dans Nuxt.
+
+- Correctif défilement bon cadeau du 4 septembre 2026 : l’aperçu distant réserve désormais sa zone avec son ratio réel et utilise un décodage asynchrone. Le chargement de la photo n’entraîne plus de recalcul de mise en page pendant le défilement. `npm run build` passe dans Nuxt.
+
+- Aperçu bon cadeau du 4 septembre 2026 : l’image affichée sur `/offrir` est désormais directement chargée depuis l’URL de la photo fournie. Les modèles PDF restent inchangés. `npm run build` passe dans Nuxt.
+
+- Correctif notification Cécile du 4 septembre 2026 : les commandes confirmaient l'e-mail cliente mais la notification interne restait à `false`, signe d'un refus Resend ou d'un destinataire configuré incorrectement. La boîte professionnelle `lesphotosdececile80@gmail.com` est désormais systématiquement destinataire ; une adresse configurée valide est ajoutée seulement en copie. Lorsqu'une commande déjà payée a `notificationCecileEnvoyee: false`, la page de confirmation la retente sans dupliquer l'e-mail cliente. `npm run build` passe dans Nuxt.
 
 - Correctif e-mail bon cadeau du 4 septembre 2026 : une emoji dans le message personnalisé provoquait une erreur d'encodage de la police PDF avant l'appel Resend ; aucun e-mail ne pouvait donc être envoyé. Le texte dessiné dans le PDF est maintenant nettoyé des caractères non pris en charge, tandis que le message stocké est conservé. La génération du PDF est exécutée dans le périmètre d'échec de l'e-mail cliente : une erreur future n'empêche plus la notification Cécile. Le PDF a été généré avec le message contenant `👌` et `npm run build` passe dans Nuxt.
 
