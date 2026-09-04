@@ -229,7 +229,7 @@ export const completeReservation = async (event, body) => {
       });
     }
 
-    await resend.emails.send({
+    const { error: customerEmailError } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: email.trim(),
 
@@ -483,8 +483,16 @@ export const completeReservation = async (event, body) => {
         </div>
       `,
 
-      attachments,
+      attachments: attachments.map((attachment) => ({
+        ...attachment,
+        contentType: attachment.content_type,
+        content_type: undefined,
+      })),
     });
+
+    if (customerEmailError) {
+      throw new Error(`Resend a refusé l’e-mail de réservation : ${customerEmailError.message}`);
+    }
   } catch (error) {
     emailSent = false;
 

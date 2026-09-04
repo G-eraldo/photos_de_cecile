@@ -48,6 +48,14 @@ export async function sendCecilePaymentNotification({
 
   const isOrder = type === "commande";
   const recipient = process.env.RESEND_CECILE_NOTIFICATION_EMAIL;
+
+  if (!process.env.RESEND_FROM_EMAIL) {
+    console.error(
+      "RESEND_FROM_EMAIL est absente : la notification à Cécile ne peut pas être envoyée.",
+    );
+    return false;
+  }
+
   const subject = isOrder
     ? `Nouvelle commande payée — ${reference}`
     : `Nouvelle réservation payée — ${reference}`;
@@ -73,7 +81,7 @@ export async function sendCecilePaymentNotification({
 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: recipient,
       replyTo: details.email,
@@ -98,6 +106,10 @@ export async function sendCecilePaymentNotification({
           </div>
         </div>`,
     });
+    if (error)
+      throw new Error(
+        `Resend a refusé la notification à Cécile : ${error.message}`,
+      );
     return true;
   } catch (error) {
     console.error(

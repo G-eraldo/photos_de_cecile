@@ -39,7 +39,7 @@ export async function sendOrderConfirmation({ reference, details, total }) {
       .map(([name, value]) => `${escapeHtml(name)} : ${escapeHtml(value)}`)
       .join(" · ");
 
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: details.email,
       subject: "Confirmation de votre commande — Les Photos de Cécile",
@@ -76,15 +76,16 @@ export async function sendOrderConfirmation({ reference, details, total }) {
           filename: "logo-email.png",
           content: logoBuffer,
           contentId: "logo-cecile",
-          content_type: "image/png",
+          contentType: "image/png",
         },
         {
           filename: `Facture_${reference}.pdf`,
           content: invoice,
-          content_type: "application/pdf",
+          contentType: "application/pdf",
         },
       ],
     });
+    if (error) throw new Error(`Resend a refusé la confirmation de commande : ${error.message}`);
   } catch (error) {
     console.error("Impossible d’envoyer la confirmation de commande.", error);
     customerEmailSent = false;
