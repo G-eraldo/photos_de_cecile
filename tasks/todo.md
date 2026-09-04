@@ -7,6 +7,12 @@
 - [x] Adapter les confirmations e-mail et le retour de paiement au bon cadeau.
 - [x] Compiler Nuxt et Strapi, puis consigner la revue.
 
+## Correctif bon cadeau — confirmation et notification
+
+- [x] Corriger le routage de la confirmation après Mollie.
+- [x] Rétablir et reprendre la notification Cécile sans renvoyer l’e-mail cliente.
+- [x] Compiler Nuxt et vérifier le parcours de reprise.
+
 ## Incident — portfolio indisponible
 
 - [x] Reproduire l’échec de récupération des médias via Strapi et identifier la cause.
@@ -145,6 +151,8 @@
 - [x] Vérifier la compilation Nuxt.
 
 ## Revue
+
+- Correctif bon cadeau du 4 septembre 2026 : la page de confirmation était masquée par le fichier `pages/offrir.vue`. La page principale est maintenant `pages/offrir/index.vue`, donc `/offrir/confirmation` résout bien vers son écran dédié. La notification Cécile utilise désormais la variable actuelle, son ancien nom `CECILE_NOTIFICATION_EMAIL` ou l’adresse métier en dernier repli. Lorsqu’une notification interne seule a échoué, la page de confirmation la relance sans renvoyer l’e-mail cliente. `npm run build` passe dans Nuxt.
 
 - Bon cadeau du 4 septembre 2026 : `/offrir` propose les choix 5/10/15 photos, la réception par e-mail ou courrier (+5 €) et le forfait naissance (+65 €, uniquement pour 10 ou 15 photos). Le montant est recalculé et validé côté serveur avant Mollie ; la commande est enregistrée dans la collection Strapi `commande`, sans produit Strapi. Après paiement confirmé, le webhook existant envoie les confirmations cliente et Cécile, adaptées au bon cadeau, sans tenter de traiter une photo privée. Une confirmation dédiée est disponible sur `/offrir/confirmation`. `npm run build` passe dans Nuxt et Strapi (l'avertissement de préférences Strapi du sandbox reste sans effet sur le build).
 

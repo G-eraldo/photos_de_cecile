@@ -21,7 +21,11 @@ export default defineEventHandler(async (event) => {
   // Secours si Mollie a redirigé la cliente avant que son webhook soit traité.
   // Seul Mollie est interrogé côté serveur ; le navigateur ne peut pas forcer
   // l'état « payé ».
-  if (paymentRecord.statut === "en_attente" || paymentRecord.details?.finalisation?.statut === "erreur") {
+  if (
+    paymentRecord.statut === "en_attente"
+    || paymentRecord.details?.finalisation?.statut === "erreur"
+    || paymentRecord.details?.notificationCecileEnvoyee === false
+  ) {
     const payment = await getMolliePayment(config, paymentRecord.mollie_payment_id);
     const expectedAmount = Number(order ? order.montant_total : reservation.montant_acompte).toFixed(2);
     if (

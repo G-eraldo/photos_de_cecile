@@ -47,7 +47,12 @@ export async function sendCecilePaymentNotification({
   }
 
   const isOrder = type === "commande";
-  const recipient = process.env.RESEND_CECILE_NOTIFICATION_EMAIL;
+  // Les premiers déploiements utilisaient CECILE_NOTIFICATION_EMAIL. Garder
+  // ce nom en repli évite de perdre une notification si seule cette variable
+  // est présente dans l'environnement de production.
+  const recipient = process.env.RESEND_CECILE_NOTIFICATION_EMAIL
+    || process.env.CECILE_NOTIFICATION_EMAIL
+    || "lesphotosdececile80@gmail.com";
 
   if (!process.env.RESEND_FROM_EMAIL) {
     console.error(

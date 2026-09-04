@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import { completeReservation } from "../api/calendar/reservations.post.js";
+import { sendCecilePaymentNotification } from "./cecile-notification-email.js";
 import { sendOrderConfirmation } from "./order-email.js";
 import { finalizePrivateUpload } from "./r2-private.js";
 import {
@@ -27,6 +28,21 @@ export const finalizePaidPayment = async ({ event, config, order, reservation, p
   // Les paiements déjà finalisés (ou historiques) ne doivent jamais renvoyer
   // d'e-mail ou créer un second événement Calendar.
   if (record.statut === "paye") {
+    // La cliente ne doit jamais recevoir une seconde confirmation. En
+    // revanche, une notification Cécile qui a échoué peut être reprise
+    // séparément depuis la page de confirmation.
+    if (finalisation?.statut === "terminee" && record.details?.notificationCecileEnvoyee === false) {
+      const cecileEmailSent = await sendCecilePaymentNotification({
+        type: isOrder ? "commande" : "reservation",
+        reference: record.reference,
+        details: record.details,
+        total: isOrder ? record.montant_total : record.montant_acompte,
+      });
+      await updateRecord(config, record.documentId, {
+        details: { ...record.details, notificationCecileEnvoyee: cecileEmailSent },
+      });
+      return { notificationRetried: cecileEmailSent };
+    }
     if (!finalisation || finalisation.statut === "terminee") return { alreadyFinalized: true };
     if (finalisation.statut === "en_cours") return { processing: true };
   }
