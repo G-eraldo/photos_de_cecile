@@ -30,10 +30,10 @@
 - [x] Retirer le positionnement fixe de l’aperçu afin que les deux colonnes défilent ensemble.
 - [x] Vérifier la compilation Nuxt.
 
-## Correctif bon cadeau - sticky limité
+## Correctif bon cadeau - comportement photo
 
-- [ ] Garder l’aperçu fixe pendant les choix et le libérer au début de la personnalisation.
-- [ ] Vérifier la compilation Nuxt.
+- [x] Reprendre exactement le comportement sticky de la fiche `/tirages-photo/[slug]` pour l’aperçu.
+- [x] Vérifier la compilation Nuxt.
 
 ## Correctif bon cadeau — confirmation et notification
 
@@ -179,6 +179,8 @@
 - [x] Vérifier la compilation Nuxt.
 
 ## Revue
+
+- Comportement photo bon cadeau du 4 septembre 2026 : l’aperçu utilise désormais la même structure (`sticky`, position et ratio) que la fiche `/tirages-photo/[slug]`, en gardant l’URL directe de l’image. `npm run build` passe dans Nuxt.
 
 - Correctif défilement unifié du 4 septembre 2026 : l’aperçu du bon cadeau ne reste plus fixe sur desktop ; la photo complète et le formulaire défilent maintenant ensemble. `npm run build` passe dans Nuxt.
 

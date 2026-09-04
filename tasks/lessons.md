@@ -25,3 +25,4 @@
 - A route file inside `src/api/*` is always registered as Strapi content API even when it declares `type: 'admin'`. Private administrative actions must instead be attached to `strapi.admin.routes` during `register`, with the `admin::isAuthenticatedAdmin` policy.
 - Lorsqu’une image distante très haute résolution est utilisée directement dans une page, fixer son ratio et ses dimensions intrinsèques, puis demander un décodage asynchrone : sinon son chargement provoque un décalage de mise en page et peut dégrader le défilement.
 - Ne pas utiliser `sticky` sur une image d’aperçu quand le parcours demandé est un défilement synchronisé avec le formulaire : les deux colonnes doivent rester dans le flux normal de la page.
+- Lorsque l’utilisateur demande que l’aperçu reproduise la fiche produit, reprendre sa structure et ses classes existantes à l’identique plutôt que d’ajouter une logique de sticky spécifique.
