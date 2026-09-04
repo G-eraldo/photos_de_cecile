@@ -31,13 +31,25 @@ export default defineEventHandler(async (event) => {
       payment.metadata?.reference === paymentRecord.reference &&
       payment.metadata?.type === (order ? "commande" : "reservation")
     ) {
-      await finalizePaidPayment({
-        event,
-        config,
-        order,
-        reservation,
-        paymentId: paymentRecord.mollie_payment_id,
-      });
+      try {
+        await finalizePaidPayment({
+          event,
+          config,
+          order,
+          reservation,
+          paymentId: paymentRecord.mollie_payment_id,
+        });
+      } catch (error) {
+        // Le paiement reste valable même si Calendar ou les e-mails doivent
+        // être repris. Ne jamais transformer ce cas en une fausse 404 pour la
+        // cliente : la réservation existe bien dans Strapi.
+        console.error("Impossible de finaliser le paiement depuis la page de confirmation.", {
+          reference: paymentRecord.reference,
+          paymentId: paymentRecord.mollie_payment_id,
+          message: error?.message,
+          statusCode: error?.statusCode,
+        });
+      }
     }
   }
 
@@ -50,5 +62,6 @@ export default defineEventHandler(async (event) => {
     statut: refreshedRecord.statut,
     type: order ? "commande" : "reservation",
     montant: refreshedOrder ? refreshedOrder.montant_total : refreshedReservation?.montant_acompte || paymentRecord.montant_acompte,
+    finalisation: refreshedRecord.details?.finalisation?.statut || null,
   };
 });

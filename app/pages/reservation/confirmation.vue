@@ -26,8 +26,8 @@ let stopConfirmationWatch
 
 onMounted(() => {
   refreshTimer = window.setInterval(() => {
-    if (data.value?.statut === 'en_attente') refresh()
-  }, 3000)
+    if (data.value?.statut === 'en_attente' || data.value?.finalisation === 'erreur') refresh()
+  }, 10000)
 
   stopConfirmationWatch = watch(isConfirmed, (confirmed) => {
     if (confirmed) {
@@ -42,7 +42,8 @@ onBeforeUnmount(() => {
   stopConfirmationWatch?.()
 })
 
-const isConfirmed = computed(() => data.value?.statut === 'paye')
+const isConfirmed = computed(() => data.value?.statut === 'paye' && !['en_cours', 'erreur'].includes(data.value?.finalisation))
+const isFinalisationRetrying = computed(() => data.value?.statut === 'paye' && data.value?.finalisation === 'erreur')
 const isFailed = computed(() => ['echoue', 'expire', 'annule'].includes(data.value?.statut))
 </script>
 
@@ -72,6 +73,12 @@ const isFailed = computed(() => ['echoue', 'expire', 'annule'].includes(data.val
       <Button as-child>
         <NuxtLink to="/reservation">Revenir à la réservation</NuxtLink>
       </Button>
+    </div>
+
+    <div v-else-if="isFinalisationRetrying" class="space-y-4 py-4">
+      <Clock3 class="mx-auto h-12 w-12 text-[#C9A227]" />
+      <CardTitle class="font-playfair text-2xl text-[#613213]">Paiement reçu, confirmation en cours</CardTitle>
+      <CardDescription>Votre acompte est bien reçu. Nous finalisons la réservation de votre créneau ; cette page se mettra à jour automatiquement.</CardDescription>
     </div>
 
     <div v-else class="space-y-4 py-4">

@@ -93,6 +93,13 @@ export const finalizePaidPayment = async ({ event, config, order, reservation, p
     });
     return { completed: true };
   } catch (error) {
+    console.error("La finalisation du paiement a échoué.", {
+      reference: record.reference,
+      paymentId,
+      type: isOrder ? "commande" : "reservation",
+      message: error?.message,
+      statusCode: error?.statusCode,
+    });
     await updateRecord(config, record.documentId, {
       statut: "paye",
       details: {

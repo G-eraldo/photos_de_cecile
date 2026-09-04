@@ -54,6 +54,7 @@ useHead({
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+    <CookieBanner />
     <Toaster />
   </div>
 </template>

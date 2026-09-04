@@ -120,6 +120,14 @@
 
 ## Revue
 
+- [x] Réservation payée : ne plus masquer une erreur de finalisation derrière « réservation introuvable », permettre une reprise sûre de Calendar et vérifier le build.
+
+- Correctif réservation payée du 4 septembre 2026 : une erreur de finalisation Calendar/e-mail ne fait plus répondre l’endpoint de statut en 500, donc la page ne prétend plus que la réservation est introuvable. L’état de reprise est retourné à la page et, après déploiement, une réservation payée en erreur est retentée à intervalle mesuré depuis sa page de confirmation. Les journaux serveur enregistrent désormais la cause technique exacte (référence, paiement, message et code) sans exposer ces informations à la cliente. `npm run build` passe dans Nuxt.
+
+- Consentement avis du 4 septembre 2026 : le consentement Elfsight est demandé dans un bandeau global à la première arrivée. Après acceptation, les avis se chargent automatiquement à leur emplacement ; le bloc de consentement au milieu de la section avis est supprimé. Le refus évite toujours le chargement du service tiers. `npm run build` passe dans Nuxt.
+
+- Audit final vérifié en ligne le 4 septembre 2026 : le frontend sert CSP, HSTS, anti-iframe, `nosniff`, politique de référent et permissions policy ; la CSP autorise précisément Strapi et le compte R2. La CORS Strapi refuse `https://evil.example` et accepte le domaine frontend configuré ; les collections commande/réservation répondent 403 publiquement. L’image Open Graph/Twitter répond 200, `robots.txt` et le sitemap sont cohérents, et les écrans de paiement sont `noindex`. Le site est prêt pour ce domaine hors test Mollie final ; si un autre domaine devient le domaine public, mettre à jour `site.url`, `SITE_URL`, `FRONTEND_URL`, les redirections Google et les canoniques avant bascule.
+
 - Correctif e-mails de réservation du 4 septembre 2026 : le SDK Resend renvoie ses refus dans le champ `error` sans forcément lever d’exception ; le flux les détecte maintenant et n’enregistre plus un faux succès. Les pièces jointes utilisent `contentType`, la propriété attendue par le SDK, et l’adresse de notification Cécile a un repli explicite. `npm run build` passe dans Nuxt.
 
 - Correction des trois blocants d’audit du 4 septembre 2026 : la CSP autorise désormais exclusivement l’API Strapi configurée et le compte Cloudflare R2 configuré, ce qui rétablit l’upload direct de photo avant Mollie ; CORS Strapi accepte seulement `FRONTEND_URL`, une éventuelle préproduction explicite et localhost ; l’image Open Graph/Twitter/JSON-LD pointe vers une photo Cloudinary publique vérifiée en HTTP 200. `npm run build` passe pour Nuxt et Strapi.

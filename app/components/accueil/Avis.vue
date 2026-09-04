@@ -1,12 +1,7 @@
 <script setup>
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 
-const consent = useCookie('cecile_reviews_consent', {
-    default: () => 'pending',
-    maxAge: 180 * 24 * 60 * 60,
-    sameSite: 'lax',
-    secure: true,
-})
+const { consent } = useReviewsConsent()
 const reviewsEnabled = ref(false)
 
 async function enableReviews() {
@@ -27,17 +22,10 @@ async function enableReviews() {
     }
 }
 
-function acceptReviews() {
-    consent.value = 'accepted'
-    enableReviews()
-}
-
-function rejectReviews() {
-    consent.value = 'rejected'
-}
-
 onMounted(() => {
-    if (consent.value === 'accepted') enableReviews()
+    watch(consent, (value) => {
+        if (value === 'accepted') enableReviews()
+    }, { immediate: true })
 })
 </script>
 
@@ -59,19 +47,7 @@ onMounted(() => {
             </div>
 
             <div v-if="reviewsEnabled" class="elfsight-app-0326db88-58c9-43ed-96ae-19c0ac181935" data-elfsight-app-lazy />
-            <div v-else-if="consent !== 'rejected'" class="mx-auto max-w-xl rounded-2xl bg-white/70 px-6 py-8 text-center shadow-sm">
-                <p class="text-sm leading-6 text-[#676463]">
-                    Les avis sont fournis par un service tiers. En les affichant, vous autorisez le chargement de ce service.
-                </p>
-                <div class="mt-5 flex flex-wrap justify-center gap-3">
-                    <button type="button" class="rounded-full bg-[#5A3419] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#382b27]" @click="acceptReviews">Accepter et afficher les avis</button>
-                    <button type="button" class="rounded-full border border-[#9e8b8b] px-5 py-3 text-sm font-medium text-[#5A3419] transition hover:bg-white" @click="rejectReviews">Refuser</button>
-                </div>
-            </div>
-            <div v-else class="mx-auto max-w-xl rounded-2xl bg-white/70 px-6 py-8 text-center shadow-sm">
-                <p class="text-sm leading-6 text-[#676463]">Les avis tiers ne sont pas affichés, conformément à votre choix.</p>
-                <button type="button" class="mt-5 text-sm font-medium text-[#5A3419] underline" @click="consent = 'pending'">Modifier mon choix</button>
-            </div>
+            <p v-else-if="consent === 'rejected'" class="text-center text-sm leading-6 text-[#676463]">Les avis tiers ne sont pas affichés, conformément à votre choix.</p>
 
         </div>
 
