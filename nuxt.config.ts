@@ -31,6 +31,16 @@ export default defineNuxtConfig({
   routeRules: {
     "/reservation/confirmation": { robots: false, sitemap: false },
     "/tirages-photo/confirmation": { robots: false, sitemap: false },
+    "/**": {
+      headers: {
+        "Content-Security-Policy": "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://static.elfsight.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com https://*.maptiler.com; connect-src 'self' https://*.maptiler.com https://static.elfsight.com https://*.elfsight.com https://*.elfsightcdn.com; frame-src https://*.mollie.com; upgrade-insecure-requests",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+      },
+    },
   },
 
   css: ["~/assets/css/main.css"],

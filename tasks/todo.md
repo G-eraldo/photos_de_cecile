@@ -9,6 +9,12 @@
 - [x] Compléter les métadonnées SEO des pages et exclure les retours de paiement des moteurs.
 - [x] Auditer la sécurité applicative et consigner les priorités.
 
+## Audit de préparation au domaine public
+
+- [x] Vérifier les contrôles de sécurité, les secrets et les flux tiers.
+- [x] Vérifier les signaux SEO effectivement servis sur le domaine public.
+- [x] Évaluer les prérequis de déploiement hors Mollie production.
+
 ## Commande de tirages photo
 
 - [x] Auditer le flux de paiement existant et définir le parcours commande.
@@ -113,6 +119,8 @@
 - [x] Vérifier la compilation Nuxt.
 
 ## Revue
+
+- Audit production du 4 septembre 2026 : le domaine répond en HTTPS, les pages principales, `robots.txt`, le sitemap, les balises canoniques et le produit dynamique sont publiés ; les écrans de confirmation sont exclus du sitemap. Le lancement public doit toutefois attendre au minimum la correction de la variable de notification Cécile (`RESEND_CECILE_NOTIFICATION_EMAIL` utilisée dans le code alors que l’exemple documente `CECILE_NOTIFICATION_EMAIL`) et l’ajout d’en-têtes de sécurité HTTP. Un rate-limit distribué et une protection anti-bot restent aussi nécessaires pour les routes générant des coûts.
 
 - Les paiements Mollie confirmés envoient maintenant une notification distincte à Cécile pour les commandes de tirages et les réservations. `CECILE_NOTIFICATION_EMAIL` permet de remplacer l’adresse de réception ; à défaut, l’adresse professionnelle déjà publiée est utilisée. `RESEND_FROM_EMAIL` est aussi pris en compte.
 - Les pages `/mentions-legales` et `/politique-confidentialite` sont ajoutées et reliées depuis le pied de page. Elles décrivent les données réellement utilisées par les formulaires, Mollie, Resend, Google Calendar, Cloudflare R2, MapTiler et le widget d’avis.

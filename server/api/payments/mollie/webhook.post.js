@@ -1,6 +1,5 @@
-import { completeReservation } from "../../calendar/reservations.post.js";
-import { sendOrderConfirmation } from "../../../utils/order-email.js";
-import { deletePrivateUpload, finalizePrivateUpload } from "../../../utils/r2-private.js";
+import { deletePrivateUpload } from "../../../utils/r2-private.js";
+import { finalizePaidPayment } from "../../../utils/mollie-paid-payment.js";
 import {
   findStoredOrder,
   findStoredReservation,
@@ -52,36 +51,7 @@ export default defineEventHandler(async (event) => {
     return { received: true };
   }
 
-  if (paymentRecord.statut === "paye") {
-    return { received: true };
-  }
-
-  if (order) {
-    const photoPrivee = await finalizePrivateUpload(order.photo_privee, order.reference);
-    const emailResult = await sendOrderConfirmation({ reference: order.reference, details: order.details, total: order.montant_total });
-    await updateStoredOrder(config, order.documentId, {
-      statut: "paye",
-      details: {
-        ...order.details,
-        paiementConfirmeLe: new Date().toISOString(),
-        emailEnvoye: emailResult.customerEmailSent,
-        notificationCecileEnvoyee: emailResult.cecileEmailSent,
-      },
-      photo_privee: photoPrivee,
-    });
-    return { received: true };
-  }
-
-  const result = await completeReservation(event, { ...reservation.details, reference: reservation.reference });
-  await updateStoredReservation(config, reservation.documentId, {
-    statut: "paye",
-    details: {
-      ...reservation.details,
-      paiementConfirmeLe: new Date().toISOString(),
-      emailEnvoye: result.emailSent,
-      notificationCecileEnvoyee: result.cecileEmailSent,
-    },
-  });
+  await finalizePaidPayment({ event, config, order, reservation, paymentId });
 
   return { received: true };
 });

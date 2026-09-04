@@ -37,7 +37,7 @@ const validateAndSubmit = async (e) => {
     });
 
     if (data.success) {
-      toast.success(data.message);
+      toast.success(data.message || 'Votre message a bien été envoyé. Cécile vous répondra rapidement.');
       // reset form
       nom.value = '';
       prenom.value = '';

@@ -32,7 +32,6 @@ const phone = ref('');
 const lieu = ref('');
 
 const availability = ref([]);
-const reservations = ref([]);
 const calendarError = ref(false);
 const loadingCalendar = ref(true);
 const calendarMonth = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
@@ -91,9 +90,6 @@ const availableSlots = computed(() => {
 
     const slots = [];
     for (const slotStart = new Date(start); slotStart.getTime() + 2 * 60 * 60 * 1000 <= end.getTime(); slotStart.setHours(slotStart.getHours() + 2)) {
-      const slotEnd = new Date(slotStart.getTime() + 2 * 60 * 60 * 1000);
-      const reserved = reservations.value.some((reservation) => slotStart < new Date(reservation.end) && slotEnd > new Date(reservation.start));
-      if (reserved) continue;
       slots.push({
         value: `${String(slotStart.getHours()).padStart(2, '0')}:${String(slotStart.getMinutes()).padStart(2, '0')}`,
         label: `${String(slotStart.getHours()).padStart(2, '0')}h – ${String((slotStart.getHours() + 2) % 24).padStart(2, '0')}h`,
@@ -107,7 +103,6 @@ const loadAvailability = async () => {
   try {
     const data = await $fetch('/api/calendar/events');
     availability.value = data.availability || [];
-    reservations.value = data.reservations || [];
     if (availableDates.value.length) {
       const [year, month] = availableDates.value[0].value.split('-').map(Number);
       calendarMonth.value = new Date(year, month - 1, 1);
