@@ -111,8 +111,17 @@ export const getTravelFee = (location) => {
 export const createStoredReservation = (config, data) =>
   strapiFetch(config, "/reservations", { method: "POST", body: { data } });
 
+export const createStoredOrder = (config, data) =>
+  strapiFetch(config, "/commandes", { method: "POST", body: { data } });
+
 export const updateStoredReservation = (config, documentId, data) =>
   strapiFetch(config, `/reservations/${encodeURIComponent(documentId)}`, {
+    method: "PUT",
+    body: { data },
+  });
+
+export const updateStoredOrder = (config, documentId, data) =>
+  strapiFetch(config, `/commandes/${encodeURIComponent(documentId)}`, {
     method: "PUT",
     body: { data },
   });
@@ -131,7 +140,50 @@ export const findStoredReservation = async (config, field, value) => {
   return response.data?.[0] || null;
 };
 
-export const createMolliePayment = async (config, { amount, reference, description }) => {
+export const findStoredOrder = async (config, field, value) => {
+  const query = new URLSearchParams({
+    [`filters[${field}][$eq]`]: value,
+    "fields[0]": "reference",
+    "fields[1]": "montant_total",
+    "fields[2]": "mollie_payment_id",
+    "fields[3]": "statut",
+    "fields[4]": "details",
+    "pagination[pageSize]": "1",
+  });
+  const response = await strapiFetch(config, `/commandes?${query.toString()}`);
+  return response.data?.[0] || null;
+};
+
+export const findProductForOrder = async (config, { productId, slug }) => {
+  const query = new URLSearchParams({
+    "fields[0]": "titre",
+    "fields[1]": "slug",
+    "fields[2]": "prix_a_partir_de",
+    "fields[3]": "formats",
+    "fields[4]": "options",
+    "filters[publishedAt][$notNull]": "true",
+    "pagination[pageSize]": "1",
+  });
+
+  if (typeof productId === "string" && productId.trim()) {
+    query.set("filters[documentId][$eq]", productId.trim());
+  } else if (typeof productId === "number" && Number.isInteger(productId)) {
+    query.set("filters[id][$eq]", String(productId));
+  } else if (typeof slug === "string" && slug.trim()) {
+    query.set("filters[slug][$eq]", slug.trim());
+  } else {
+    throw createError({ statusCode: 400, statusMessage: "Produit de tirage invalide." });
+  }
+
+  const response = await strapiFetch(config, `/produits?${query.toString()}`);
+  const product = response.data?.[0];
+  if (!product || !Number.isFinite(Number(product.prix_a_partir_de))) {
+    throw createError({ statusCode: 400, statusMessage: "Ce tirage n’est plus disponible." });
+  }
+  return product;
+};
+
+export const createMolliePayment = async (config, { amount, reference, description, confirmationPath = "/reservation/confirmation", paymentType = "reservation" }) => {
   const payment = await $fetch(apiUrl, {
     method: "POST",
     headers: {
@@ -140,9 +192,9 @@ export const createMolliePayment = async (config, { amount, reference, descripti
     body: {
       amount: { currency: "EUR", value: amount },
       description,
-      redirectUrl: `${config.siteUrl}/reservation/confirmation?reference=${encodeURIComponent(reference)}`,
+      redirectUrl: `${config.siteUrl}${confirmationPath}?reference=${encodeURIComponent(reference)}`,
       webhookUrl: `${config.siteUrl}/api/payments/mollie/webhook`,
-      metadata: { reference },
+      metadata: { reference, type: paymentType },
     },
   });
 

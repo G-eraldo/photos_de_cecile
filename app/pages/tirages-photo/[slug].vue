@@ -1,4 +1,10 @@
 <script setup>
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Mail } from 'lucide-vue-next'
+import { toast } from 'vue-sonner'
+
 definePageMeta({ layout: 'default' })
 
 const route = useRoute()
@@ -100,6 +106,14 @@ const selectedImage = ref(0)
 const selectedFormat = ref('')
 const selectedOptions = ref({})
 const quantity = ref(1)
+const nom = ref('')
+const prenom = ref('')
+const email = ref('')
+const rue = ref('')
+const codePostal = ref('')
+const ville = ref('')
+const photo = ref(null)
+const paymentPending = ref(false)
 
 watch(product, (value) => {
   if (!value) return
@@ -110,6 +124,60 @@ watch(product, (value) => {
 
 function decreaseQuantity() {
   quantity.value = Math.max(1, quantity.value - 1)
+}
+
+function selectPhoto(event) {
+  photo.value = event.target.files?.[0] || null
+}
+
+async function submitOrder() {
+  if (!nom.value.trim() || !prenom.value.trim() || !email.value.trim() || !rue.value.trim() || !codePostal.value.trim() || !ville.value.trim()) {
+    toast.error('Merci de renseigner votre nom, prénom, e-mail et adresse postale.')
+    return
+  }
+  if (!photo.value) {
+    toast.error('Ajoutez la photo à imprimer avant de poursuivre.')
+    return
+  }
+
+  paymentPending.value = true
+  try {
+    const signedUpload = await $fetch('/api/uploads/private/presign', {
+      method: 'POST',
+      body: { filename: photo.value.name, type: photo.value.type, size: photo.value.size },
+    })
+    const uploadResponse = await fetch(signedUpload.uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': photo.value.type },
+      body: photo.value,
+    })
+    if (!uploadResponse.ok) throw new Error('Le téléversement privé de la photo a échoué.')
+
+    const response = await $fetch('/api/payments/mollie/order', {
+      method: 'POST',
+      body: {
+        nom: nom.value,
+        prenom: prenom.value,
+        email: email.value,
+        adresse: `${rue.value.trim()}\n${codePostal.value.trim()} ${ville.value.trim()}`,
+        productId: product.value.documentId || product.value.id || '',
+        slug: product.value.slug || route.params.slug,
+        format: selectedFormat.value,
+        options: selectedOptions.value,
+        quantity: quantity.value,
+        uploadToken: signedUpload.uploadToken,
+      },
+    })
+    if (response.checkoutUrl) {
+      window.location.assign(response.checkoutUrl)
+      return
+    }
+    toast.error('Impossible de créer votre paiement.')
+  } catch (error) {
+    toast.error(error?.data?.statusMessage || error?.statusMessage || error?.message || 'Une erreur est survenue. Veuillez réessayer.')
+  } finally {
+    paymentPending.value = false
+  }
 }
 </script>
 
@@ -184,11 +252,38 @@ function decreaseQuantity() {
                 type="button" class="px-4 py-2 hover:bg-[#ebe4da]" aria-label="Ajouter un tirage"
                 @click="quantity += 1">+</button></div>
           </div>
-          <button type="button"
-            class="mt-8 w-full border border-[#503d30] bg-[#503d30] px-6 py-4 text-sm text-white transition hover:bg-transparent hover:text-[#503d30]">Ajouter
-            au panier</button>
-          <p class="mt-3 text-center text-xs text-[#806957]">La commande et le téléversement de vos photos seront
-            bientôt disponibles.</p>
+          <form class="mt-10 border-t border-[#d8cec1] pt-8" @submit.prevent="submitOrder">
+            <h2 class="font-playfair text-2xl">Commander votre tirage</h2>
+            <p class="mt-2 text-sm leading-6 text-[#6d5b4e]">Indiquez vos coordonnées et importez la photo à imprimer.
+              Vous serez ensuite redirigé(e) vers le paiement sécurisé.</p>
+            <div class="mt-6 grid gap-4 sm:grid-cols-2">
+              <div class="grid gap-2"><Label for="order-nom">Nom</Label><Input id="order-nom" v-model="nom"
+                  autocomplete="family-name" required /></div>
+              <div class="grid gap-2"><Label for="order-prenom">Prénom</Label><Input id="order-prenom" v-model="prenom"
+                  autocomplete="given-name" required /></div>
+            </div>
+            <div class="mt-4 grid gap-2"><Label for="order-email">E-mail</Label><Input id="order-email" v-model="email"
+                type="email" autocomplete="email" required /></div>
+            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+              <div class="grid gap-2 sm:col-span-2"><Label for="order-rue">Numéro et rue</Label><Input id="order-rue"
+                  v-model="rue" autocomplete="street-address" required /></div>
+              <div class="grid gap-2"><Label for="order-code-postal">Code postal</Label><Input id="order-code-postal"
+                  v-model="codePostal" inputmode="numeric" autocomplete="postal-code" required /></div>
+              <div class="grid gap-2"><Label for="order-ville">Ville</Label><Input id="order-ville" v-model="ville"
+                  autocomplete="address-level2" required /></div>
+            </div>
+            <div class="mt-4 grid gap-2"><Label for="order-photo">Photo à imprimer</Label><Input id="order-photo"
+                type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" required
+                @change="selectPhoto" />
+              <p class="text-xs text-[#806957]">JPG, PNG, WebP ou HEIC. Votre photo est envoyée directement dans un
+                espace Cloudflare privé.</p>
+            </div>
+            <Button type="submit" class="mt-6 w-full" :disabled="paymentPending">
+              <Mail class="mr-2 h-4 w-4" />
+              {{ paymentPending ? 'Redirection vers le paiement…' : `Payer ${Number(product.prix_a_partir_de *
+                quantity).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` }}
+            </Button>
+          </form>
         </div>
       </div>
     </div>

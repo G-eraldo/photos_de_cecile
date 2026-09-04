@@ -1,5 +1,23 @@
 # Tirages photo
 
+## Commande de tirages photo
+
+- [x] Auditer le flux de paiement existant et définir le parcours commande.
+- [x] Ajouter la collection Strapi `commande` avec les coordonnées, les détails et la photo source.
+- [x] Ajouter la création de commande, l'upload sécurisé et le paiement Mollie.
+- [x] Envoyer automatiquement la facture au paiement confirmé.
+- [x] Ajouter le formulaire de commande sur les fiches tirage et l'écran de confirmation.
+- [x] Compiler les deux applications et consigner la revue.
+
+## Commande de tirages — dépôt privé R2 direct
+
+- [x] Vérifier le bucket privé et le flux actuel de téléversement.
+- [x] Générer une URL R2 signée et vérifier le fichier privé avant la commande.
+- [x] Envoyer directement la photo du navigateur au bucket privé.
+- [x] Enregistrer les métadonnées privées dans la commande, sans URL publique.
+- [ ] Appliquer le CORS du bucket privé dans Cloudflare.
+- [x] Documenter le CORS, vérifier les compilations et le parcours de signature.
+
 - [x] Examiner l'existant et la direction visuelle de référence.
 - [x] Ajouter la collection Strapi `produit`.
 - [x] Refaire le catalogue `/tirages-photo`.
@@ -81,11 +99,16 @@
 ## Portfolio — grille de l’album
 
 - [x] Répartir automatiquement les photos selon leur format pour équilibrer les trois colonnes de l’album.
+- [x] Ajouter deux images au premier lot pour combler les colonnes les plus courtes.
 - [x] Ajuster les sources responsive à la nouvelle largeur des vignettes.
 - [x] Vérifier la compilation Nuxt.
 
 ## Revue
 
+- Les photos de commande sont désormais envoyées par URL R2 signée vers `cecile-uploads-prives`, sans passer par Nuxt ou Strapi. La commande conserve uniquement leurs métadonnées privées ; aucune URL publique n’est créée. Le CORS et les nouvelles variables requises sont documentés dans `docs/r2-private-uploads.md`.
+- La fiche de chaque tirage comporte désormais le formulaire de commande (nom, prénom, e-mail, adresse postale et photo) puis redirige vers Mollie. La commande est enregistrée dans Strapi avec l'instantané du produit, du prix, des options, de la quantité et la photo source ; le prix est relu côté serveur pour ne pas dépendre du navigateur.
+- Le webhook Mollie traite maintenant les commandes et les réservations. Pour une commande payée, il génère une facture PDF et l'envoie à la cliente avec la confirmation. Deux écrans dédiés couvrent l'attente et le résultat du paiement de commande.
+- `npm run build` passe dans `photos_de_cecile`. `npm run build` passe dans `backEnd` avec le seul avertissement Strapi existant lié au sandbox (`~/Library/Preferences/com.strapi/config.json`).
 - `npm run build` passe dans `photos_de_cecile`.
 - `npm run build` passe dans `backEnd` ; Strapi affiche un avertissement sans bloquer la construction car le sandbox empêche l'écriture de ses préférences locales.
 - Le serveur Nuxt démarre correctement hors sandbox sur le port 3000.
@@ -111,3 +134,4 @@
 - L’intertitre intermédiaire du portfolio a été supprimé pour former un seul album continu. Les six photos d’ouverture peuvent être choisies et ordonnées dans la légende Strapi avec les marqueurs `#portfolio-une-1` à `#portfolio-une-6`. `npm run build` passe.
 - Les 18 premières images sont désormais choisies dans Strapi et ordonnées par les marqueurs `#portfolio-une-1` à `#portfolio-une-18` : 4 animaux, 2 images de chacun des sept autres thèmes retenus et aucune image de baptême. Toutes proviennent exclusivement des sous-dossiers du dossier Portfolio ; l’ordre alterne les thèmes.
 - L’album répartit désormais automatiquement les photos selon leur format afin d’équilibrer les trois colonnes sans recadrage et sans large zone vide. Les `srcset` sont ajustés au tiers de largeur ; `npm run build` passe.
+- Le premier lot de l’album contient désormais 20 images (26 avec la mosaïque d’ouverture) ; les deux nouvelles images sont placées dans les colonnes les plus courtes. Les lots suivants restent de 12 images.

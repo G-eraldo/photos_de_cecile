@@ -63,7 +63,7 @@ const presta = [
         </p>
       </div>
       <Button as-child class="text-lg w-full md:w-auto">
-        <NuxtLink to="/tirages-photo/commande">Développer vos photos</NuxtLink>
+        <NuxtLink to="/tirages-photo">Développer vos photos</NuxtLink>
       </Button>
     </CardFooter>
   </Card>

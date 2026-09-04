@@ -6,7 +6,7 @@ const isPaused = ref(false)
 
 const slides = [
   {
-    src: '/images/naissance.png',
+    src: '/images/photo-illustra.jpg',
     alt: 'Photographie Les photos de Cécile'
   },
   {
