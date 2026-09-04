@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { Resend } from "resend";
 
 import { sendCecilePaymentNotification } from "./cecile-notification-email.js";
+import { generateGiftVoucherPdf } from "./generate-gift-voucher-pdf.js";
 import { generateOrderInvoicePdf } from "./generate-order-invoice-pdf.js";
 
 const escapeHtml = (value) =>
@@ -30,6 +31,7 @@ export async function sendOrderConfirmation({ reference, details, total }) {
 
   const invoice = await generateOrderInvoicePdf({ reference, details, total });
   const isGift = details.type === "bon_cadeau";
+  const voucher = isGift ? await generateGiftVoucherPdf({ details }) : null;
   let customerEmailSent = true;
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -62,12 +64,12 @@ export async function sendOrderConfirmation({ reference, details, total }) {
                 <p style="margin:0 0 10px;"><strong style="color:#5A3419;">Quantité :</strong> ${escapeHtml(details.quantite)}</p>
                 <p style="margin:0;"><strong style="color:#5A3419;">Total payé :</strong> ${formatPrice(total)}</p>
               </div>
-              <p style="font-size:15px;line-height:1.7;">${isGift ? (details.options?.réception?.startsWith("Par courrier") ? "Votre bon cadeau va maintenant être préparé avec soin puis expédié à l’adresse indiquée." : "Votre bon cadeau vous sera envoyé par e-mail avec les informations nécessaires.") : "Votre tirage va maintenant être préparé avec soin, puis expédié à l’adresse indiquée lors de votre commande."}</p>
+              <p style="font-size:15px;line-height:1.7;">${isGift ? (details.options?.réception?.startsWith("Par courrier") ? "Votre bon cadeau personnalisé est joint à cet e-mail et va maintenant être préparé avec soin puis expédié à l’adresse indiquée." : "Votre bon cadeau personnalisé est joint à cet e-mail. Il est valable un an à compter d’aujourd’hui.") : "Votre tirage va maintenant être préparé avec soin, puis expédié à l’adresse indiquée lors de votre commande."}</p>
               <div style="margin:30px 0;padding:24px;background:#F8F4F1;border:1px solid #E4D8D2;border-radius:12px;">
                 <p style="margin:0 0 10px;font-family:Georgia,serif;font-size:20px;color:#5A3419;">Votre facture</p>
                 <p style="margin:0;font-size:14px;line-height:1.7;color:#676463;">Vous trouverez votre <strong style="color:#5A3419;">facture acquittée</strong> en pièce jointe de cet e-mail.</p>
               </div>
-              <p style="margin:25px 0 0;font-size:14px;line-height:1.7;color:#8F8C85;">📎 <strong>Pièce jointe :</strong><br>Facture de votre commande</p>
+              <p style="margin:25px 0 0;font-size:14px;line-height:1.7;color:#8F8C85;">📎 <strong>Pièces jointes :</strong><br>${isGift ? "Votre bon cadeau personnalisé et la facture acquittée" : "Facture de votre commande"}</p>
               <p style="margin:30px 0 0;font-size:15px;line-height:1.7;">À très bientôt,<br><strong style="color:#5A3419;">Cécile</strong><br>Les Photos de Cécile</p>
             </div>
           </div>
@@ -84,6 +86,11 @@ export async function sendOrderConfirmation({ reference, details, total }) {
           content: invoice,
           contentType: "application/pdf",
         },
+        ...(voucher ? [{
+          filename: `Bon_cadeau_${reference}.pdf`,
+          content: voucher,
+          contentType: "application/pdf",
+        }] : []),
       ],
     });
     if (error) throw new Error(`Resend a refusé la confirmation de commande : ${error.message}`);

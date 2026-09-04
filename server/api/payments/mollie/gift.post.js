@@ -3,7 +3,11 @@ import { randomUUID } from 'node:crypto'
 import { createMolliePayment, createStoredOrder, getMollieConfig, updateStoredOrder } from '../../../utils/mollie.js'
 import { enforceRateLimit, enforceTrustedOrigin } from '../../../utils/request-security.js'
 
-const prices = { 5: 110, 10: 185, 15: 230 }
+const giftOffers = {
+  animaux: { label: 'Animaux', prices: { 5: 110, 10: 185, 15: 230 } },
+  famille: { label: 'Famille, couple, grossesse, portrait ou boudoir', prices: { 10: 185, 15: 230 } },
+  naissance: { label: 'Naissance', prices: { 10: 250, 15: 295 } },
+}
 const isText = (value, maximum = 500) => typeof value === 'string' && value.trim() && value.trim().length <= maximum
 
 export default defineEventHandler(async (event) => {
@@ -14,16 +18,19 @@ export default defineEventHandler(async (event) => {
   const nom = details?.nom || ''
   const prenom = details?.prenom || ''
   const email = details?.email || ''
+  const beneficiaire = details?.beneficiaire || ''
+  const message = details?.message || ''
   const adresse = details?.adresse || ''
+  const prestation = details?.prestation
   const photos = Number(details?.photos)
   const delivery = details?.delivery
-  const birthPackage = details?.birthPackage === true
+  const offer = giftOffers[prestation]
 
-  if (![nom, prenom, email].every((field) => isText(field)) || !/^\S+@\S+\.\S+$/.test(email.trim())) {
-    throw createError({ statusCode: 400, statusMessage: 'Merci de renseigner votre nom, prénom et e-mail.' })
+  if (![nom, prenom, email, beneficiaire].every((field) => isText(field)) || !/^\S+@\S+\.\S+$/.test(email.trim())) {
+    throw createError({ statusCode: 400, statusMessage: 'Merci de renseigner vos coordonnées et le bénéficiaire.' })
   }
-  if (!Object.hasOwn(prices, photos)) {
-    throw createError({ statusCode: 400, statusMessage: 'Le nombre de photos choisi est invalide.' })
+  if (!offer || !Object.hasOwn(offer.prices, photos)) {
+    throw createError({ statusCode: 400, statusMessage: 'La prestation ou le forfait choisi est invalide.' })
   }
   if (!['email', 'courrier'].includes(delivery)) {
     throw createError({ statusCode: 400, statusMessage: 'Le mode de réception est invalide.' })
@@ -31,16 +38,18 @@ export default defineEventHandler(async (event) => {
   if (delivery === 'courrier' && !isText(adresse)) {
     throw createError({ statusCode: 400, statusMessage: 'L’adresse d’envoi du bon cadeau est requise.' })
   }
-  if (birthPackage && ![10, 15].includes(photos)) {
-    throw createError({ statusCode: 400, statusMessage: 'Le forfait naissance est disponible pour 10 ou 15 photos.' })
+  if (message && !isText(message, 250)) {
+    throw createError({ statusCode: 400, statusMessage: 'Le message ne peut pas dépasser 250 caractères.' })
   }
 
-  const total = prices[photos] + (delivery === 'courrier' ? 5 : 0) + (birthPackage ? 65 : 0)
+  const price = offer.prices[photos]
+  const total = price + (delivery === 'courrier' ? 5 : 0)
   const reference = `c${randomUUID().replace(/-/g, '')}`
   const orderDetails = {
     type: 'bon_cadeau', nom: nom.trim(), prenom: prenom.trim(), email: email.trim(), adresse: adresse.trim(),
-    produit: 'Bon cadeau', produitSlug: 'bon-cadeau', format: `${photos} photos`, quantite: 1, prixUnitaire: prices[photos],
-    options: { réception: delivery === 'courrier' ? 'Par courrier (+5 €)' : 'Par e-mail', ...(birthPackage ? { 'forfait naissance': 'Oui (+65 €)' } : {}) },
+    beneficiaire: beneficiaire.trim(), message: message.trim(), prestation: offer.label, produit: 'Bon cadeau', produitSlug: 'bon-cadeau',
+    format: `${photos} photos`, quantite: 1, prixUnitaire: price,
+    options: { prestation: offer.label, réception: delivery === 'courrier' ? 'Par courrier (+5 €)' : 'Par e-mail' },
   }
   const config = getMollieConfig()
   const order = await createStoredOrder(config, {
@@ -49,7 +58,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const payment = await createMolliePayment(config, {
-      amount: total.toFixed(2), reference, description: `Bon cadeau — ${photos} photos`, confirmationPath: '/offrir/confirmation', paymentType: 'commande',
+      amount: total.toFixed(2), reference, description: `Bon cadeau ${offer.label} - ${photos} photos`, confirmationPath: '/offrir/confirmation', paymentType: 'commande',
     })
     await updateStoredOrder(config, order.data.documentId, { mollie_payment_id: payment.id })
     return { checkoutUrl: payment._links.checkout.href }
