@@ -26,8 +26,9 @@ export const finalizePaidPayment = async ({ event, config, order, reservation, p
 
   // Les paiements déjà finalisés (ou historiques) ne doivent jamais renvoyer
   // d'e-mail ou créer un second événement Calendar.
-  if (record.statut === "paye" && (!finalisation || finalisation.statut === "terminee")) {
-    return { alreadyFinalized: true };
+  if (record.statut === "paye") {
+    if (!finalisation || finalisation.statut === "terminee") return { alreadyFinalized: true };
+    if (finalisation.statut === "en_cours") return { processing: true };
   }
   if (processingPaymentIds.has(paymentId)) return { processing: true };
 
