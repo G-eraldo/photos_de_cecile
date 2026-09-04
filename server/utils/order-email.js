@@ -29,6 +29,7 @@ export async function sendOrderConfirmation({ reference, details, total }) {
   }
 
   const invoice = await generateOrderInvoicePdf({ reference, details, total });
+  const isGift = details.type === "bon_cadeau";
   let customerEmailSent = true;
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
@@ -42,7 +43,7 @@ export async function sendOrderConfirmation({ reference, details, total }) {
     const { error } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: details.email,
-      subject: "Confirmation de votre commande — Les Photos de Cécile",
+      subject: isGift ? "Confirmation de votre bon cadeau — Les Photos de Cécile" : "Confirmation de votre commande — Les Photos de Cécile",
       html: `
         <div style="margin:0;padding:40px 20px;background:#E6DFDD;font-family:Arial,sans-serif;color:#676463;">
           <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;">
@@ -51,9 +52,9 @@ export async function sendOrderConfirmation({ reference, details, total }) {
               <div style="width:60px;height:1px;background:#D9D2CF;margin:0 auto;"></div>
             </div>
             <div style="padding:10px 35px 40px;">
-              <h1 style="font-family:Georgia,serif;font-size:25px;font-weight:normal;color:#5A3419;margin:0 0 25px;">Votre commande est confirmée</h1>
+              <h1 style="font-family:Georgia,serif;font-size:25px;font-weight:normal;color:#5A3419;margin:0 0 25px;">${isGift ? "Votre bon cadeau est confirmé" : "Votre commande est confirmée"}</h1>
               <p style="font-size:15px;line-height:1.7;">Bonjour ${escapeHtml(details.prenom)},</p>
-              <p style="font-size:15px;line-height:1.7;">Nous vous confirmons la bonne réception de votre commande de <strong style="color:#5A3419;">${escapeHtml(details.produit)}</strong>. Votre paiement a bien été validé.</p>
+              <p style="font-size:15px;line-height:1.7;">Nous vous confirmons la bonne réception de votre ${isGift ? "bon cadeau" : "commande"} de <strong style="color:#5A3419;">${escapeHtml(details.produit)}</strong>. Votre paiement a bien été validé.</p>
               <div style="margin:30px 0;padding:20px;background:#FAF8F7;border-radius:10px;">
                 <p style="margin:0 0 10px;"><strong style="color:#5A3419;">Référence :</strong> ${escapeHtml(reference)}</p>
                 <p style="margin:0 0 10px;"><strong style="color:#5A3419;">Format :</strong> ${escapeHtml(details.format)}</p>
@@ -61,7 +62,7 @@ export async function sendOrderConfirmation({ reference, details, total }) {
                 <p style="margin:0 0 10px;"><strong style="color:#5A3419;">Quantité :</strong> ${escapeHtml(details.quantite)}</p>
                 <p style="margin:0;"><strong style="color:#5A3419;">Total payé :</strong> ${formatPrice(total)}</p>
               </div>
-              <p style="font-size:15px;line-height:1.7;">Votre tirage va maintenant être préparé avec soin, puis expédié à l’adresse indiquée lors de votre commande.</p>
+              <p style="font-size:15px;line-height:1.7;">${isGift ? (details.options?.réception?.startsWith("Par courrier") ? "Votre bon cadeau va maintenant être préparé avec soin puis expédié à l’adresse indiquée." : "Votre bon cadeau vous sera envoyé par e-mail avec les informations nécessaires.") : "Votre tirage va maintenant être préparé avec soin, puis expédié à l’adresse indiquée lors de votre commande."}</p>
               <div style="margin:30px 0;padding:24px;background:#F8F4F1;border:1px solid #E4D8D2;border-radius:12px;">
                 <p style="margin:0 0 10px;font-family:Georgia,serif;font-size:20px;color:#5A3419;">Votre facture</p>
                 <p style="margin:0;font-size:14px;line-height:1.7;color:#676463;">Vous trouverez votre <strong style="color:#5A3419;">facture acquittée</strong> en pièce jointe de cet e-mail.</p>

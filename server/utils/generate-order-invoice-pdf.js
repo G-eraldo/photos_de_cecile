@@ -17,7 +17,7 @@ export async function generateOrderInvoicePdf({ reference, details, total }) {
     y -= gap;
   };
 
-  line("FACTURE — TIRAGE PHOTO", { font: bold, size: 22, color: brown, gap: 32 });
+  line(details.type === "bon_cadeau" ? "FACTURE — BON CADEAU" : "FACTURE — TIRAGE PHOTO", { font: bold, size: 22, color: brown, gap: 32 });
   line("Les Photos de Cécile", { font: bold, size: 12, color: brown, gap: 20 });
   line("DELLENBACH Cécile — Entrepreneur individuel", { gap: 15 });
   line("8 allée sablée, 80000 Amiens — SIRET : 93211664300010", { gap: 34 });
@@ -26,7 +26,7 @@ export async function generateOrderInvoicePdf({ reference, details, total }) {
   line("FACTURÉ À", { font: bold, size: 11, color: brown, gap: 20 });
   line(`${safe(details.prenom)} ${safe(details.nom)}`);
   line(safe(details.email));
-  safe(details.adresse).split(/\r?\n/).forEach((addressLine) => line(addressLine));
+  if (details.adresse) safe(details.adresse).split(/\r?\n/).forEach((addressLine) => line(addressLine));
   y -= 18;
   line("DÉTAIL DE LA COMMANDE", { font: bold, size: 11, color: brown, gap: 22 });
   line(`${safe(details.produit)} — ${safe(details.format)}`);

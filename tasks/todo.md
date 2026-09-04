@@ -2,10 +2,10 @@
 
 ## Bon cadeau
 
-- [ ] Remplacer la page `/offrir` par le configurateur de bon cadeau statique.
-- [ ] Créer le paiement Mollie sécurisé et enregistrer le bon cadeau dans Strapi.
-- [ ] Adapter les confirmations e-mail et le retour de paiement au bon cadeau.
-- [ ] Compiler Nuxt et Strapi, puis consigner la revue.
+- [x] Remplacer la page `/offrir` par le configurateur de bon cadeau statique.
+- [x] Créer le paiement Mollie sécurisé et enregistrer le bon cadeau dans Strapi.
+- [x] Adapter les confirmations e-mail et le retour de paiement au bon cadeau.
+- [x] Compiler Nuxt et Strapi, puis consigner la revue.
 
 ## Incident — portfolio indisponible
 
@@ -17,7 +17,8 @@
 
 - [x] Identifier la CSP comme origine du blocage des images Cloudflare.
 - [x] Autoriser les deux domaines Cloudflare du portfolio dans `img-src`.
-- [ ] Compiler le frontend et redéployer la correction.
+- [x] Compiler le frontend.
+- [ ] Redéployer le frontend.
 
 
 ## Conformité, notifications et référencement
@@ -144,6 +145,8 @@
 - [x] Vérifier la compilation Nuxt.
 
 ## Revue
+
+- Bon cadeau du 4 septembre 2026 : `/offrir` propose les choix 5/10/15 photos, la réception par e-mail ou courrier (+5 €) et le forfait naissance (+65 €, uniquement pour 10 ou 15 photos). Le montant est recalculé et validé côté serveur avant Mollie ; la commande est enregistrée dans la collection Strapi `commande`, sans produit Strapi. Après paiement confirmé, le webhook existant envoie les confirmations cliente et Cécile, adaptées au bon cadeau, sans tenter de traiter une photo privée. Une confirmation dédiée est disponible sur `/offrir/confirmation`. `npm run build` passe dans Nuxt et Strapi (l'avertissement de préférences Strapi du sandbox reste sans effet sur le build).
 
 - [x] Réservation payée : ne plus masquer une erreur de finalisation derrière « réservation introuvable », permettre une reprise sûre de Calendar et vérifier le build.
 - [x] Bloquer la création d’un paiement de réservation si le jeton Google ou le droit d’écriture Calendar n’est pas valide.

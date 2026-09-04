@@ -66,6 +66,7 @@ export async function sendCecilePaymentNotification({
         ["Adresse", details.adresse],
         ["Produit", details.produit],
         ["Format", details.format],
+        ["Options", Object.entries(details.options || {}).map(([name, value]) => `${name} : ${value}`).join(" · ")],
         ["Quantité", details.quantite],
         ["Montant payé", formatPrice(total)],
       ]
