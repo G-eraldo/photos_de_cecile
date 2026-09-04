@@ -46,7 +46,7 @@ onMounted(() => {
 
             </div>
 
-            <div v-if="reviewsEnabled" class="elfsight-app-0326db88-58c9-43ed-96ae-19c0ac181935" data-elfsight-app-lazy />
+            <div v-if="reviewsEnabled" class="elfsight-app-0326db88-58c9-43ed-96ae-19c0ac181935" />
             <p v-else-if="consent === 'rejected'" class="text-center text-sm leading-6 text-[#676463]">Les avis tiers ne sont pas affichés, conformément à votre choix.</p>
 
         </div>
