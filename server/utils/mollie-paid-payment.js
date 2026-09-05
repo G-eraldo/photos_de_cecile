@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { completeReservation } from "../api/calendar/reservations.post.js";
 import { sendCecilePaymentNotification } from "./cecile-notification-email.js";
 import { sendOrderConfirmation } from "./order-email.js";
+import { isFinalisationStale } from "./payment-finalisation.js";
 import { finalizePrivateUpload } from "./r2-private.js";
 import {
   findStoredOrder,
@@ -44,7 +45,9 @@ export const finalizePaidPayment = async ({ event, config, order, reservation, p
       return { notificationRetried: cecileEmailSent };
     }
     if (!finalisation || finalisation.statut === "terminee") return { alreadyFinalized: true };
-    if (finalisation.statut === "en_cours") return { processing: true };
+    if (finalisation.statut === "en_cours" && !isFinalisationStale(record.details)) {
+      return { processing: true };
+    }
   }
   if (processingPaymentIds.has(paymentId)) return { processing: true };
 

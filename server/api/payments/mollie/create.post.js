@@ -9,6 +9,7 @@ import {
   updateStoredReservation,
 } from "../../../utils/mollie.js";
 import { ensureGoogleCalendarWriterAccess } from "../../../utils/google-calendar.js";
+import { dateTimeInParis } from "../../../utils/paris-date-time.js";
 import { enforceRateLimit, enforceTrustedOrigin } from "../../../utils/request-security.js";
 
 const requiredFields = [
@@ -43,7 +44,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Date ou créneau invalide." });
   }
 
-  const start = new Date(`${details.date}T${details.heure}:00`);
+  const start = dateTimeInParis(details.date, details.heure);
   if (Number.isNaN(start.getTime()) || start <= new Date()) {
     throw createError({ statusCode: 400, statusMessage: "Ce créneau n’est plus disponible." });
   }

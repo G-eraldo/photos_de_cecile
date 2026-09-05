@@ -135,6 +135,12 @@
 - [x] Indiquer dans Google Calendar que l’acompte est payé.
 - [x] Vérifier la compilation Nuxt.
 
+## Correctif réservation — fuseau horaire Dokploy
+
+- [x] Interpréter les dates de réservation explicitement dans le fuseau Europe/Paris.
+- [x] Vérifier les heures d’été et d’hiver, puis compiler Nuxt.
+- [x] Reprendre automatiquement une finalisation payée restée bloquée en cours.
+
 ## Connexion Google Agenda de Cécile
 
 - [x] Ajouter un assistant interne protégé pour autoriser le compte Google de Cécile et récupérer un refresh token sans le persister.

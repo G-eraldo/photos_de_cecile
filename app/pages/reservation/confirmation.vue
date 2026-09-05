@@ -26,7 +26,7 @@ let stopConfirmationWatch
 
 onMounted(() => {
   refreshTimer = window.setInterval(() => {
-    if (data.value?.statut === 'en_attente' || data.value?.finalisation === 'erreur') refresh()
+    if (data.value?.statut === 'en_attente' || ['en_cours', 'erreur'].includes(data.value?.finalisation)) refresh()
   }, 10000)
 
   stopConfirmationWatch = watch(isConfirmed, (confirmed) => {

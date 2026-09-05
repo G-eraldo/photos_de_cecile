@@ -1,4 +1,5 @@
 import { finalizePaidPayment } from "../../../utils/mollie-paid-payment.js";
+import { isFinalisationStale } from "../../../utils/payment-finalisation.js";
 import {
   findStoredOrder,
   findStoredReservation,
@@ -24,6 +25,7 @@ export default defineEventHandler(async (event) => {
   if (
     paymentRecord.statut === "en_attente"
     || paymentRecord.details?.finalisation?.statut === "erreur"
+    || isFinalisationStale(paymentRecord.details)
     || paymentRecord.details?.notificationCecileEnvoyee === false
   ) {
     const payment = await getMolliePayment(config, paymentRecord.mollie_payment_id);

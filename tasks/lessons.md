@@ -23,6 +23,8 @@
 - A third-party widget can create consent obligations even when the application itself writes no cookie. Audit how and when every external script loads; if it is optional, gate it behind a durable accept/refuse choice instead of merely hiding it.
 - Never wait to persist a confirmed payment until after Calendar, PDF generation, or e-mail sending: a secondary integration can fail while Mollie has already collected the money. Persist the confirmed state first, retain a finalisation marker, and make the client status endpoint reconcile the payment server-side when a webhook is delayed.
 - A route file inside `src/api/*` is always registered as Strapi content API even when it declares `type: 'admin'`. Private administrative actions must instead be attached to `strapi.admin.routes` during `register`, with the `admin::isAuthenticatedAdmin` policy.
+
+- Never parse a client-selected local booking time with `new Date("YYYY-MM-DDTHH:mm:ss")` on the server. Containers commonly run in UTC; convert explicitly from the business timezone before comparing or writing Calendar events, and test both summer and winter offsets.
 - Lorsqu’une image distante très haute résolution est utilisée directement dans une page, fixer son ratio et ses dimensions intrinsèques, puis demander un décodage asynchrone : sinon son chargement provoque un décalage de mise en page et peut dégrader le défilement.
 - Ne pas utiliser `sticky` sur une image d’aperçu quand le parcours demandé est un défilement synchronisé avec le formulaire : les deux colonnes doivent rester dans le flux normal de la page.
 - Lorsque l’utilisateur demande que l’aperçu reproduise la fiche produit, reprendre sa structure et ses classes existantes à l’identique plutôt que d’ajouter une logique de sticky spécifique.

@@ -9,6 +9,7 @@ import {
   getGoogleAccessToken,
   isAvailabilityEvent,
 } from "../../utils/google-calendar.js";
+import { dateTimeInParis, formatParisTime } from "../../utils/paris-date-time.js";
 
 const hasOverlap = (start, end, otherStart, otherEnd) =>
   start < otherEnd && end > otherStart;
@@ -78,7 +79,7 @@ export const completeReservation = async (event, body) => {
     });
   }
 
-  const start = new Date(`${date}T${heure}:00`);
+  const start = dateTimeInParis(date, heure);
   const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
 
   if (Number.isNaN(start.getTime()) || start <= new Date()) {
@@ -144,15 +145,12 @@ export const completeReservation = async (event, body) => {
       }\nConditions acceptées : ${conditionsAccepted}\nUsage des photos : ${socialUsage}`,
 
       start: {
-        dateTime: `${date}T${heure}:00`,
+        dateTime: start.toISOString(),
         timeZone: "Europe/Paris",
       },
 
       end: {
-        dateTime: `${date}T${String(start.getHours() + 2).padStart(
-          2,
-          "0",
-        )}:${String(start.getMinutes()).padStart(2, "0")}:00`,
+        dateTime: end.toISOString(),
         timeZone: "Europe/Paris",
       },
     },
@@ -335,9 +333,7 @@ export const completeReservation = async (event, body) => {
                     Horaire :
                   </strong>
                   ${heure} —
-                  ${String(start.getHours() + 2).padStart(2, "0")}:${String(
-                    start.getMinutes(),
-                  ).padStart(2, "0")}
+                  ${formatParisTime(end)}
                 </p>
 
                 <p style="margin:0;">
