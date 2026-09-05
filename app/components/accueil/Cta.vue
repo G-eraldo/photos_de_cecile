@@ -3,7 +3,7 @@
 
     <div class="mx-auto max-w-295">
 
-      <h2 class="mb-6 font-playfair text-[clamp(2rem,3.8vw,2.7rem)] font-semibold text-[#5A3419]">
+      <h2 class="mb-6 font-playfair text-[clamp(2rem,3.8vw,2.7rem)] font-semibold text-[#F2F0EF]">
         Découvrez les formules
       </h2>
 

@@ -1,6 +1,7 @@
 <script setup>
 import TirageProductCard from '~/components/tirage/TirageProductCard.vue'
 import Card from '~/components/ui/card/Card.vue'
+import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
 
 definePageMeta({ layout: 'default' })
 
@@ -49,14 +50,16 @@ const products = computed(() => {
 </script>
 
 <template>
-  <div class="overflow-hidden text-[#503d30]">
-    <section class="px-6 pb-16 pt-36 md:pb-24 md:pt-44">
+  <main class="mt-20 overflow-hidden text-[#503d30] sm:mt-24">
+    <section class="pb-16 pt-10 sm:pt-16 md:pb-24">
+      <EditorialPageHeader eyebrow="La boutique — Les Photos de Cécile" title="Tirages photo"
+        description="Des souvenirs choisis avec soin, à toucher, à offrir et à transmettre." />
       <div class="mx-auto grid max-w-6xl items-center gap-10 md:grid-cols-2 md:gap-20">
         <div class="order-2 md:order-1">
-          <p class="mb-4 text-xs uppercase tracking-[0.24em] text-[#907762]">Les souvenirs prennent vie</p>
-          <h1 class="max-w-lg font-playfair text-4xl leading-[1.08] text-[#503d30] md:text-6xl">
+          <p class="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-[#9e8b8b]">Les souvenirs prennent vie</p>
+          <h2 class="max-w-lg font-playfair text-4xl leading-[1.08] text-[#613213] md:text-5xl">
             Vos photos méritent mieux qu’un écran.
-          </h1>
+          </h2>
           <p class="mt-7 max-w-md leading-7 text-[#6d5b4e]">
             Découvrez une sélection de tirages imaginés pour donner une place particulière à vos instants précieux : des
             papiers choisis, une finition délicate et un rendu intemporel.
@@ -109,5 +112,5 @@ const products = computed(() => {
         </div>
       </Card>
     </section>
-  </div>
+  </main>
 </template>

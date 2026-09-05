@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Mail } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
+import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
 
 definePageMeta({ layout: 'default' })
 
@@ -182,7 +183,9 @@ async function submitOrder() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#E6DFDD] px-6 pb-20 pt-32 text-[#503d30] md:pt-40">
+  <main class="mt-20 min-h-screen bg-[#E6DFDD] pb-20 pt-10 text-[#503d30] sm:mt-24 sm:pt-16">
+    <EditorialPageHeader v-if="product" eyebrow="La boutique — Les Photos de Cécile" :title="product.titre"
+      :description="product.accroche" />
     <div v-if="pending" class="mx-auto grid max-w-6xl gap-12 md:grid-cols-2">
       <Skeleton class="aspect-4/5 rounded-none" />
       <div class="space-y-5">
@@ -195,7 +198,7 @@ async function submitOrder() {
     <Alert v-else-if="error && !product" variant="destructive" class="mx-auto max-w-2xl">
       <AlertDescription>Ce tirage est momentanément indisponible.</AlertDescription>
     </Alert>
-    <div v-else-if="product" class="mx-auto max-w-6xl">
+    <div v-else-if="product" class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
       <NuxtLink to="/tirages-photo" class="mb-8 inline-flex text-sm text-[#806957] transition hover:text-[#503d30]">←
         Retour aux tirages</NuxtLink>
       <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.7fr)] lg:gap-18">
@@ -214,12 +217,10 @@ async function submitOrder() {
           </div>
         </div>
 
-        <div class="max-w-xl p-7!">
-          <p class="text-xs uppercase tracking-[0.24em] text-[#907762]">La boutique</p>
-          <h1 class="mt-3 font-playfair text-4xl leading-tight md:text-5xl">{{ product.titre }}</h1>
-          <p class="mt-4 font-playfair text-xl">À partir de {{ product.prix }} €</p>
+        <div class="max-w-xl p-7! lg:pt-4!">
+          <p class="font-playfair text-2xl text-[#613213] md:text-3xl">À partir de {{ product.prix }} €</p>
           <p class="mt-1 text-xs text-[#806957]">Frais d’expédition calculés à l’étape de paiement.</p>
-          <p class="mt-8 leading-7 text-[#6d5b4e]">{{ product.accroche }}</p>
+          <p class="mt-8 leading-7 text-[#6d5b4e]">{{ product.description || product.accroche }}</p>
 
           <div v-if="product.caracteristiques?.length" class="mt-8 border-y border-[#d8cec1] py-7">
             <h2 class="font-playfair text-xl">Caractéristiques</h2>
@@ -287,5 +288,5 @@ async function submitOrder() {
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>

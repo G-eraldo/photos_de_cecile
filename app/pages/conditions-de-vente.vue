@@ -1,4 +1,6 @@
 <script setup>
+import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
+
 definePageMeta({ layout: 'default' })
 
 useSeoMeta({
@@ -9,6 +11,8 @@ useSeoMeta({
 
 <template>
   <main class="min-h-screen bg-[#E6DFDD] px-4 py-24 font-poppins sm:px-6 lg:px-8">
+    <EditorialPageHeader title="Conditions de vente"
+      description="Les conditions qui encadrent votre séance photo, avec clarté et simplicité." />
 
     <div class="mx-auto max-w-4xl">
 
@@ -21,11 +25,11 @@ useSeoMeta({
           Les photos de Cécile
         </p>
 
-        <h1
-          class="font-playfair text-4xl font-semibold text-[#5A3419] md:text-5xl"
+        <h2
+          class="font-playfair text-2xl font-semibold text-[#613213] md:text-3xl"
         >
-          Conditions de vente
-        </h1>
+          Contrat de prestation photographique
+        </h2>
 
         <div class="mx-auto mt-6 h-px w-16 bg-[#D9D2CF]" />
 

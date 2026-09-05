@@ -55,9 +55,9 @@ const validateAndSubmit = async (e) => {
 </script>
 
 <template>
-  <Card class="max-w-2xl mx-auto p-4 md:p-6 mt-32">
-    <CardTitle class="text-xl md:text-2xl font-bold mb-4 text-[#613213] font-playfair">
-      Contactez-moi
+  <Card class="mx-auto max-w-2xl p-4 md:p-6">
+    <CardTitle class="mb-4 font-playfair text-2xl font-bold text-[#613213] md:text-3xl">
+      Parlons de votre projet
     </CardTitle>
     <CardDescription class="mb-4 md:mb-6 text-[#9e8b8b]">
       Pour toute demande, n'hésitez pas à m'écrire. Je serai ravie de vous

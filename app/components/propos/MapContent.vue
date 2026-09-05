@@ -5,7 +5,7 @@ import Maps from './Maps.vue';
 </script>
 
 <template>
-  <Card class="max-w-5xl mx-auto p-4 md:p-8 mt-12 shadow-lg bg-white/90 backdrop-blur-sm">
+  <Card class="mx-auto mt-10 max-w-5xl bg-white/90 p-4 shadow-lg backdrop-blur-sm md:p-8">
     <CardTitle class="text-2xl md:text-3xl font-bold mb-6 font-playfair md:mb-8 text-[#613213] text-center">
       Envie d'immortaliser vos moments ?
     </CardTitle>

@@ -7,8 +7,13 @@ useSeoMeta({
 })
 
 import ReservationForm from '~/components/ReservationForm.vue'
+import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
 </script>
 
 <template>
-  <ReservationForm />
+  <main class="mt-20 pb-20 pt-10 sm:mt-24 sm:pt-16">
+    <EditorialPageHeader title="Réservation"
+      description="Choisissez votre séance et le moment qui vous convient pour créer vos souvenirs." />
+    <ReservationForm />
+  </main>
 </template>

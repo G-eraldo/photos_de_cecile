@@ -247,10 +247,10 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
 </script>
 
 <template>
-  <Card class="max-w-2xl mx-auto p-4 md:p-6 mt-32">
+  <Card class="mx-auto max-w-2xl p-4 md:p-6">
     <div class="flex items-center gap-3 mb-4">
       <CalendarDays class="h-6 w-6 text-[#613213]" />
-      <CardTitle class="text-xl md:text-2xl font-bold text-[#613213] font-playfair">Réserver une séance</CardTitle>
+      <CardTitle class="font-playfair text-2xl font-bold text-[#613213] md:text-3xl">Préparons votre séance</CardTitle>
     </div>
     <CardDescription class="mb-6 text-[#9e8b8b]">
       Les créneaux affichés sont ceux définis par Cécile dans son agenda. Chaque rendez-vous dure une heure et sera
@@ -367,8 +367,8 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
       <div class="space-y-4 rounded-lg border border-[#E6DFDD] bg-[#FAF8F7] p-4">
 
         <div class="flex items-start gap-3">
-          <Checkbox id="conditions-accepted" v-model="conditionsAccepted" required />
-          <Label for="conditions-accepted" class="text-sm leading-6 text-[#676463]">
+          <Checkbox id="conditions-accepted" v-model="conditionsAccepted" required class="mt-1 shrink-0" />
+          <label for="conditions-accepted" class="block min-w-0 flex-1 text-sm leading-6 text-[#676463]">
             J’ai lu et j’accepte les
             <NuxtLink to="/conditions-de-vente" target="_blank"
               class="font-medium text-[#613213] underline underline-offset-2 transition-colors hover:text-[#C9A227]">
@@ -376,7 +376,7 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
             </NuxtLink>
             de la prestation.
             <span class="text-red-500">*</span>
-          </Label>
+          </label>
         </div>
 
 

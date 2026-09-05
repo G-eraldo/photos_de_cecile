@@ -3,6 +3,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ExternalLink, Images } from 'lucide-vue-next';
+import EditorialPageHeader from '~/components/EditorialPageHeader.vue';
 
 definePageMeta({ layout: 'default' });
 
@@ -63,18 +64,8 @@ const featuredLayouts = [
 
 <template>
   <main class="mt-20 overflow-hidden pb-20 pt-10 sm:mt-24 sm:pt-16">
-    <header class="mx-auto mb-12 max-w-7xl px-5 sm:mb-16 sm:px-8 lg:px-12">
-      <div class="grid gap-7 border-y border-[#d9cac2] py-8 sm:grid-cols-[1fr_auto] sm:items-end sm:py-11">
-        <div class="max-w-2xl">
-          <p class="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-[#9e8b8b]">Les Photos de Cécile — depuis
-            Amiens</p>
-          <h1 class="font-playfair text-5xl leading-none text-[#613213] sm:text-7xl lg:text-8xl">Portfolio</h1>
-        </div>
-        <p class="max-w-sm text-base leading-7 text-[#786b68] sm:text-right">
-          Des histoires, des regards et des éclats de vie — un album libre, au fil des émotions.
-        </p>
-      </div>
-    </header>
+    <EditorialPageHeader title="Portfolio"
+      description="Des histoires, des regards et des éclats de vie — un album libre, au fil des émotions." />
 
     <div v-if="pending" class="columns-2 gap-4 sm:columns-3 lg:columns-4">
       <Skeleton v-for="item in 12" :key="item"

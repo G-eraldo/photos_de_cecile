@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Mail } from 'lucide-vue-next'
+import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
 import { toast } from 'vue-sonner'
 
 definePageMeta({ layout: 'default' })
@@ -88,7 +89,9 @@ async function submitGiftCard() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#E6DFDD] px-6 pb-20 pt-32 text-[#503d30] md:pt-40">
+  <main class="mt-20 min-h-screen bg-[#E6DFDD] px-6 pb-20 pt-10 text-[#503d30] sm:mt-24 sm:pt-16">
+    <EditorialPageHeader eyebrow="La boutique — Les Photos de Cécile" title="Bon cadeau"
+      description="Offrez une séance photo et laissez place à des souvenirs qui comptent vraiment." />
     <div class="mx-auto max-w-6xl">
       <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.7fr)] lg:gap-18">
         <div class="lg:sticky lg:top-28 lg:self-start">
@@ -103,10 +106,8 @@ async function submitGiftCard() {
         </div>
 
         <div class="max-w-xl p-7!">
-          <p class="text-xs uppercase tracking-[0.24em] text-[#907762]">La boutique</p>
-          <h1 class="mt-3 font-playfair text-4xl leading-tight md:text-5xl">Bon cadeau</h1>
-          <p class="mt-4 font-playfair text-xl">À offrir, valable un an</p>
-          <p class="mt-8 leading-7 text-[#6d5b4e]">Choisissez une prestation, le forfait photo et ajoutez votre message.
+          <p class="font-playfair text-2xl text-[#613213] md:text-3xl">À offrir, valable un an</p>
+          <p class="mt-5 leading-7 text-[#6d5b4e]">Choisissez une prestation, le forfait photo et ajoutez votre message.
             Le bon cadeau sera complété puis envoyé par e-mail après le paiement.</p>
 
           <div class="mt-8 border-y border-[#d8cec1] py-7">
@@ -177,5 +178,5 @@ async function submitGiftCard() {
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>

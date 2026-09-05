@@ -1,4 +1,6 @@
 <script setup>
+import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
+
 definePageMeta({ layout: 'default' })
 
 useSeoMeta({
@@ -9,11 +11,14 @@ useSeoMeta({
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#E6DFDD] px-4 py-28 font-poppins sm:px-6 lg:px-8">
+  <main class="mt-20 min-h-screen bg-[#E6DFDD] pb-20 pt-10 font-poppins sm:mt-24 sm:pt-16">
+    <EditorialPageHeader title="Confidentialité"
+      description="Comment vos données sont utilisées et protégées lorsque vous naviguez sur le site." />
+    <div class="px-4 sm:px-6 lg:px-8">
     <article class="mx-auto max-w-4xl rounded-2xl bg-white px-6 py-10 shadow-sm sm:px-10 md:px-14 md:py-14">
       <header class="border-b border-[#D9D2CF] pb-8 text-center">
-        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-[#5A3419]">Les Photos de Cécile</p>
-        <h1 class="mt-3 font-playfair text-4xl text-[#5A3419] md:text-5xl">Politique de confidentialité</h1>
+        <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[#9e8b8b]">Les Photos de Cécile</p>
+        <h2 class="mt-3 font-playfair text-2xl text-[#613213] md:text-3xl">Politique de confidentialité</h2>
         <p class="mt-5 text-sm leading-7 text-[#676463]">Dernière mise à jour : 4 septembre 2026</p>
       </header>
 
@@ -73,5 +78,6 @@ useSeoMeta({
         </section>
       </div>
     </article>
+    </div>
   </main>
 </template>

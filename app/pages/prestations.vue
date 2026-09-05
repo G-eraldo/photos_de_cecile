@@ -7,10 +7,13 @@ useSeoMeta({
 })
 
 import Prestation from '~/components/Prestation/Prestation.vue';
+import EditorialPageHeader from '~/components/EditorialPageHeader.vue';
 </script>
 
 <template>
-  <div>
+  <main class="mt-20 pb-20 pt-10 sm:mt-24 sm:pt-16">
+    <EditorialPageHeader title="Prestations"
+      description="Des séances pensées pour raconter vos liens, vos instants et les grandes étapes de votre vie." />
     <Prestation />
-  </div>
+  </main>
 </template>

@@ -1,5 +1,23 @@
 # Tirages photo
 
+## Cohérence éditoriale du site
+
+- [x] Auditer les titres et en-têtes des pages par rapport à Portfolio.
+- [x] Créer une présentation éditoriale réutilisable (sur-titre, titre, texte et séparateurs).
+- [x] Appliquer cette présentation aux pages publiques, sans modifier leur contenu métier.
+- [x] Vérifier le rendu responsive et compiler Nuxt.
+
+## Fiche tirage — en-tête éditorial
+
+- [x] Adapter la fiche dynamique `/tirages-photo/[slug]` au bandeau de la boutique.
+- [x] Vérifier la compilation Nuxt.
+
+## Correctifs accueil et réservation mobile
+
+- [x] Renforcer le contraste du titre « Découvrez les formules ».
+- [x] Corriger le retour à la ligne de l’acceptation des conditions sur mobile.
+- [x] Vérifier la compilation Nuxt.
+
 ## Bon cadeau
 
 - [x] Remplacer la page `/offrir` par le configurateur de bon cadeau statique.
@@ -199,6 +217,12 @@
 - [x] Vérifier la compilation Nuxt.
 
 ## Revue
+
+- Correctifs accueil et réservation mobile du 5 septembre 2026 : le titre « Découvrez les formules » est clair sur le fond sombre. Sur le formulaire mobile, la case d’acceptation ne rétrécit plus et son libellé s’écoule naturellement à côté, sans espacement artificiel entre chaque fragment. `npm run build` et `git diff --check` passent.
+
+- Fiche tirage du 5 septembre 2026 : toutes les URLs produit `/tirages-photo/[slug]` utilisent maintenant le bandeau éditorial dynamique de la boutique. Le titre et l’accroche sont issus du produit, tandis que la photo, le prix, les caractéristiques et le configurateur restent dans leur disposition existante. `npm run build` et `git diff --check` passent.
+
+- Cohérence éditoriale du 5 septembre 2026 : le bandeau de Portfolio est maintenant un composant partagé, avec le même sur-titre Poppins, titre Playfair, palette et doubles séparateurs. Il structure Portfolio, Prestations, À propos, Contact, Réservation, Bon cadeau, Tirages et les pages d’information ; les formulaires reprennent une hiérarchie interne plus sobre. `npm run build` passe.
 
 - Envoi par courrier du 4 septembre 2026 : un bon cadeau choisi par courrier ne génère ni ne joint de PDF au message cliente ; seule la facture acquittée reste jointe. La page et l’e-mail indiquent que Cécile prépare puis expédie le bon à l’adresse fournie. `npm run build` passe dans Nuxt.
 
