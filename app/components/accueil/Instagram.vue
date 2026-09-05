@@ -27,12 +27,12 @@ const photos = [
     <a :href="instagramUrl" target="_blank" rel="noopener noreferrer"
       class="group mx-auto grid max-w-6xl gap-10 bg-white px-7 py-10 shadow-sm transition-shadow duration-300 hover:shadow-lg sm:grid-cols-[minmax(13rem,0.8fr)_1.5fr] sm:items-center sm:gap-12 sm:px-12 sm:py-14 lg:px-16">
       <div class="text-center sm:text-left">
-        <p class="font-playfair text-[clamp(2rem,4vw,3.1rem)] leading-tight text-[#5A3419]">
+        <p class="font-playfair text-[clamp(2rem,4vw,3.1rem)] leading-tight text-[#5A3419] ">
           Suivez-moi sur
-          <span class="block italic">Instagram</span>
+          <span class="block italic"><span class="inline-block border-b border-[#9e8b8b]">Instagram</span></span>
         </p>
         <span
-          class="mt-6 inline-flex items-center gap-2 border-b border-[#9e8b8b] pb-1 text-sm tracking-wide text-[#786b68] transition-colors duration-300 group-hover:text-[#5A3419]">
+          class="mt-6 inline-flex items-center gap-2  pb-1 text-sm tracking-wide text-[#786b68] transition-colors duration-300 group-hover:text-[#5A3419]">
           <InstagramIcon class="size-4" aria-hidden="true" />
           @lesphotosdececile80
         </span>
