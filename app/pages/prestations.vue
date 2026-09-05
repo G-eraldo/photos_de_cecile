@@ -12,11 +12,13 @@ useSeoMeta({
 </script>
 
 <template>
-  <main class="mt-20 pb-20 pt-10 sm:mt-24 sm:pt-16">
-    <EditorialPageHeader title="Prestations"
-      description="Des séances pensées pour raconter vos liens, vos instants et les plus beaux moment de votre vie." />
+  <main class="pb-20">
     <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/8_f4c7c5c00c.png"
       alt="Un couple attendant un enfant dans un champ au coucher du soleil" position="center 45%" />
-    <Prestation />
+    <div class="pt-10 sm:pt-16">
+      <EditorialPageHeader title="Prestations"
+        description="Des séances pensées pour raconter vos liens, vos instants et les plus beaux moment de votre vie." />
+      <Prestation />
+    </div>
   </main>
 </template>

@@ -1,4 +1,6 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 
 const COLORS = {
   brown: rgb(0.35, 0.2, 0.1),
@@ -100,6 +102,9 @@ export async function generateContractPdf({
   const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const italicFont = await pdfDoc.embedFont(StandardFonts.HelveticaOblique);
+  const logo = await pdfDoc.embedPng(
+    await readFile(resolve(process.cwd(), "public/images/logo-document.png")),
+  );
 
   const pageWidth = 595.28;
   const pageHeight = 841.89;
@@ -235,6 +240,9 @@ export async function generateContractPdf({
   // -------------------------------------------------------
   // EN-TÊTE
   // -------------------------------------------------------
+
+  page.drawImage(logo, { x: marginLeft, y: 696, width: 185, height: 98 });
+  y = 665;
 
   page.drawText("CONTRAT PHOTO", {
     x: marginLeft,

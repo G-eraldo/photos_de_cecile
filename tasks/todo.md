@@ -2,12 +2,14 @@
 
 ## Remplacement du logo — Les Photos de Cécile
 
-- [ ] Auditer les usages du logo sur le site, les e-mails, les PDF et Strapi.
-- [ ] Préparer des déclinaisons nettes du logo fourni (site, e-mail, favicon et administration).
-- [ ] Remplacer le logo sur le site et son favicon.
-- [ ] Ajouter le logo aux factures et aux contrats PDF, puis mettre à jour les e-mails envoyés.
-- [ ] Remplacer le logo et le favicon de l’administration Strapi.
-- [ ] Vérifier les builds, les PDF générés et consigner la revue.
+- [x] Auditer les usages du logo sur le site, les e-mails, les PDF et Strapi.
+- [x] Préparer des déclinaisons nettes du logo fourni (site, e-mail, favicon et administration).
+- [x] Remplacer le logo sur le site et son favicon.
+- [x] Ajouter le logo aux factures et aux contrats PDF, puis mettre à jour les e-mails envoyés.
+- [x] Remplacer le logo et le favicon de l’administration Strapi.
+- [x] Vérifier les builds, les PDF générés et consigner la revue.
+
+- Revue du 5 septembre 2026 : le mot-symbole fourni est utilisé dans le pied de page et les e-mails de confirmation. La navigation conserve un titre typographique blanc sur les photos, puis brun sur son fond blanc au défilement. Un pictogramme cadré est utilisé pour les favicons du site et de Strapi. Les factures et contrats générés incluent désormais le logo en en-tête ; leurs rendus PDF ont été contrôlés. `npm run build` passe pour Nuxt et Strapi, et `git diff --check` ne remonte aucune erreur.
 
 ## Correctif panier et aperçu des photos privées
 
@@ -270,9 +272,23 @@
 - [x] Optimiser les photos sélectionnées pour leur affichage grand format.
 - [x] Vérifier la compilation Nuxt et consigner la revue.
 
+## Bandeaux photos Portfolio, boutique et bon cadeau
+
+- [x] Ajouter les trois images fournies en ouverture des pages Portfolio, Tirages photo et Bon cadeau.
+- [x] Préserver les mises en page, chargements et formulaires existants.
+- [x] Vérifier la compilation Nuxt et consigner la revue.
+
+## Accueil — photo d’ouverture unique
+
+- [ ] Retirer le carrousel et ses interactions inutiles.
+- [ ] Afficher la photo fournie dans le hero existant.
+- [ ] Vérifier la compilation Nuxt et consigner la revue.
+
 ## Revue
 
-- Bandeaux photos des pages éditoriales du 5 septembre 2026 : À propos, Prestations et Contact reçoivent chacun un visuel large sous leur bandeau de titre, avec des cadrages adaptés au sujet. Les trois images source sont converties en JPEG de 1 800 px et pèsent ensemble moins de 1 Mo. `npm run build` et `git diff --check` passent.
+- Bandeaux Portfolio, boutique et bon cadeau du 5 septembre 2026 : les trois pages reçoivent à leur tour une image d’ouverture pleine largeur sous la navigation, puis leur titre et contenu existants. Les visuels sont ramenés à 1 800 px et restent sous 1 Mo au total. `npm run build` et `git diff --check` passent.
+
+- Bandeaux photos des pages éditoriales du 5 septembre 2026 : À propos, Prestations et Contact reçoivent chacun un visuel à pleine largeur dès l’ouverture de la page, sous la navigation fixe, avec des cadrages adaptés au sujet. Les titres et contenus suivent le bandeau. `npm run build` et `git diff --check` passent.
 
 - Accueil — relais Instagram du 5 septembre 2026 : un encart blanc, responsive et entièrement cliquable est placé avant les avis. Il présente `@lesphotosdececile80` et les trois photos fournies ; celles-ci sont réduites à 900 px de large et représentent au total moins de 500 Ko. `npm run build` et `git diff --check` passent.
 

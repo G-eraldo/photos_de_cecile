@@ -1,5 +1,6 @@
 <script setup>
 import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
+import EditorialPhotoBanner from '~/components/EditorialPhotoBanner.vue'
 import TirageProductCard from '~/components/tirage/TirageProductCard.vue'
 import Card from '~/components/ui/card/Card.vue'
 
@@ -50,7 +51,9 @@ const products = computed(() => {
 </script>
 
 <template>
-  <main class="mt-20 overflow-hidden text-[#503d30] sm:mt-24">
+  <main class="overflow-hidden text-[#503d30]">
+    <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/4_da7bfa672c.png"
+      alt="La patte d’un chien reposant dans des mains" position="center 50%" />
     <section class="pb-16 pt-10 sm:pt-16 md:pb-24">
       <EditorialPageHeader eyebrow="La boutique" title="Tirages photo"
         description="Imprimé en France dans mon atelier, sur du papier Français de qualité premium." />

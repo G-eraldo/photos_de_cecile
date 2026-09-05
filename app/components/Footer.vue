@@ -13,10 +13,10 @@ const links = [
 <template>
   <footer class="font-poppins py-8 sm:py-16 md:py-8">
     <div class="mx-auto max-w-5xl px-4 sm:px-6">
-      <div class="flex items-center justify-center gap-2">
-        <NuxtImg src="/images/logo.svg" alt="Cécile Logo" width="32" height="32" />
-        <NuxtLink to="/" aria-label="go home" class="text-[#382b27]">
-          Les Photos de Cécile
+      <div class="flex justify-center">
+        <NuxtLink to="/" aria-label="Accueil">
+          <NuxtImg src="/images/logo.png" alt="Les Photos de Cécile" width="220" height="118"
+            class="h-20 w-auto object-contain" />
         </NuxtLink>
       </div>
 

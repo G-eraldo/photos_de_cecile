@@ -1,4 +1,10 @@
 <script setup>
+import Accueil from '~/components/accueil/Accueil.vue';
+import Avis from '~/components/accueil/Avis.vue';
+import Cta from '~/components/accueil/Cta.vue';
+import Instagram from '~/components/accueil/Instagram.vue';
+import Prestation from '~/components/accueil/Prestation.vue';
+
 definePageMeta({ layout: 'default' })
 
 useSeoMeta({
@@ -7,12 +13,6 @@ useSeoMeta({
   ogTitle: 'Les Photos de Cécile | Photographe à Amiens',
   ogDescription: 'Des moments de vie photographiés avec naturel et sensibilité à Amiens et ses alentours.',
 })
-
-import Accueil from '~/components/accueil/Accueil.vue';
-import Avis from '~/components/accueil/Avis.vue';
-import Cta from '~/components/accueil/Cta.vue';
-import Prestation from '~/components/accueil/Prestation.vue';
-import Instagram from '~/components/accueil/Instagram.vue';
 </script>
 
 <template>

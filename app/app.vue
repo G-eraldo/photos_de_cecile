@@ -17,6 +17,10 @@ useSeoMeta({
 
 useHead({
   htmlAttrs: { lang: 'fr' },
+  link: [
+    { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+    { rel: 'shortcut icon', href: '/favicon.ico' },
+  ],
   meta: [
     { name: 'geo.region', content: 'FR-80' },
     { name: 'geo.placename', content: 'Amiens' },

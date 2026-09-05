@@ -12,11 +12,13 @@ useSeoMeta({
 </script>
 
 <template>
-  <main class="mt-20 pb-20 pt-10 sm:mt-24 sm:pt-16">
-    <EditorialPageHeader title="Contact"
-      description="Une envie, une date ou une question ? Échangeons pour imaginer votre séance." />
+  <main class="pb-20">
     <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/3_4fa71f2d6a.png"
       alt="Une femme avec son chien et son lapin en extérieur" position="center 48%" />
-    <FormContent />
+    <div class="pt-10 sm:pt-16">
+      <EditorialPageHeader title="Contact"
+        description="Une envie, une date ou une question ? Échangeons pour imaginer votre séance." />
+      <FormContent />
+    </div>
   </main>
 </template>

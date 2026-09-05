@@ -1,4 +1,6 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 
 const safe = (value) => String(value || "").trim() || "Non renseigné";
 const euros = (value) => `${Number(value).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
@@ -8,9 +10,14 @@ export async function generateOrderInvoicePdf({ reference, details, total }) {
   const page = pdf.addPage([595.28, 841.89]);
   const regular = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  const logo = await pdf.embedPng(
+    await readFile(resolve(process.cwd(), "public/images/logo-document.png")),
+  );
   const brown = rgb(0.35, 0.2, 0.1);
   const text = rgb(0.25, 0.24, 0.23);
-  let y = 780;
+  let y = 675;
+
+  page.drawImage(logo, { x: 55, y: 700, width: 185, height: 98 });
 
   const line = (content, { font = regular, size = 10, color = text, gap = 18 } = {}) => {
     page.drawText(content, { x: 55, y, size, font, color });
