@@ -35,6 +35,8 @@
 - Pour une navbar posée sur une photo, préférer le titre typographique blanc lorsque le logo complet alourdit la navigation ; conserver sa variante brune au défilement.
 - Pour une animation d’apparition jugée trop discrète, renforcer d’abord l’amplitude et la durée avec une courbe douce, plutôt que d’ajouter des effets visuels qui nuiraient à la lecture.
 - Lorsqu’une image est demandée « comme sur l’accueil », la placer en ouverture de page et à pleine largeur, plutôt que comme un visuel intermédiaire sous le titre.
+- Lorsqu’une image unique est retenue pour le hero, supprimer aussi le code du carrousel et ses contrôles : conserver une interaction inactive alourdit inutilement le chargement et la maintenance.
+- Lorsqu’un ensemble de pages adopte le même bandeau photo, réutiliser exactement la même hauteur afin de préserver un rythme visuel cohérent.
 - Pour ajuster une navigation à partir d’une référence visuelle, préférer une augmentation mesurée de la largeur existante ; ne pas élargir la barre jusqu’aux marges de la fenêtre lorsque seul un pictogramme a été ajouté.
 - Lorsqu’un correctif concerne l’administration Strapi déployée, ne pas le présenter comme visible en production avant le redéploiement du backend : les fichiers locaux non déployés ne modifient pas `back-cecile`.
 - Dans une expression Vue contenant une apostrophe française, utiliser des guillemets doubles ou échapper l’apostrophe afin de ne pas interrompre la chaîne JavaScript.

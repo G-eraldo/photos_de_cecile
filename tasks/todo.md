@@ -280,11 +280,13 @@
 
 ## Accueil — photo d’ouverture unique
 
-- [ ] Retirer le carrousel et ses interactions inutiles.
-- [ ] Afficher la photo fournie dans le hero existant.
-- [ ] Vérifier la compilation Nuxt et consigner la revue.
+- [x] Retirer le carrousel et ses interactions inutiles.
+- [x] Afficher la photo fournie dans le hero existant.
+- [x] Vérifier la compilation Nuxt et consigner la revue.
 
 ## Revue
+
+- Accueil — photo d’ouverture unique du 5 septembre 2026 : le carrousel, l’autoplay, le geste tactile et les indicateurs sont supprimés. Le hero utilise désormais uniquement l’image fournie, en conservant le voile et la citation ; sa hauteur est alignée sur les autres bandeaux de page. `npm run build` et `git diff --check` passent.
 
 - Bandeaux Portfolio, boutique et bon cadeau du 5 septembre 2026 : les trois pages reçoivent à leur tour une image d’ouverture pleine largeur sous la navigation, puis leur titre et contenu existants. Les visuels sont ramenés à 1 800 px et restent sous 1 Mo au total. `npm run build` et `git diff --check` passent.
 

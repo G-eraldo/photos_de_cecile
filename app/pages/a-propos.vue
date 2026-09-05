@@ -14,7 +14,7 @@ useSeoMeta({
 
 <template>
   <main class="pb-20">
-    <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/2_e7ca9ea164.png"
+    <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/1_e1d5cd0f04.png"
       alt="Une femme et son cheval au coucher du soleil" position="center 52%" />
     <div class="pt-10 sm:pt-16">
       <EditorialPageHeader title="À propos"

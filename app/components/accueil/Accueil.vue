@@ -1,131 +1,19 @@
-<script setup>
-import { onMounted, onUnmounted, ref } from 'vue'
-
-const currentSlide = ref(0)
-const isPaused = ref(false)
-
-const slides = [
-  {
-    src: 'https://media-photodececile.lafabriqueducode.fr/7_74ede68670.png',
-    alt: 'Photographie Les photos de Cécile'
-  },
-  {
-    src: 'https://media-photodececile.lafabriqueducode.fr/9_211d3a83ac.png',
-    alt: 'Photographie Les photos de Cécile'
-  },
-  {
-    src: 'https://media-photodececile.lafabriqueducode.fr/1_e1d5cd0f04.png',
-    alt: 'Photographie Les photos de Cécile'
-  }
-]
-
-let autoplay = null
-
-const nextSlide = () => {
-  currentSlide.value =
-    (currentSlide.value + 1) % slides.length
-}
-
-const previousSlide = () => {
-  currentSlide.value =
-    (currentSlide.value - 1 + slides.length) % slides.length
-}
-
-const goToSlide = (index) => {
-  currentSlide.value = index
-}
-
-const startAutoplay = () => {
-  if (autoplay) {
-    clearInterval(autoplay)
-  }
-
-  autoplay = setInterval(() => {
-    if (!isPaused.value) {
-      nextSlide()
-    }
-  }, 6000)
-}
-
-const pauseAutoplay = () => {
-  isPaused.value = true
-}
-
-const resumeAutoplay = () => {
-  isPaused.value = false
-}
-
-let touchStartX = null
-
-const handleTouchStart = (event) => {
-  touchStartX = event.touches[0].clientX
-}
-
-const handleTouchEnd = (event) => {
-  if (touchStartX === null) {
-    return
-  }
-
-  const touchEndX = event.changedTouches[0].clientX
-  const difference = touchEndX - touchStartX
-
-  if (Math.abs(difference) > 40) {
-    if (difference < 0) {
-      nextSlide()
-    } else {
-      previousSlide()
-    }
-  }
-
-  touchStartX = null
-}
-
-onMounted(() => {
-  startAutoplay()
-})
-
-onUnmounted(() => {
-  if (autoplay) {
-    clearInterval(autoplay)
-  }
-})
-</script>
-
 <template>
   <div>
 
     <!-- HERO -->
     <section
-      class="relative isolate flex min-h-[82vh] items-center justify-center overflow-hidden px-8 py-16 text-center"
-      data-scroll-reveal-skip
-      @mouseenter="pauseAutoplay" @mouseleave="resumeAutoplay" @touchstart.passive="handleTouchStart"
-      @touchend.passive="handleTouchEnd">
+      class="relative isolate flex h-[52svh] min-h-96 max-h-168 items-center justify-center overflow-hidden px-8 py-16 text-center"
+      data-scroll-reveal-skip>
 
-      <!-- Slides -->
       <div class="absolute inset-0 -z-20">
-
-        <div v-for="(slide, index) in slides" :key="slide.src"
-          class="absolute inset-0 transition-all duration-1400 ease-in-out" :class="currentSlide === index
-            ? 'z-10 scale-100 opacity-100'
-            : 'z-0 scale-[1.08] opacity-0'
-            ">
-
-          <NuxtImg :src="slide.src" :alt="slide.alt" class="h-full w-full object-cover" />
-
-          <div class="absolute inset-0 bg-linear-to-b from-[rgba(70,48,38,0.20)] to-[rgba(45,32,26,0.55)]" />
-        </div>
-
+        <NuxtImg src="https://media-photodececile.lafabriqueducode.fr/7_74ede68670.png"
+          alt="Photographie Les Photos de Cécile" class="h-full w-full object-cover" />
+        <div class="absolute inset-0 bg-linear-to-b from-[rgba(70,48,38,0.20)] to-[rgba(45,32,26,0.55)]" />
       </div>
 
-      <!-- Flèche précédente -->
-      <!-- <button type="button" aria-label="Photo précédente"
-        class="absolute left-6 top-1/2 z-20 flex h-11.5 w-11.5 -translate-y-1/2 items-center justify-center border border-white/35 bg-[#333333]/55 text-2xl text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white hover:bg-[#333333]/75 max-sm:left-3 max-sm:h-9.5 max-sm:w-9.5"
-        @click="previousSlide(); startAutoplay()">
-        ‹
-      </button> -->
-
       <!-- Texte -->
-      <div class="relative z-20">
+      <!-- <div class="relative z-20">
 
         <p
           class="max-w-195 translate-y-0 font-playfair text-[clamp(1.6rem,3.4vw,2.5rem)] font-normal leading-[1.4] text-white opacity-100">
@@ -137,25 +25,7 @@ onUnmounted(() => {
           </cite>
         </p>
 
-      </div>
-
-      <!-- Flèche suivante -->
-      <!-- <button type="button" aria-label="Photo suivante"
-        class="absolute right-6 top-1/2 z-20 flex h-11.5 w-11.5 -translate-y-1/2 items-center justify-center border border-white/35 bg-[#333333]/55 text-2xl text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white hover:bg-[#333333]/75 max-sm:right-3 max-sm:h-9.5 max-sm:w-9.5"
-        @click="nextSlide(); startAutoplay()">
-        ›
-      </button> -->
-
-      <!-- Dots -->
-      <div class="absolute bottom-6.5 left-1/2 z-20 flex -translate-x-1/2 gap-2.5">
-
-        <button v-for="(_, index) in slides" :key="index" type="button" :aria-label="`Afficher la photo ${index + 1}`"
-          class="h-2 cursor-pointer rounded-full bg-white/40 transition-all duration-300" :class="currentSlide === index
-            ? 'w-5.5 bg-white'
-            : 'w-2'
-            " @click="goToSlide(index); startAutoplay()" />
-
-      </div>
+      </div> -->
 
     </section>
 

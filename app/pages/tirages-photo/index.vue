@@ -61,7 +61,7 @@ const products = computed(() => {
         <div class="order-2 md:order-1">
           <p class="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-[#9e8b8b]">Vos souvenirs prennent vie</p>
           <h2 class="max-w-lg font-playfair text-4xl leading-[1.08] text-[#613213] md:text-5xl">
-            Vos photos «&nbsp;à travers des impressions de qualité et un travail minutieux&nbsp;»
+            Vos photos à travers des impressions de qualité et un travail minutieux
           </h2>
           <p class="mt-7 max-w-md leading-7 text-[#6d5b4e]">
             Découvrez une sélection de tirages imaginés pour donner une place particulière à vos instants précieux : des
