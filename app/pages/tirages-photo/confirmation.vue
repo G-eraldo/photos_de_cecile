@@ -13,6 +13,7 @@ useSeoMeta({
 })
 
 const route = useRoute()
+const cart = useCartStore()
 const reference = computed(() => typeof route.query.reference === 'string' ? route.query.reference : '')
 const { data, pending, error, refresh } = await useAsyncData(
   () => `order-payment-${reference.value}`,
@@ -29,7 +30,10 @@ onMounted(() => {
     if (data.value?.statut === 'en_attente') refresh()
   }, 3000)
   stopConfirmationWatch = watch(isConfirmed, (confirmed) => {
-    if (confirmed) redirectTimer = window.setTimeout(() => navigateTo('/tirages-photo'), 7000)
+    if (confirmed) {
+      cart.clearCart()
+      redirectTimer = window.setTimeout(() => navigateTo('/tirages-photo'), 7000)
+    }
   }, { immediate: true })
 })
 

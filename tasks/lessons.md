@@ -30,3 +30,8 @@
 - Ne pas utiliser `sticky` sur une image d’aperçu quand le parcours demandé est un défilement synchronisé avec le formulaire : les deux colonnes doivent rester dans le flux normal de la page.
 - Lorsque l’utilisateur demande que l’aperçu reproduise la fiche produit, reprendre sa structure et ses classes existantes à l’identique plutôt que d’ajouter une logique de sticky spécifique.
 - Pour un bon cadeau expédié par courrier, ne pas joindre de version PDF au client : le branchement de livraison doit contrôler à la fois le texte et les pièces jointes de l’e-mail.
+- Pour les tirages, ne pas inventer d’option de retrait lorsque la consigne ne prévoit que l’envoi par courrier : conserver le choix de livraison seulement quand plusieurs modes sont explicitement proposés.
+- Lorsqu’un élément est ajouté à la navigation desktop, vérifier la largeur de la barre dans son état réduit : préserver la disposition sur une ligne plutôt que laisser le logo et les liens passer sur deux rangées.
+- Pour une animation d’apparition jugée trop discrète, renforcer d’abord l’amplitude et la durée avec une courbe douce, plutôt que d’ajouter des effets visuels qui nuiraient à la lecture.
+- Pour ajuster une navigation à partir d’une référence visuelle, préférer une augmentation mesurée de la largeur existante ; ne pas élargir la barre jusqu’aux marges de la fenêtre lorsque seul un pictogramme a été ajouté.
+- Lorsqu’un correctif concerne l’administration Strapi déployée, ne pas le présenter comme visible en production avant le redéploiement du backend : les fichiers locaux non déployés ne modifient pas `back-cecile`.

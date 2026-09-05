@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Mail } from 'lucide-vue-next'
+import { ShoppingBag } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
 
@@ -10,6 +10,7 @@ definePageMeta({ layout: 'default' })
 
 const route = useRoute()
 const { find } = useStrapi()
+const cart = useCartStore()
 
 const fallbackProducts = {
   'tirage-fine-art': {
@@ -117,16 +118,9 @@ useSeoMeta({
 const selectedImage = ref(0)
 const selectedFormat = ref('')
 const selectedOptions = ref({})
-const delivery = ref('retrait')
 const quantity = ref(1)
-const nom = ref('')
-const prenom = ref('')
-const email = ref('')
-const rue = ref('')
-const codePostal = ref('')
-const ville = ref('')
 const photo = ref(null)
-const paymentPending = ref(false)
+const addingToCart = ref(false)
 
 const selectedFormatPrice = computed(() => {
   const tariff = product.value?.tarifsFormats.find((item) => item.format === selectedFormat.value)
@@ -139,10 +133,6 @@ const hasFringedEdges = computed(() => Object.entries(selectedOptions.value).som
 
 const unitPrice = computed(() => Number((selectedFormatPrice.value
   + (hasFringedEdges.value ? product.value?.supplementBordsFranges || 0 : 0)).toFixed(2)))
-
-const deliveryFee = computed(() => delivery.value === 'courrier' ? product.value?.supplementCourrier || 0 : 0)
-
-const orderTotal = computed(() => Number(((unitPrice.value * quantity.value) + deliveryFee.value).toFixed(2)))
 
 function formatPrice(value) {
   return Number(value).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -163,17 +153,13 @@ function selectPhoto(event) {
   photo.value = event.target.files?.[0] || null
 }
 
-async function submitOrder() {
-  if (!nom.value.trim() || !prenom.value.trim() || !email.value.trim() || (delivery.value === 'courrier' && (!rue.value.trim() || !codePostal.value.trim() || !ville.value.trim()))) {
-    toast.error(delivery.value === 'courrier' ? 'Merci de renseigner votre nom, prénom, e-mail et adresse postale.' : 'Merci de renseigner votre nom, prénom et e-mail.')
-    return
-  }
+async function addToCart() {
   if (!photo.value) {
     toast.error('Ajoutez la photo à imprimer avant de poursuivre.')
     return
   }
 
-  paymentPending.value = true
+  addingToCart.value = true
   try {
     const signedUpload = await $fetch('/api/uploads/private/presign', {
       method: 'POST',
@@ -186,31 +172,24 @@ async function submitOrder() {
     })
     if (!uploadResponse.ok) throw new Error('Le téléversement privé de la photo a échoué.')
 
-    const response = await $fetch('/api/payments/mollie/order', {
-      method: 'POST',
-      body: {
-        nom: nom.value,
-        prenom: prenom.value,
-        email: email.value,
-        adresse: delivery.value === 'courrier' ? `${rue.value.trim()}\n${codePostal.value.trim()} ${ville.value.trim()}` : '',
-        productId: product.value.documentId || product.value.id || '',
-        slug: product.value.slug || route.params.slug,
-        format: selectedFormat.value,
-        options: selectedOptions.value,
-        delivery: delivery.value,
-        quantity: quantity.value,
-        uploadToken: signedUpload.uploadToken,
-      },
+    cart.addItem({
+      productId: product.value.documentId || product.value.id || '',
+      slug: product.value.slug || route.params.slug,
+      titre: product.value.titre,
+      imageUrl: product.value.imageUrl,
+      format: selectedFormat.value,
+      options: { ...selectedOptions.value },
+      quantity: quantity.value,
+      unitPrice: unitPrice.value,
+      supplementCourrier: product.value.supplementCourrier,
+      photo: { filename: photo.value.name, uploadToken: signedUpload.uploadToken },
     })
-    if (response.checkoutUrl) {
-      window.location.assign(response.checkoutUrl)
-      return
-    }
-    toast.error('Impossible de créer votre paiement.')
+    photo.value = null
+    toast.success('Le tirage a été ajouté au panier.')
   } catch (error) {
     toast.error(error?.data?.statusMessage || error?.statusMessage || error?.message || 'Une erreur est survenue. Veuillez réessayer.')
   } finally {
-    paymentPending.value = false
+    addingToCart.value = false
   }
 }
 </script>
@@ -277,14 +256,6 @@ async function submitOrder() {
                 @click="selectedOptions[name] = choice">{{ choice }}</button></div>
           </div>
 
-          <div class="mt-6">
-            <p class="text-sm font-medium">Réception</p>
-            <div class="mt-3 flex flex-wrap gap-2">
-              <button type="button" class="rounded-full border px-4 py-2 text-sm transition" :class="delivery === 'retrait' ? 'border-[#503d30] bg-[#503d30] text-white' : 'border-[#b9aa9c] hover:border-[#503d30]'" @click="delivery = 'retrait'">Retrait auprès de Cécile</button>
-              <button type="button" class="rounded-full border px-4 py-2 text-sm transition" :class="delivery === 'courrier' ? 'border-[#503d30] bg-[#503d30] text-white' : 'border-[#b9aa9c] hover:border-[#503d30]'" @click="delivery = 'courrier'">Par courrier (+{{ formatPrice(product.supplementCourrier) }} €)</button>
-            </div>
-          </div>
-
           <div class="mt-8">
             <p class="text-sm font-medium">Quantité</p>
             <div class="mt-3 inline-flex border border-[#a99888]"><button type="button"
@@ -294,37 +265,20 @@ async function submitOrder() {
                 type="button" class="px-4 py-2 hover:bg-[#ebe4da]" aria-label="Ajouter un tirage"
                 @click="quantity += 1">+</button></div>
           </div>
-          <form class="mt-10 border-t border-[#d8cec1] pt-8" @submit.prevent="submitOrder">
-            <h2 class="font-playfair text-2xl">Commander votre tirage</h2>
-            <p class="mt-2 text-sm leading-6 text-[#6d5b4e]">Indiquez vos coordonnées et importez la photo à imprimer.
-              Vous serez ensuite redirigé(e) vers le paiement sécurisé.</p>
-            <div class="mt-6 grid gap-4 sm:grid-cols-2">
-              <div class="grid gap-2"><Label for="order-nom">Nom</Label><Input id="order-nom" v-model="nom"
-                  autocomplete="family-name" required /></div>
-              <div class="grid gap-2"><Label for="order-prenom">Prénom</Label><Input id="order-prenom" v-model="prenom"
-                  autocomplete="given-name" required /></div>
-            </div>
-            <div class="mt-4 grid gap-2"><Label for="order-email">E-mail</Label><Input id="order-email" v-model="email"
-                type="email" autocomplete="email" required /></div>
-            <div v-if="delivery === 'courrier'" class="mt-4 grid gap-4 sm:grid-cols-2">
-              <div class="grid gap-2 sm:col-span-2"><Label for="order-rue">Numéro et rue</Label><Input id="order-rue"
-                  v-model="rue" autocomplete="street-address" required /></div>
-              <div class="grid gap-2"><Label for="order-code-postal">Code postal</Label><Input id="order-code-postal"
-                  v-model="codePostal" inputmode="numeric" autocomplete="postal-code" required /></div>
-              <div class="grid gap-2"><Label for="order-ville">Ville</Label><Input id="order-ville" v-model="ville"
-                  autocomplete="address-level2" required /></div>
-            </div>
+          <div class="mt-10 border-t border-[#d8cec1] pt-8">
+            <h2 class="font-playfair text-2xl">Ajouter votre tirage au panier</h2>
+            <p class="mt-2 text-sm leading-6 text-[#6d5b4e]">Importez la photo à imprimer. Vous pourrez réunir vos tirages et finaliser la commande depuis le panier.</p>
             <div class="mt-4 grid gap-2"><Label for="order-photo">Photo à imprimer</Label><Input id="order-photo"
-                type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" required
+                type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
                 @change="selectPhoto" />
               <p class="text-xs text-[#806957]">JPG, PNG, WebP ou HEIC. Votre photo est envoyée directement dans un
                 espace Cloudflare privé.</p>
             </div>
-            <Button type="submit" class="mt-6 w-full" :disabled="paymentPending">
-              <Mail class="mr-2 h-4 w-4" />
-              {{ paymentPending ? 'Redirection vers le paiement…' : `Payer ${formatPrice(orderTotal)} €` }}
+            <Button type="button" class="mt-6 w-full" :disabled="addingToCart" @click="addToCart">
+              <ShoppingBag class="mr-2 h-4 w-4" />
+              {{ addingToCart ? 'Ajout en cours…' : `Ajouter au panier — ${formatPrice(unitPrice * quantity)} €` }}
             </Button>
-          </form>
+          </div>
         </div>
       </div>
     </div>

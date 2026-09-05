@@ -44,7 +44,10 @@ export default defineEventHandler(async (event) => {
     if (status !== paymentRecord.statut) {
       if (order) {
         await updateStoredOrder(config, order.documentId, { statut: status });
-        if (["annule", "expire", "echoue"].includes(status)) await deletePrivateUpload(order.photo_privee?.key);
+        if (["annule", "expire", "echoue"].includes(status)) {
+          const photos = Array.isArray(order.photo_privee) ? order.photo_privee : [order.photo_privee];
+          await Promise.all(photos.map((photo) => deletePrivateUpload(photo?.key)));
+        }
       }
       else await updateStoredReservation(config, reservation.documentId, { statut: status });
     }

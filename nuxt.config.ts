@@ -32,6 +32,8 @@ export default defineNuxtConfig({
     "@nuxtjs/seo",
     "nuxt-og-image",
     "@nuxtjs/strapi",
+    "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
   ],
 
   site: {

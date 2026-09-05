@@ -6,15 +6,15 @@ const isPaused = ref(false)
 
 const slides = [
   {
-    src: 'https://res.cloudinary.com/dlnbsf2ed/image/upload/v1787837561/naissance_46062b81e0.webp',
+    src: 'https://media-photodececile.lafabriqueducode.fr/7_74ede68670.png',
     alt: 'Photographie Les photos de Cécile'
   },
   {
-    src: 'https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788510710/accueil_ctpwvj.webp',
+    src: 'https://media-photodececile.lafabriqueducode.fr/9_211d3a83ac.png',
     alt: 'Photographie Les photos de Cécile'
   },
   {
-    src: 'https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788510732/cta_z5i3fl.webp',
+    src: 'https://media-photodececile.lafabriqueducode.fr/1_e1d5cd0f04.png',
     alt: 'Photographie Les photos de Cécile'
   }
 ]
@@ -97,6 +97,7 @@ onUnmounted(() => {
     <!-- HERO -->
     <section
       class="relative isolate flex min-h-[82vh] items-center justify-center overflow-hidden px-8 py-16 text-center"
+      data-scroll-reveal-skip
       @mouseenter="pauseAutoplay" @mouseleave="resumeAutoplay" @touchstart.passive="handleTouchStart"
       @touchend.passive="handleTouchEnd">
 

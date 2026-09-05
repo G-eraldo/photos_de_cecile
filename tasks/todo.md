@@ -1,5 +1,25 @@
 # Tirages photo
 
+## Correctif panier et aperçu des photos privées
+
+- [x] Réduire le panier de navigation à une icône visible également sur mobile.
+- [x] Adapter l’aperçu Strapi aux photos privées enregistrées sous forme de liste.
+- [x] Compiler Nuxt et Strapi, puis consigner la revue.
+
+## Correctif disposition de la navigation desktop
+
+- [x] Conserver le logo, les liens et l’icône panier sur une même ligne en desktop.
+- [x] Préserver strictement le rendu mobile existant.
+- [x] Compiler Nuxt et vérifier le diff.
+
+## Panier de tirages
+
+- [x] Installer et configurer Pinia pour le panier persistant.
+- [x] Remplacer le formulaire de fiche produit par l’ajout au panier avec photo privée.
+- [x] Créer la page panier et le paiement groupé des tirages.
+- [x] Afficher le panier dans la navigation seulement lorsqu’il contient un article.
+- [x] Vérifier les compilations et consigner la revue.
+
 ## Tarification des tirages
 
 - [x] Ajouter les tarifs par format et les suppléments configurables à la collection Produit.
@@ -223,7 +243,21 @@
 - [x] Ajuster les sources responsive à la nouvelle largeur des vignettes.
 - [x] Vérifier la compilation Nuxt.
 
+## Animations d’apparition au défilement
+
+- [x] Mettre en place un mécanisme global d’apparition progressive, compatible mobile et desktop.
+- [x] Respecter les préférences d’accessibilité et préserver l’affichage sans JavaScript.
+- [x] Vérifier la compilation Nuxt et consigner la revue.
+
 ## Revue
+
+- Animations d’apparition au défilement du 5 septembre 2026 : un observer global révèle les sections et en-têtes à l’approche du viewport, y compris pour les contenus chargés après l’affichage initial. Le hero est exclu afin de rester immédiatement visible. L’arrivée est renforcée (48 px et léger zoom, sur 900 ms) tout en restant douce. Les contenus restent visibles sans JavaScript et l’animation est neutralisée lorsque la préférence système de réduction des animations est active. `npm run build` et `git diff --check` passent.
+
+- Correctif navigation desktop du 5 septembre 2026 : la barre dispose d’une largeur maximale de 112rem et les éléments desktop ne peuvent plus revenir à la ligne ; les espacements deviennent plus compacts sur les écrans desktop intermédiaires. Le panier reste une icône, tandis que le rendu mobile est inchangé. `npm run build` et `git diff --check` passent.
+
+- Correctif panier et photo privée du 5 septembre 2026 : le panier est une icône seule, affichée auprès du menu burger sur mobile et dans la navigation desktop lorsqu’il contient un tirage. L’outil d’administration Strapi prend désormais en charge le tableau `photo_privee` créé pour les commandes groupées et ouvre correctement la première photo de la commande. `npm run build` passe dans Nuxt et Strapi, et `git diff --check` passe.
+
+- Panier de tirages du 5 septembre 2026 : Pinia conserve les tirages et leur référence de photo privée. La fiche produit téléverse la photo puis ajoute le tirage configuré au panier ; les coordonnées et l’adresse sont demandées une seule fois dans `/tirages-photo/panier`. Les tirages sont exclusivement expédiés par courrier, facturé une seule fois par commande. L’API vérifie de nouveau chaque produit, format, option et photo avant Mollie, et finalise toutes les photos après paiement. Le lien Panier disparaît lorsqu’il est vide et le panier est vidé après confirmation. `npm run build` et `git diff --check` passent.
 
 - Tarification des tirages du 5 septembre 2026 : la collection Produit dispose désormais de `tarifs_formats`, `supplement_bords_franges` (1 € par défaut) et `supplement_courrier` (5 € par défaut). La fiche affiche le prix du format choisi, ajoute le bord frangé, puis ajoute l’envoi postal une seule fois au total. L’API recalcule et valide ces montants depuis Strapi avant Mollie ; la facture distingue aussi le supplément d’envoi. `npm run build` passe dans Nuxt et Strapi, et `git diff --check` passe.
 

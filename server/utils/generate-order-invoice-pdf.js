@@ -29,7 +29,16 @@ export async function generateOrderInvoicePdf({ reference, details, total }) {
   if (details.adresse) safe(details.adresse).split(/\r?\n/).forEach((addressLine) => line(addressLine));
   y -= 18;
   line("DÉTAIL DE LA COMMANDE", { font: bold, size: 11, color: brown, gap: 22 });
-  line(`${safe(details.produit)} — ${safe(details.format)}`);
+  if (Array.isArray(details.items) && details.items.length > 1) {
+    details.items.forEach((item) => {
+      line(`${safe(item.product)} — ${safe(item.format)} × ${safe(item.quantity)} : ${euros(Number(item.unitPrice) * Number(item.quantity))}`);
+      if (Object.keys(item.options || {}).length) {
+        line(`Options : ${Object.entries(item.options).map(([name, value]) => `${name} : ${value}`).join(" · ")}`, { size: 9 });
+      }
+    });
+  } else {
+    line(`${safe(details.produit)} — ${safe(details.format)}`);
+  }
   if (Object.keys(details.options || {}).length) {
     line(`Options : ${Object.entries(details.options).map(([name, value]) => `${name} : ${value}`).join(" · ")}`);
   }

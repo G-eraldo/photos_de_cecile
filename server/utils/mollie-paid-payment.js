@@ -80,7 +80,9 @@ export const finalizePaidPayment = async ({ event, config, order, reservation, p
     if (isOrder) {
       const photoPrivee = record.details?.type === "bon_cadeau"
         ? record.photo_privee
-        : await finalizePrivateUpload(record.photo_privee, record.reference);
+        : Array.isArray(record.photo_privee)
+          ? await Promise.all(record.photo_privee.map((photo) => finalizePrivateUpload(photo, record.reference)))
+          : await finalizePrivateUpload(record.photo_privee, record.reference);
       const emailResult = await sendOrderConfirmation({
         reference: record.reference,
         details: record.details,

@@ -86,3 +86,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-reveal-ready [data-scroll-reveal] {
+    opacity: 0;
+    transform: translateY(3rem) scale(0.975);
+    transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1), transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: 80ms;
+    will-change: opacity, transform;
+  }
+
+  .scroll-reveal-ready [data-scroll-reveal].is-scroll-revealed {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    will-change: auto;
+  }
+}
