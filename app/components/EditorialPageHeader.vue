@@ -1,6 +1,6 @@
 <script setup>
 defineProps({
-  eyebrow: { type: String, default: 'Les Photos de Cécile — depuis Amiens' },
+  eyebrow: { type: String, default: "Photographe Amiénoise" },
   title: { type: String, required: true },
   description: { type: String, default: '' },
 })

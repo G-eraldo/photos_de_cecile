@@ -4,8 +4,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Mail } from 'lucide-vue-next'
-import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
 import { toast } from 'vue-sonner'
+import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
 
 definePageMeta({ layout: 'default' })
 
@@ -43,6 +43,9 @@ const photoChoices = computed(() => selectedPrestationData.value?.choices || [])
 const selectedChoice = computed(() => photoChoices.value.find((choice) => choice.photos === selectedPhotos.value))
 const total = computed(() => (selectedChoice.value?.price || 0) + (delivery.value === 'courrier' ? 5 : 0))
 const formattedTotal = computed(() => total.value.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+const deliveryMessage = computed(() => delivery.value === 'courrier'
+  ? 'Cécile préparera votre bon cadeau et vous l’enverra par courrier.'
+  : 'Le bon personnalisé sera envoyé au format PDF après paiement.')
 
 watch(selectedPrestationData, (prestation) => {
   if (prestation && !prestation.choices.some((choice) => choice.photos === selectedPhotos.value)) selectedPhotos.value = prestation.choices[0].photos
@@ -90,7 +93,7 @@ async function submitGiftCard() {
 
 <template>
   <main class="mt-20 min-h-screen bg-[#E6DFDD] px-6 pb-20 pt-10 text-[#503d30] sm:mt-24 sm:pt-16">
-    <EditorialPageHeader eyebrow="La boutique — Les Photos de Cécile" title="Bon cadeau"
+    <EditorialPageHeader title="Bon cadeau"
       description="Offrez une séance photo et laissez place à des souvenirs qui comptent vraiment." />
     <div class="mx-auto max-w-6xl">
       <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.7fr)] lg:gap-18">
@@ -98,11 +101,9 @@ async function submitGiftCard() {
           <div class="aspect-4/5 overflow-hidden bg-[#ddd4c9] shadow-sm">
             <img src="https://media-photodececile.lafabriqueducode.fr/DSC_06915_ad4aa41b76.jpg"
               alt="Aperçu du bon cadeau personnalisé" width="6336" height="9504" decoding="async"
-              class="h-full w-full object-cover" />
+              class="h-full w-full object-cover">
           </div>
-          <p class="mt-3 text-center text-xs text-[#806957]">
-            {{ delivery === 'courrier' ? 'Cécile préparera votre bon cadeau et vous l’enverra par courrier.' : 'Le bon personnalisé sera envoyé au format PDF après paiement.' }}
-          </p>
+          <p class="mt-3 text-center text-xs text-[#806957]">{{ deliveryMessage }}</p>
         </div>
 
         <div class="max-w-xl p-7!">

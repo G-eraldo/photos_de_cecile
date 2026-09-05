@@ -35,3 +35,5 @@
 - Pour une animation d’apparition jugée trop discrète, renforcer d’abord l’amplitude et la durée avec une courbe douce, plutôt que d’ajouter des effets visuels qui nuiraient à la lecture.
 - Pour ajuster une navigation à partir d’une référence visuelle, préférer une augmentation mesurée de la largeur existante ; ne pas élargir la barre jusqu’aux marges de la fenêtre lorsque seul un pictogramme a été ajouté.
 - Lorsqu’un correctif concerne l’administration Strapi déployée, ne pas le présenter comme visible en production avant le redéploiement du backend : les fichiers locaux non déployés ne modifient pas `back-cecile`.
+- Dans une expression Vue contenant une apostrophe française, utiliser des guillemets doubles ou échapper l’apostrophe afin de ne pas interrompre la chaîne JavaScript.
+- Ne pas placer une condition ternaire textuelle longue directement dans une interpolation Vue : la formater dans un `computed` pour que le formatage automatique reste sans risque.

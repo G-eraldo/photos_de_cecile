@@ -249,7 +249,15 @@
 - [x] Respecter les préférences d’accessibilité et préserver l’affichage sans JavaScript.
 - [x] Vérifier la compilation Nuxt et consigner la revue.
 
+## Accueil — relais Instagram
+
+- [x] Ajouter le bloc Instagram et les trois photos fournies avant les avis.
+- [x] Adapter la présentation à tous les écrans et lier l’ensemble au compte Instagram de Cécile.
+- [x] Optimiser les images et vérifier la compilation Nuxt.
+
 ## Revue
+
+- Accueil — relais Instagram du 5 septembre 2026 : un encart blanc, responsive et entièrement cliquable est placé avant les avis. Il présente `@lesphotosdececile80` et les trois photos fournies ; celles-ci sont réduites à 900 px de large et représentent au total moins de 500 Ko. `npm run build` et `git diff --check` passent.
 
 - Animations d’apparition au défilement du 5 septembre 2026 : un observer global révèle les sections et en-têtes à l’approche du viewport, y compris pour les contenus chargés après l’affichage initial. Le hero est exclu afin de rester immédiatement visible. L’arrivée est renforcée (48 px et léger zoom, sur 900 ms) tout en restant douce. Les contenus restent visibles sans JavaScript et l’animation est neutralisée lorsque la préférence système de réduction des animations est active. `npm run build` et `git diff --check` passent.
 

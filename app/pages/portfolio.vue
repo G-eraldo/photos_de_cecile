@@ -65,7 +65,7 @@ const featuredLayouts = [
 <template>
   <main class="mt-20 overflow-hidden pb-20 pt-10 sm:mt-24 sm:pt-16">
     <EditorialPageHeader title="Portfolio"
-      description="Des histoires, des regards et des éclats de vie — un album libre, au fil des émotions." />
+      description="Des histoires, des regards et des éclats de vie un album libre..." />
 
     <div v-if="pending" class="columns-2 gap-4 sm:columns-3 lg:columns-4">
       <Skeleton v-for="item in 12" :key="item"
@@ -85,8 +85,8 @@ const featuredLayouts = [
 
     <section v-else aria-label="Sélection mise en avant" class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
       <div class="mb-5 flex items-center justify-between">
-        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-[#9e8b8b]">À découvrir</p>
-        <p class="font-playfair text-lg text-[#613213]">Une sélection d’instants vrais</p>
+
+        <p class="font-playfair text-lg text-[#613213]">Découvrez mon univers</p>
       </div>
       <div class="grid auto-rows-[42vw] grid-cols-2 gap-2 sm:auto-rows-[13vw] sm:grid-cols-6 sm:gap-3">
         <a v-for="(photo, index) in featuredPhotos" :key="photo.id" :href="photo.url" target="_blank"
@@ -113,9 +113,8 @@ const featuredLayouts = [
         <a v-for="photo in displayedAlbumPhotos" :key="photo.id" :href="photo.url" target="_blank"
           rel="noopener noreferrer" :aria-label="`Ouvrir ${photo.alt} en grand format`"
           class="group relative mb-4 block break-inside-avoid overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-          <img :src="photo.thumbnailUrl" :srcset="photo.thumbnailSrcset"
-            sizes="(max-width: 639px) 100vw, 33vw" :alt="photo.alt" :width="photo.width"
-            :height="photo.height" loading="lazy" decoding="async"
+          <img :src="photo.thumbnailUrl" :srcset="photo.thumbnailSrcset" sizes="(max-width: 639px) 100vw, 33vw"
+            :alt="photo.alt" :width="photo.width" :height="photo.height" loading="lazy" decoding="async"
             class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]">
           <span
             class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/35 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100">
@@ -127,8 +126,8 @@ const featuredLayouts = [
       </div>
       <div class="hidden gap-5 sm:grid sm:grid-cols-3">
         <div v-for="(column, columnIndex) in albumColumns" :key="columnIndex" class="space-y-5">
-          <a v-for="photo in column" :key="photo.id" :href="photo.url" target="_blank"
-            rel="noopener noreferrer" :aria-label="`Ouvrir ${photo.alt} en grand format`"
+          <a v-for="photo in column" :key="photo.id" :href="photo.url" target="_blank" rel="noopener noreferrer"
+            :aria-label="`Ouvrir ${photo.alt} en grand format`"
             class="group relative block overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl">
             <img :src="photo.thumbnailUrl" :srcset="photo.thumbnailSrcset" sizes="33vw" :alt="photo.alt"
               :width="photo.width" :height="photo.height" loading="lazy" decoding="async"

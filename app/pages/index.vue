@@ -12,6 +12,7 @@ import Accueil from '~/components/accueil/Accueil.vue';
 import Avis from '~/components/accueil/Avis.vue';
 import Cta from '~/components/accueil/Cta.vue';
 import Prestation from '~/components/accueil/Prestation.vue';
+import Instagram from '~/components/accueil/Instagram.vue';
 </script>
 
 <template>
@@ -19,6 +20,7 @@ import Prestation from '~/components/accueil/Prestation.vue';
     <Accueil />
     <Cta />
     <Prestation />
+    <Instagram />
     <Avis />
   </div>
 </template>
