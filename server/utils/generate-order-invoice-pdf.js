@@ -35,6 +35,9 @@ export async function generateOrderInvoicePdf({ reference, details, total }) {
   }
   line(`Quantité : ${details.quantite}`);
   line(`Prix unitaire : ${euros(details.prixUnitaire)}`, { gap: 30 });
+  if (Number(details.fraisLivraison) > 0) {
+    line(`Envoi par courrier : ${euros(details.fraisLivraison)}`, { gap: 30 });
+  }
   page.drawLine({ start: { x: 55, y }, end: { x: 540, y }, thickness: 1, color: brown });
   y -= 26;
   line(`TOTAL PAYÉ : ${euros(total)}`, { font: bold, size: 14, color: brown, gap: 30 });

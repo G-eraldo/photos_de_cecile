@@ -16,6 +16,14 @@ const fallbackProducts = {
     titre: 'Tirage Fine Art',
     accroche: 'Un papier d’art à la texture douce, pour des images qui traversent le temps.',
     prix_a_partir_de: 8,
+    tarifs_formats: [
+      { format: '10 × 10 cm', prix: 3 }, { format: '10 × 15 cm', prix: 3 },
+      { format: '13 × 18 cm', prix: 4 }, { format: '15 × 15 cm', prix: 4 },
+      { format: '20 × 20 cm', prix: 10 }, { format: '18 × 24 cm', prix: 10 },
+      { format: 'A4', prix: 10 }, { format: '20 × 30 cm', prix: 10 }, { format: 'A3', prix: 20 },
+    ],
+    supplement_bords_franges: 1,
+    supplement_courrier: 5,
     imageUrl: '/images/impression.png',
     galerieUrls: ['/images/impression.png', '/images/format.png'],
     caracteristiques: [
@@ -23,7 +31,7 @@ const fallbackProducts = {
       { texte: 'Rendu mat et profond' },
       { texte: 'Impression réalisée avec soin' },
     ],
-    formats: ['10 × 15 cm', '13 × 18 cm', '15 × 15 cm', '20 × 20 cm', 'A4', '30 × 40 cm'],
+    formats: ['10 × 10 cm', '10 × 15 cm', '13 × 18 cm', '15 × 15 cm', '20 × 20 cm', '18 × 24 cm', 'A4', '20 × 30 cm', 'A3'],
     options: { marge: ['Sans marge', 'Avec marge'], finition: ['Bords droits', 'Bords frangés'] },
   },
   'tirage-traditionnel': {
@@ -51,7 +59,7 @@ const fallbackProducts = {
 const { data, pending, error } = await useAsyncData(
   `produit-${route.params.slug}`,
   () => find('produits', {
-    fields: ['titre', 'slug', 'accroche', 'description', 'prix_a_partir_de', 'formats', 'options'],
+    fields: ['titre', 'slug', 'accroche', 'description', 'prix_a_partir_de', 'tarifs_formats', 'supplement_bords_franges', 'supplement_courrier', 'formats', 'options'],
     populate: {
       image: { fields: ['url', 'alternativeText'] },
       galerie: { fields: ['url', 'alternativeText'] },
@@ -88,8 +96,11 @@ const product = computed(() => {
     imageUrl: source.imageUrl || mediaUrl(source.image, '/images/impression.png'),
     galerieUrls: [...new Set(gallery)],
     prix: Number(source.prix_a_partir_de).toLocaleString('fr-FR', { minimumFractionDigits: 0, maximumFractionDigits: 2 }),
-    formats: source.formats || [],
+    tarifsFormats: Array.isArray(source.tarifs_formats) ? source.tarifs_formats.filter((item) => item?.format && Number.isFinite(Number(item.prix))) : [],
+    formats: Array.isArray(source.tarifs_formats) && source.tarifs_formats.length ? source.tarifs_formats.map((item) => item.format) : (source.formats || []),
     options: source.options || {},
+    supplementBordsFranges: Number(source.supplement_bords_franges ?? 1),
+    supplementCourrier: Number(source.supplement_courrier ?? 5),
   }
 })
 
@@ -106,6 +117,7 @@ useSeoMeta({
 const selectedImage = ref(0)
 const selectedFormat = ref('')
 const selectedOptions = ref({})
+const delivery = ref('retrait')
 const quantity = ref(1)
 const nom = ref('')
 const prenom = ref('')
@@ -115,6 +127,26 @@ const codePostal = ref('')
 const ville = ref('')
 const photo = ref(null)
 const paymentPending = ref(false)
+
+const selectedFormatPrice = computed(() => {
+  const tariff = product.value?.tarifsFormats.find((item) => item.format === selectedFormat.value)
+  return Number(tariff?.prix ?? product.value?.prix_a_partir_de ?? 0)
+})
+
+const hasFringedEdges = computed(() => Object.entries(selectedOptions.value).some(([name, value]) =>
+  /bord|finition/i.test(name) && /frang/i.test(String(value)),
+))
+
+const unitPrice = computed(() => Number((selectedFormatPrice.value
+  + (hasFringedEdges.value ? product.value?.supplementBordsFranges || 0 : 0)).toFixed(2)))
+
+const deliveryFee = computed(() => delivery.value === 'courrier' ? product.value?.supplementCourrier || 0 : 0)
+
+const orderTotal = computed(() => Number(((unitPrice.value * quantity.value) + deliveryFee.value).toFixed(2)))
+
+function formatPrice(value) {
+  return Number(value).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
 
 watch(product, (value) => {
   if (!value) return
@@ -132,8 +164,8 @@ function selectPhoto(event) {
 }
 
 async function submitOrder() {
-  if (!nom.value.trim() || !prenom.value.trim() || !email.value.trim() || !rue.value.trim() || !codePostal.value.trim() || !ville.value.trim()) {
-    toast.error('Merci de renseigner votre nom, prénom, e-mail et adresse postale.')
+  if (!nom.value.trim() || !prenom.value.trim() || !email.value.trim() || (delivery.value === 'courrier' && (!rue.value.trim() || !codePostal.value.trim() || !ville.value.trim()))) {
+    toast.error(delivery.value === 'courrier' ? 'Merci de renseigner votre nom, prénom, e-mail et adresse postale.' : 'Merci de renseigner votre nom, prénom et e-mail.')
     return
   }
   if (!photo.value) {
@@ -160,11 +192,12 @@ async function submitOrder() {
         nom: nom.value,
         prenom: prenom.value,
         email: email.value,
-        adresse: `${rue.value.trim()}\n${codePostal.value.trim()} ${ville.value.trim()}`,
+        adresse: delivery.value === 'courrier' ? `${rue.value.trim()}\n${codePostal.value.trim()} ${ville.value.trim()}` : '',
         productId: product.value.documentId || product.value.id || '',
         slug: product.value.slug || route.params.slug,
         format: selectedFormat.value,
         options: selectedOptions.value,
+        delivery: delivery.value,
         quantity: quantity.value,
         uploadToken: signedUpload.uploadToken,
       },
@@ -218,8 +251,8 @@ async function submitOrder() {
         </div>
 
         <div class="max-w-xl p-7! lg:pt-4!">
-          <p class="font-playfair text-2xl text-[#613213] md:text-3xl">À partir de {{ product.prix }} €</p>
-          <p class="mt-1 text-xs text-[#806957]">Frais d’expédition calculés à l’étape de paiement.</p>
+          <p class="font-playfair text-2xl text-[#613213] md:text-3xl">{{ formatPrice(unitPrice) }} €</p>
+          <p class="mt-1 text-xs text-[#806957]">Prix unitaire selon le format et les finitions choisies.</p>
           <p class="mt-8 leading-7 text-[#6d5b4e]">{{ product.description || product.accroche }}</p>
 
           <div v-if="product.caracteristiques?.length" class="mt-8 border-y border-[#d8cec1] py-7">
@@ -244,6 +277,14 @@ async function submitOrder() {
                 @click="selectedOptions[name] = choice">{{ choice }}</button></div>
           </div>
 
+          <div class="mt-6">
+            <p class="text-sm font-medium">Réception</p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button type="button" class="rounded-full border px-4 py-2 text-sm transition" :class="delivery === 'retrait' ? 'border-[#503d30] bg-[#503d30] text-white' : 'border-[#b9aa9c] hover:border-[#503d30]'" @click="delivery = 'retrait'">Retrait auprès de Cécile</button>
+              <button type="button" class="rounded-full border px-4 py-2 text-sm transition" :class="delivery === 'courrier' ? 'border-[#503d30] bg-[#503d30] text-white' : 'border-[#b9aa9c] hover:border-[#503d30]'" @click="delivery = 'courrier'">Par courrier (+{{ formatPrice(product.supplementCourrier) }} €)</button>
+            </div>
+          </div>
+
           <div class="mt-8">
             <p class="text-sm font-medium">Quantité</p>
             <div class="mt-3 inline-flex border border-[#a99888]"><button type="button"
@@ -265,7 +306,7 @@ async function submitOrder() {
             </div>
             <div class="mt-4 grid gap-2"><Label for="order-email">E-mail</Label><Input id="order-email" v-model="email"
                 type="email" autocomplete="email" required /></div>
-            <div class="mt-4 grid gap-4 sm:grid-cols-2">
+            <div v-if="delivery === 'courrier'" class="mt-4 grid gap-4 sm:grid-cols-2">
               <div class="grid gap-2 sm:col-span-2"><Label for="order-rue">Numéro et rue</Label><Input id="order-rue"
                   v-model="rue" autocomplete="street-address" required /></div>
               <div class="grid gap-2"><Label for="order-code-postal">Code postal</Label><Input id="order-code-postal"
@@ -281,8 +322,7 @@ async function submitOrder() {
             </div>
             <Button type="submit" class="mt-6 w-full" :disabled="paymentPending">
               <Mail class="mr-2 h-4 w-4" />
-              {{ paymentPending ? 'Redirection vers le paiement…' : `Payer ${Number(product.prix_a_partir_de *
-                quantity).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` }}
+              {{ paymentPending ? 'Redirection vers le paiement…' : `Payer ${formatPrice(orderTotal)} €` }}
             </Button>
           </form>
         </div>

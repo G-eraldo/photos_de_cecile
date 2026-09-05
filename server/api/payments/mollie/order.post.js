@@ -35,16 +35,29 @@ export default defineEventHandler(async (event) => {
   const slug = details?.slug || "";
   const format = details?.format || "";
   const options = details?.options;
+  const delivery = details?.delivery || "";
   const quantity = Number(details?.quantity);
 
   if (
-    ![nom, prenom, email, adresse, format].every((field) => isText(field)) ||
+    ![nom, prenom, email, format].every((field) => isText(field)) ||
     !/^\S+@\S+\.\S+$/.test(email.trim())
   ) {
     throw createError({
       statusCode: 400,
       statusMessage:
         "Merci de renseigner vos coordonnées et l’adresse de livraison.",
+    });
+  }
+  if (!['retrait', 'courrier'].includes(delivery)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Le mode de réception sélectionné est invalide.",
+    });
+  }
+  if (delivery === 'courrier' && !isText(adresse)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Merci de renseigner l’adresse de livraison.",
     });
   }
   if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
@@ -63,8 +76,10 @@ export default defineEventHandler(async (event) => {
   const config = getMollieConfig();
   const product = await findProductForOrder(config, { productId, slug });
   if (
-    !Array.isArray(product.formats) ||
-    !product.formats.includes(format.trim())
+    (!Array.isArray(product.tarifs_formats) && !Array.isArray(product.formats)) ||
+    !(product.tarifs_formats || product.formats).some((item) =>
+      typeof item === 'string' ? item === format.trim() : item?.format === format.trim(),
+    )
   ) {
     throw createError({
       statusCode: 400,
@@ -95,8 +110,23 @@ export default defineEventHandler(async (event) => {
     verifyPrivateUploadToken(details?.uploadToken),
   );
   const reference = `c${randomUUID().replace(/-/g, "")}`;
-  const price = Number(product.prix_a_partir_de);
-  const total = Number((price * quantity).toFixed(2));
+  const selectedTariff = Array.isArray(product.tarifs_formats)
+    ? product.tarifs_formats.find((item) => item?.format === format.trim())
+    : null;
+  const formatPrice = Number(selectedTariff?.prix ?? product.prix_a_partir_de);
+  if (!Number.isFinite(formatPrice) || formatPrice < 0) {
+    throw createError({ statusCode: 400, statusMessage: "Le tarif du format sélectionné est invalide." });
+  }
+  const hasFringedEdges = Object.entries(options).some(([name, value]) =>
+    /bord|finition/i.test(name) && /frang/i.test(String(value)),
+  );
+  const fringeFee = hasFringedEdges ? Number(product.supplement_bords_franges ?? 1) : 0;
+  const deliveryFee = delivery === 'courrier' ? Number(product.supplement_courrier ?? 5) : 0;
+  if (!Number.isFinite(fringeFee) || fringeFee < 0 || !Number.isFinite(deliveryFee) || deliveryFee < 0) {
+    throw createError({ statusCode: 400, statusMessage: "Les suppléments du produit sont invalides." });
+  }
+  const price = Number((formatPrice + fringeFee).toFixed(2));
+  const total = Number(((price * quantity) + deliveryFee).toFixed(2));
   const orderDetails = {
     nom: nom.trim(),
     prenom: prenom.trim(),
@@ -105,9 +135,13 @@ export default defineEventHandler(async (event) => {
     produit: product.titre,
     produitSlug: product.slug,
     format: format.trim(),
-    options,
+    options: {
+      ...options,
+      réception: delivery === 'courrier' ? `Par courrier (+${deliveryFee.toFixed(2)} €)` : 'Retrait auprès de Cécile',
+    },
     quantite: quantity,
     prixUnitaire: price,
+    fraisLivraison: deliveryFee,
     photoNom: uploadedPhoto.filename,
   };
   const order = await createStoredOrder(config, {

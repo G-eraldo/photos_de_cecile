@@ -1,5 +1,12 @@
 # Tirages photo
 
+## Tarification des tirages
+
+- [x] Ajouter les tarifs par format et les suppléments configurables à la collection Produit.
+- [x] Recalculer le prix de la fiche tirage selon le format, les bords frangés et l’envoi postal.
+- [x] Valider le même calcul côté serveur avant le paiement Mollie.
+- [x] Compiler les applications et consigner la revue.
+
 ## Cohérence éditoriale du site
 
 - [x] Auditer les titres et en-têtes des pages par rapport à Portfolio.
@@ -217,6 +224,8 @@
 - [x] Vérifier la compilation Nuxt.
 
 ## Revue
+
+- Tarification des tirages du 5 septembre 2026 : la collection Produit dispose désormais de `tarifs_formats`, `supplement_bords_franges` (1 € par défaut) et `supplement_courrier` (5 € par défaut). La fiche affiche le prix du format choisi, ajoute le bord frangé, puis ajoute l’envoi postal une seule fois au total. L’API recalcule et valide ces montants depuis Strapi avant Mollie ; la facture distingue aussi le supplément d’envoi. `npm run build` passe dans Nuxt et Strapi, et `git diff --check` passe.
 
 - Correctifs accueil et réservation mobile du 5 septembre 2026 : le titre « Découvrez les formules » est clair sur le fond sombre. Sur le formulaire mobile, la case d’acceptation ne rétrécit plus et son libellé s’écoule naturellement à côté, sans espacement artificiel entre chaque fragment. `npm run build` et `git diff --check` passent.
 

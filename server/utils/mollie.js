@@ -160,8 +160,11 @@ export const findProductForOrder = async (config, { productId, slug }) => {
     "fields[0]": "titre",
     "fields[1]": "slug",
     "fields[2]": "prix_a_partir_de",
-    "fields[3]": "formats",
-    "fields[4]": "options",
+    "fields[3]": "tarifs_formats",
+    "fields[4]": "supplement_bords_franges",
+    "fields[5]": "supplement_courrier",
+    "fields[6]": "formats",
+    "fields[7]": "options",
     "filters[publishedAt][$notNull]": "true",
     "pagination[pageSize]": "1",
   });
