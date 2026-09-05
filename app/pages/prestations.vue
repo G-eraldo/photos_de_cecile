@@ -1,5 +1,6 @@
 <script setup>
 import EditorialPageHeader from '~/components/EditorialPageHeader.vue';
+import EditorialPhotoBanner from '~/components/EditorialPhotoBanner.vue';
 import Prestation from '~/components/Prestation/Prestation.vue';
 
 definePageMeta({ layout: 'default' })
@@ -14,6 +15,8 @@ useSeoMeta({
   <main class="mt-20 pb-20 pt-10 sm:mt-24 sm:pt-16">
     <EditorialPageHeader title="Prestations"
       description="Des séances pensées pour raconter vos liens, vos instants et les plus beaux moment de votre vie." />
+    <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/8_f4c7c5c00c.png"
+      alt="Un couple attendant un enfant dans un champ au coucher du soleil" position="center 45%" />
     <Prestation />
   </main>
 </template>

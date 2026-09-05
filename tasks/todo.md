@@ -1,5 +1,14 @@
 # Tirages photo
 
+## Remplacement du logo — Les Photos de Cécile
+
+- [ ] Auditer les usages du logo sur le site, les e-mails, les PDF et Strapi.
+- [ ] Préparer des déclinaisons nettes du logo fourni (site, e-mail, favicon et administration).
+- [ ] Remplacer le logo sur le site et son favicon.
+- [ ] Ajouter le logo aux factures et aux contrats PDF, puis mettre à jour les e-mails envoyés.
+- [ ] Remplacer le logo et le favicon de l’administration Strapi.
+- [ ] Vérifier les builds, les PDF générés et consigner la revue.
+
 ## Correctif panier et aperçu des photos privées
 
 - [x] Réduire le panier de navigation à une icône visible également sur mobile.
@@ -255,7 +264,15 @@
 - [x] Adapter la présentation à tous les écrans et lier l’ensemble au compte Instagram de Cécile.
 - [x] Optimiser les images et vérifier la compilation Nuxt.
 
+## Bandeaux photos des pages éditoriales
+
+- [x] Ajouter un bandeau photo unique sur les pages À propos, Prestations et Contact.
+- [x] Optimiser les photos sélectionnées pour leur affichage grand format.
+- [x] Vérifier la compilation Nuxt et consigner la revue.
+
 ## Revue
+
+- Bandeaux photos des pages éditoriales du 5 septembre 2026 : À propos, Prestations et Contact reçoivent chacun un visuel large sous leur bandeau de titre, avec des cadrages adaptés au sujet. Les trois images source sont converties en JPEG de 1 800 px et pèsent ensemble moins de 1 Mo. `npm run build` et `git diff --check` passent.
 
 - Accueil — relais Instagram du 5 septembre 2026 : un encart blanc, responsive et entièrement cliquable est placé avant les avis. Il présente `@lesphotosdececile80` et les trois photos fournies ; celles-ci sont réduites à 900 px de large et représentent au total moins de 500 Ko. `npm run build` et `git diff --check` passent.
 
