@@ -1,4 +1,5 @@
 import { enforceRateLimit } from "../../utils/request-security.js";
+import { RESERVATION_DURATION_MS } from "~~/shared/utils/reservation-duration.js";
 
 export default defineEventHandler(async (event) => {
   enforceRateLimit(event, { scope: "calendar-availability", limit: 90, windowMs: 15 * 60 * 1000 });
@@ -53,7 +54,7 @@ export default defineEventHandler(async (event) => {
       .filter((item) => !Number.isNaN(item.start.getTime()) && !Number.isNaN(item.end.getTime()));
 
     // Le client ne reçoit jamais les rendez-vous personnels : seulement les créneaux
-    // de deux heures encore effectivement réservables.
+    // d'une heure encore effectivement réservables.
     const availability = (response.items || [])
       .filter(isPhotoSession)
       .flatMap((item) => {
@@ -63,10 +64,10 @@ export default defineEventHandler(async (event) => {
         const slots = [];
         for (
           const start = new Date(Math.max(interval.start.getTime(), now.getTime()));
-          start.getTime() + 2 * 60 * 60 * 1000 <= interval.end.getTime();
-          start.setHours(start.getHours() + 2)
+          start.getTime() + RESERVATION_DURATION_MS <= interval.end.getTime();
+          start.setTime(start.getTime() + RESERVATION_DURATION_MS)
         ) {
-          const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+          const end = new Date(start.getTime() + RESERVATION_DURATION_MS);
           const blocked = blockedIntervals.some((other) => start < other.end && end > other.start);
           if (!blocked) slots.push({ start: start.toISOString(), end: end.toISOString() });
         }

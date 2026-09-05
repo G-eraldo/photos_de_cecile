@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { CalendarDays, Mail } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { RESERVATION_DURATION_MS } from '~~/shared/utils/reservation-duration.js';
 import Select from './ui/select/Select.vue';
 import SelectContent from './ui/select/SelectContent.vue';
 import SelectGroup from './ui/select/SelectGroup.vue';
@@ -89,10 +90,11 @@ const availableSlots = computed(() => {
     if (itemDate !== date.value) return [];
 
     const slots = [];
-    for (const slotStart = new Date(start); slotStart.getTime() + 2 * 60 * 60 * 1000 <= end.getTime(); slotStart.setHours(slotStart.getHours() + 2)) {
+    for (const slotStart = new Date(start); slotStart.getTime() + RESERVATION_DURATION_MS <= end.getTime(); slotStart.setTime(slotStart.getTime() + RESERVATION_DURATION_MS)) {
+      const slotEnd = new Date(slotStart.getTime() + RESERVATION_DURATION_MS);
       slots.push({
         value: `${String(slotStart.getHours()).padStart(2, '0')}:${String(slotStart.getMinutes()).padStart(2, '0')}`,
-        label: `${String(slotStart.getHours()).padStart(2, '0')}h – ${String((slotStart.getHours() + 2) % 24).padStart(2, '0')}h`,
+        label: `${String(slotStart.getHours()).padStart(2, '0')}h – ${String(slotEnd.getHours()).padStart(2, '0')}h`,
       });
     }
     return slots;
@@ -251,7 +253,7 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
       <CardTitle class="text-xl md:text-2xl font-bold text-[#613213] font-playfair">Réserver une séance</CardTitle>
     </div>
     <CardDescription class="mb-6 text-[#9e8b8b]">
-      Les créneaux affichés sont ceux définis par Cécile dans son agenda. Chaque rendez-vous dure deux heures et sera
+      Les créneaux affichés sont ceux définis par Cécile dans son agenda. Chaque rendez-vous dure une heure et sera
       confirmé après vérification.
     </CardDescription>
 
@@ -356,7 +358,7 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
             {{ slot.label }}
           </Button>
         </div>
-        <p v-if="date && !availableSlots.length" class="text-sm">Aucun créneau de deux heures n’est disponible ce
+        <p v-if="date && !availableSlots.length" class="text-sm">Aucun créneau d’une heure n’est disponible ce
           jour-là.</p>
       </div>
       <div class="grid gap-2"><Label for="reservation-message">Précisions (facultatif)</Label><Textarea

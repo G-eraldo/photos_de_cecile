@@ -1,5 +1,6 @@
 # Lessons
 
+- Centraliser la durée d’une réservation entre le calendrier affiché et la création Google Calendar. Lorsqu’une durée métier change, vérifier à la fois les disponibilités d’exactement cette durée et le découpage des plages plus longues.
 - Dans un flux de paiement, ne jamais répondre « introuvable » parce qu’un effet secondaire (Calendar ou e-mail) échoue après la validation Mollie. Retourner l’état de finalisation séparément, tracer l’erreur côté serveur et prévoir une reprise idempotente.
 - Lorsqu’un OAuth demande le scope limité `calendar.events`, ne pas utiliser `calendars.get` pour vérifier l’accès : cet endpoint exige une portée plus large. Vérifier les droits sans effet de bord via `events.list`.
 

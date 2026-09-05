@@ -123,6 +123,14 @@
 - [x] Calculer et enregistrer les frais kilométriques côté serveur avant la création du paiement Mollie.
 - [x] Vérifier la compilation Nuxt.
 
+## Réservation — créneaux d’une heure
+
+- [x] Centraliser la durée et proposer uniquement des créneaux d’une heure.
+- [x] Créer la réservation Google et l’e-mail de confirmation avec la même durée.
+- [x] Vérifier la compilation Nuxt.
+
+- Revue du 5 septembre 2026 : une disponibilité Google de deux heures est découpée en deux choix consécutifs d’une heure, tandis qu’une disponibilité d’exactement une heure est proposée telle quelle. La validation serveur, l’événement Google créé et les horaires de confirmation utilisent tous la durée partagée d’une heure. `npm run build` et `git diff --check` passent.
+
 ## Paiement Mollie — retour de confirmation
 
 - [x] Corriger le routage de `/reservation/confirmation`.

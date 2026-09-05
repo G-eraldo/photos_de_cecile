@@ -10,6 +10,7 @@ import {
   isAvailabilityEvent,
 } from "../../utils/google-calendar.js";
 import { dateTimeInParis, formatParisTime } from "../../utils/paris-date-time.js";
+import { RESERVATION_DURATION_MS } from "~~/shared/utils/reservation-duration.js";
 
 const hasOverlap = (start, end, otherStart, otherEnd) =>
   start < otherEnd && end > otherStart;
@@ -80,7 +81,7 @@ export const completeReservation = async (event, body) => {
   }
 
   const start = dateTimeInParis(date, heure);
-  const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+  const end = new Date(start.getTime() + RESERVATION_DURATION_MS);
 
   if (Number.isNaN(start.getTime()) || start <= new Date()) {
     throw createError({
