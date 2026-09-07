@@ -94,7 +94,7 @@ async function submitGiftCard() {
 
 <template>
   <main class="min-h-screen bg-[#E6DFDD] text-[#503d30]">
-    <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/DSC_01434_3ae18f4bf0.jpeg"
+    <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/6_6c966f4ef3.png"
       alt="Alliances, bouquet et accessoires de mariage" position="center 48%" />
     <div class="px-6 pb-20 pt-10 sm:pt-16">
       <EditorialPageHeader title="Bon cadeau"
@@ -103,7 +103,7 @@ async function submitGiftCard() {
         <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.7fr)] lg:gap-18">
           <div class="lg:sticky lg:top-28 lg:self-start">
             <div class="aspect-4/5 overflow-hidden bg-[#ddd4c9] shadow-sm">
-              <img src="https://media-photodececile.lafabriqueducode.fr/DSC_06915_ad4aa41b76.jpg"
+              <img src="https://media-photodececile.lafabriqueducode.fr/DSC_01434_3ae18f4bf0.jpeg"
                 alt="Aperçu du bon cadeau personnalisé" width="6336" height="9504" decoding="async"
                 class="h-full w-full object-cover">
             </div>
