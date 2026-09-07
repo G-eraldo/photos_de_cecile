@@ -2,10 +2,11 @@ import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 
-const templateNames = {
-  5: 'bon-cadeau-5-photos.jpg',
-  10: 'bon-cadeau-10-photos.jpg',
-  15: 'bon-cadeau-15-photos.jpg',
+// Pages du PDF fourni, indexées à partir de zéro. Chaque page porte son forfait.
+const templatePages = {
+  Animaux: { 5: 0, 10: 1, 15: 2 },
+  'Famille, couple, grossesse, portrait ou boudoir': { 10: 3, 15: 4 },
+  Naissance: { 10: 5, 15: 6 },
 }
 
 const formatDate = (date) => new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long' }).format(date)
@@ -22,6 +23,18 @@ function wrapText(text, font, size, maximumWidth) {
   const lines = []
   let line = ''
   for (const word of text.split(/\s+/)) {
+    if (font.widthOfTextAtSize(word, size) > maximumWidth) {
+      if (line) lines.push(line)
+      line = ''
+      for (const character of word) {
+        if (font.widthOfTextAtSize(line + character, size) > maximumWidth) {
+          lines.push(line)
+          line = ''
+        }
+        line += character
+      }
+      continue
+    }
     const next = line ? `${line} ${word}` : word
     if (font.widthOfTextAtSize(next, size) <= maximumWidth) line = next
     else if (line) {
@@ -35,39 +48,46 @@ function wrapText(text, font, size, maximumWidth) {
 
 export async function generateGiftVoucherPdf({ details }) {
   const photos = Number(String(details.format || '').match(/\d+/)?.[0])
-  const templateName = templateNames[photos]
-  if (!templateName) throw new Error('Le modèle de bon cadeau est introuvable.')
+  const templatePage = templatePages[details.prestation]?.[photos]
+  if (templatePage === undefined) throw new Error('Le modèle de bon cadeau est introuvable.')
 
-  const image = await readFile(resolve(process.cwd(), 'public/images/bons-cadeaux', templateName))
+  const template = await readFile(resolve(process.cwd(), 'public/images/bons-cadeaux/modeles-bons-cadeaux.pdf'))
   const pdf = await PDFDocument.create()
-  const voucher = await pdf.embedJpg(image)
+  const source = await PDFDocument.load(template)
+  const sourcePage = source.getPage(templatePage)
+  const { x, y, width: sourceWidth, height: sourceHeight } = sourcePage.getMediaBox()
+  const voucher = await pdf.embedPage(sourcePage, {
+    left: x, bottom: y, right: x + sourceWidth, top: y + sourceHeight,
+  })
   const width = 842
   const height = width * voucher.height / voucher.width
   const page = pdf.addPage([width, height])
   const regular = await pdf.embedFont(StandardFonts.Helvetica)
-  const italic = await pdf.embedFont(StandardFonts.HelveticaOblique)
   const ink = rgb(0.31, 0.27, 0.25)
-  const scaleX = width / voucher.width
-  const scaleY = height / voucher.height
+  // Coordonnées repérées sur le gabarit affiché à 1100 px de largeur.
+  const scaleX = width / 1100
+  const scaleY = scaleX
   const toPdfY = (top) => height - top * scaleY
   const validUntil = new Date()
   validUntil.setFullYear(validUntil.getFullYear() + 1)
 
-  page.drawImage(voucher, { x: 0, y: 0, width, height })
-  page.drawText(`Pour ${clampText(details.beneficiaire, 80)}`, {
-    x: 118 * scaleX, y: toPdfY(430), size: 18, font: italic, color: ink,
-  })
-  page.drawText(clampText(`${details.prenom} ${details.nom}`, 90), {
-    x: 345 * scaleX, y: toPdfY(488), size: 15, font: regular, color: ink,
-  })
-  page.drawText(formatDate(validUntil), {
-    x: 400 * scaleX, y: toPdfY(572), size: 15, font: regular, color: ink,
-  })
+  page.drawPage(voucher, { x: 0, y: 0, width, height })
+  const drawField = (text, left, top, maximumWidth, font = regular) => {
+    const size = Math.min(12, maximumWidth * scaleX / Math.max(font.widthOfTextAtSize(text, 1), 1))
+    page.drawText(text, { x: left * scaleX, y: toPdfY(top), size, font, color: ink })
+  }
+  drawField(clampText(`${details.prenom} ${details.nom}`, 90), 225, 302, 263)
+  drawField(formatDate(validUntil), 250, 354, 238)
 
-  const message = clampText(details.message, 250) || `Une séance ${details.prestation} et un forfait ${details.format}.`
-  const lines = wrapText(message, regular, 14, 650 * scaleX).slice(0, 5)
+  const message = clampText(details.message, 250) || clampText(`Une séance ${details.prestation} et un forfait ${details.format}.`, 250)
+  let messageSize = 12
+  let lines = wrapText(message, regular, messageSize, 415 * scaleX)
+  while (lines.length > 5 && messageSize > 6) {
+    messageSize -= 0.5
+    lines = wrapText(message, regular, messageSize, 415 * scaleX)
+  }
   lines.forEach((line, index) => {
-    page.drawText(line, { x: 120 * scaleX, y: toPdfY(704 + index * 51), size: 14, font: regular, color: ink })
+    page.drawText(line, { x: 73 * scaleX, y: toPdfY(435 + index * 32), size: messageSize, font: regular, color: ink })
   })
   return Buffer.from(await pdf.save())
 }

@@ -68,8 +68,7 @@ const featuredLayouts = [
     <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/5_034a70c674.png"
       alt="Un couple entouré de ses chiens dans la forêt" position="center 48%" />
     <div class="pt-10 sm:pt-16">
-      <EditorialPageHeader title="Portfolio"
-        description="Des histoires, des regards et des éclats de vie un album libre..." />
+      <EditorialPageHeader title="Portfolio" description="Des histoires, des regards et des éclats de vie." />
 
       <div v-if="pending" class="columns-2 gap-4 sm:columns-3 lg:columns-4">
         <Skeleton v-for="item in 12" :key="item"

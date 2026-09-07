@@ -16,8 +16,7 @@ useSeoMeta({
     <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/3_4fa71f2d6a.png"
       alt="Une femme avec son chien et son lapin en extérieur" position="center 48%" />
     <div class="pt-10 sm:pt-16">
-      <EditorialPageHeader title="Contact"
-        description="Une envie, une date ou une question ? Échangeons pour imaginer votre séance." />
+      <EditorialPageHeader title="Contact" />
       <FormContent />
     </div>
   </main>

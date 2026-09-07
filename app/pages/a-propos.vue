@@ -17,8 +17,7 @@ useSeoMeta({
     <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/1_e1d5cd0f04.png"
       alt="Une femme et son cheval au coucher du soleil" position="center 52%" />
     <div class="pt-10 sm:pt-16">
-      <EditorialPageHeader title="À propos"
-        description="Une photographie sensible et spontanée, au plus près de ce qui vous ressemble." />
+      <EditorialPageHeader title="À propos" />
       <ProposContent />
       <MapContent />
     </div>

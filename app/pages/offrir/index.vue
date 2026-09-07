@@ -22,7 +22,7 @@ const prestations = [
 ]
 const deliveryChoices = [
   { value: 'email', label: 'Par e-mail', description: 'Le bon cadeau PDF personnalisé est envoyé après paiement.' },
-  { value: 'courrier', label: 'Par courrier +5 €', description: 'Cécile préparera votre bon cadeau et vous l’enverra par courrier.' },
+  { value: 'courrier', label: 'Par courrier +5 €', description: 'Cécile préparera votre bon cadeau et vous l’enverra par courrier. Une enveloppe est fourni lors de l’envoi ' },
 ]
 const hasEmoji = (value) => /[\p{Extended_Pictographic}\p{Regional_Indicator}]/u.test(value)
 
@@ -45,7 +45,7 @@ const selectedChoice = computed(() => photoChoices.value.find((choice) => choice
 const total = computed(() => (selectedChoice.value?.price || 0) + (delivery.value === 'courrier' ? 5 : 0))
 const formattedTotal = computed(() => total.value.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
 const deliveryMessage = computed(() => delivery.value === 'courrier'
-  ? 'Cécile préparera votre bon cadeau et vous l’enverra par courrier.'
+  ? 'Cécile préparera votre bon cadeau et vous l’enverra par courrier. Une enveloppe est fourni lors de l’envoi '
   : 'Le bon personnalisé sera envoyé au format PDF après paiement.')
 
 watch(selectedPrestationData, (prestation) => {
@@ -94,7 +94,7 @@ async function submitGiftCard() {
 
 <template>
   <main class="min-h-screen bg-[#E6DFDD] text-[#503d30]">
-    <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/6_6c966f4ef3.png"
+    <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/DSC_01434_3ae18f4bf0.jpeg"
       alt="Alliances, bouquet et accessoires de mariage" position="center 48%" />
     <div class="px-6 pb-20 pt-10 sm:pt-16">
       <EditorialPageHeader title="Bon cadeau"
@@ -114,7 +114,8 @@ async function submitGiftCard() {
             <p class="font-playfair text-2xl text-[#613213] md:text-3xl">À offrir, valable un an</p>
             <p class="mt-5 leading-7 text-[#6d5b4e]">Choisissez une prestation, le forfait photo et ajoutez votre
               message.
-              Le bon cadeau sera complété puis envoyé par e-mail après le paiement.</p>
+              Le bon cadeau sera complété puis envoyé par e-mail après le paiement.
+            </p>
 
             <div class="mt-8 border-y border-[#d8cec1] py-7">
               <h2 class="font-playfair text-xl">Pour quelle prestation ?</h2>

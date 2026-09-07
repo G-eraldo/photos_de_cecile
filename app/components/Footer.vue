@@ -1,9 +1,11 @@
 <script setup>
 const links = [
   { title: "À propos", href: "/a-propos" },
+  { title: "Prestations", href: "/prestations" },
   { title: "Portfolio", href: "/portfolio" },
-  // { title: "Prestations", href: "/prestations" },
-  { title: "Tirages photos", href: "/tirages-photo" },
+
+  { title: "Tirage photo", href: "/tirage-photo" },
+  { title: "Offrir", href: "/offrir" },
   { title: "Contact", href: "/contact" },
   { title: "Mentions légales", href: "/mentions-legales" },
   { title: "Confidentialité", href: "/politique-confidentialite" },

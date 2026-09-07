@@ -392,3 +392,39 @@
 - Les 18 premières images sont désormais choisies dans Strapi et ordonnées par les marqueurs `#portfolio-une-1` à `#portfolio-une-18` : 4 animaux, 2 images de chacun des sept autres thèmes retenus et aucune image de baptême. Toutes proviennent exclusivement des sous-dossiers du dossier Portfolio ; l’ordre alterne les thèmes.
 - L’album répartit désormais automatiquement les photos selon leur format afin d’équilibrer les trois colonnes sans recadrage et sans large zone vide. Les `srcset` sont ajustés au tiers de largeur ; `npm run build` passe.
 - Le premier lot de l’album contient désormais 20 images (26 avec la mosaïque d’ouverture) ; les deux nouvelles images sont placées dans les colonnes les plus courtes. Les lots suivants restent de 12 images.
+
+## Audit global — 5 septembre 2026
+
+- [x] Explorer les deux applications et relire les leçons du projet.
+- [ ] Auditer la sécurité et les flux de paiement, réservation et fichiers privés.
+- [ ] Auditer SEO, accessibilité, performances et fiabilité.
+- [ ] Vérifier les dépendances et les réponses publiques sans opération métier.
+- [ ] Rédiger un rapport priorisé avec preuves, limites et recommandations.
+
+Périmètre : audit en lecture seule du code et contrôles publics non destructifs ; aucune modification applicative ni transaction réelle.
+
+## Bons cadeaux — modèles PDF par prestation
+
+- [x] Examiner les 7 pages fournies et le parcours de livraison dématérialisée.
+- [x] Sélectionner le modèle par prestation et nombre de photos, conserver le préremplissage.
+- [x] Vérifier les 7 variantes, les textes longs et compiler Nuxt.
+
+Plan : utiliser les pages originales du PDF (animaux 5/10/15, famille 10/15, naissance 10/15), ajuster les champs au nouveau gabarit et préserver le branchement e-mail/courrier existant.
+
+Revue du 7 septembre 2026 : les 7 pages originales sont sélectionnées par prestation et forfait. Bénéficiaire, acheteur, validité et message sont préremplis ; les textes longs sont ajustés sans tronquer le message. Les 7 rendus ont été inspectés, le contenu des champs extrait et vérifié, ainsi que le message de 250 caractères et le repli pour un ancien message emoji. Les combinaisons sans modèle sont refusées. Le branchement courrier/e-mail reste inchangé. `npm run build` et `git diff --check` passent ; le PDF source est présent dans le build. Aucun e-mail réel envoyé, aucun paiement déclenché. Redéploiement nécessaire pour mise en production.
+
+## Bon cadeau — retrait du bénéficiaire sur le PDF
+
+- [x] Retirer la ligne « Pour [bénéficiaire] » et la police devenue inutile.
+- [x] Régénérer l'exemple et vérifier visuellement que les autres champs restent préremplis.
+
+Revue : ligne retirée pour toutes les catégories via le générateur commun. Exemple PDF contrôlé ; `git diff --check` passe.
+
+## Tirages — présentation des papiers
+
+- [x] Structurer l'introduction, les deux papiers et la conclusion avec une hiérarchie typographique claire.
+- [x] Vérifier le rendu et compiler la page.
+
+Plan : conserver le fond olive et le texte fourni, présenter les papiers en deux colonnes sur ordinateur et les empiler sur mobile avec des séparateurs fins.
+
+Revue : section contrôlée dans le navigateur local en disposition à deux colonnes. Titres distincts, textes conservés, séparateurs et conclusion centrée ; empilement prévu sous 768 px. `npm run build` et `git diff --check` passent.
