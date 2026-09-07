@@ -44,3 +44,6 @@
 - Lorsqu’un correctif concerne l’administration Strapi déployée, ne pas le présenter comme visible en production avant le redéploiement du backend : les fichiers locaux non déployés ne modifient pas `back-cecile`.
 - Dans une expression Vue contenant une apostrophe française, utiliser des guillemets doubles ou échapper l’apostrophe afin de ne pas interrompre la chaîne JavaScript.
 - Ne pas placer une condition ternaire textuelle longue directement dans une interpolation Vue : la formater dans un `computed` pour que le formatage automatique reste sans risque.
+
+- Pour les introductions sur mobile, prévoir un padding horizontal explicite sur le conteneur de texte même lorsqu’il possède un max-width.
+- Dans le portfolio, les réimportations Strapi ont des URL différentes : dédupliquer avec nom, dimensions et taille, après la priorité éditoriale ; ne jamais dédupliquer sur le nom seul.

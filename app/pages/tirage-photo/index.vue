@@ -57,7 +57,7 @@ const products = computed(() => {
     <section class="pb-16 pt-10 sm:pt-16 md:pb-24">
       <EditorialPageHeader eyebrow="La boutique" title="Tirages photo"
         description="Imprimé en France dans mon atelier, sur du papier Français de qualité premium." />
-      <div class="mx-auto grid max-w-6xl items-start gap-10 md:grid-cols-2 md:gap-20">
+      <div class="mx-auto grid max-w-6xl items-start gap-10 px-6 md:grid-cols-2 md:gap-20 xl:px-0">
         <div class="order-2 md:order-1">
           <p class="mb-4 text-xs font-semibold uppercase tracking-[0.3em] text-[#9e8b8b]">Vos souvenirs prennent vie</p>
           <h2 class="max-w-lg font-playfair text-4xl leading-[1.08] text-[#613213] md:text-5xl">

@@ -1,3 +1,5 @@
+import { deduplicatePortfolioPhotos } from '../utils/portfolio-photos.js';
+
 const getStrapiConfig = () => {
   const strapiUrl = process.env.STRAPI_URL;
   const strapiToken = process.env.STRAPI_API_TOKEN;
@@ -82,7 +84,7 @@ export default defineEventHandler(async () => {
   const files = Array.isArray(response) ? response : response.data || [];
 
   return {
-    photos: prioritizeFeaturedPhotos(files.filter((file) => file.mime?.startsWith("image/") && file.url))
+    photos: deduplicatePortfolioPhotos(prioritizeFeaturedPhotos(files.filter((file) => file.mime?.startsWith("image/") && file.url)))
       .map((file) => ({
         id: file.id,
         alt: getAltText(file),

@@ -428,3 +428,27 @@ Revue : ligne retirée pour toutes les catégories via le générateur commun. E
 Plan : conserver le fond olive et le texte fourni, présenter les papiers en deux colonnes sur ordinateur et les empiler sur mobile avec des séparateurs fins.
 
 Revue : section contrôlée dans le navigateur local en disposition à deux colonnes. Titres distincts, textes conservés, séparateurs et conclusion centrée ; empilement prévu sous 768 px. `npm run build` et `git diff --check` passent.
+
+## Correctifs — marges mobiles et doublons du portfolio
+
+- [x] Identifier le conteneur sans marges et les médias réimportés à l'identique.
+- [x] Ajouter les marges et dédupliquer les fichiers identiques sans supprimer de médias Strapi.
+- [x] Vérifier les réimportations, la conservation des photos distinctes et la compilation.
+
+Revue : padding horizontal de 24 px ajouté au bloc introduction. Déduplication par URL ou signature nom/dimensions/taille après tri éditorial : 195 médias deviennent 185. Assertions validées sur les réimportations réelles, les homonymes distincts et la priorité éditoriale. API locale vérifiée et compilation Nuxt réussie.
+
+## Accueil — galerie de quatre portraits
+
+- [ ] Préparer les quatre photos sur Cloudinary avec des variantes adaptées aux écrans.
+- [x] Ajouter une galerie de portraits avant le lien portfolio, avec quatre colonnes sur ordinateur et deux sur mobile.
+- [x] Vérifier les images, le rendu local et la compilation.
+
+Revue : galerie locale contrôlée visuellement, quatre portraits sans recadrage, variantes WebP de 400 à 1200 px et chargement différé. Build réussi. Hébergement distant en attente : Cloudinary renvoie 401 (signature invalide) et auto-review refuse le téléversement Strapi sans accord explicite pour cette destination. Les images locales sont destinées à l’aperçu ; ne pas déployer avant résolution de l’hébergement.
+
+## Accueil — bloc formules illustré
+
+- [x] Préparer trois photos optimisées pour l’aperçu local.
+- [x] Composer le texte à gauche et un triptyque à droite, empilé sur mobile.
+- [x] Vérifier le rendu et compiler.
+
+Revue : triptyque sans recadrage contrôlé dans le navigateur local, bouton shadcn avec lien unique vers les prestations ; compilation réussie. Photos optimisées locales pour aperçu, hébergement distant toujours en attente de l’accord demandé précédemment.
