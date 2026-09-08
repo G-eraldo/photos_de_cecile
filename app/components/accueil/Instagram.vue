@@ -17,7 +17,7 @@ const photos = [
   {
     src: 'https://media-photodececile.lafabriqueducode.fr/8_8f656b7dff.png',
     alt: 'Portrait de mariés sous un voile',
-    position: 'object-[center_38%]',
+    position: 'object-top',
   },
 ]
 </script>

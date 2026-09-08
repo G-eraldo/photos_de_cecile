@@ -3,7 +3,6 @@ import Accueil from '~/components/accueil/Accueil.vue';
 import Avis from '~/components/accueil/Avis.vue';
 import Cta from '~/components/accueil/Cta.vue';
 import Instagram from '~/components/accueil/Instagram.vue';
-import Prestation from '~/components/accueil/Prestation.vue';
 
 definePageMeta({ layout: 'default' })
 
@@ -19,7 +18,6 @@ useSeoMeta({
   <div>
     <Accueil />
     <Cta />
-    <Prestation />
     <Instagram />
     <Avis />
   </div>
