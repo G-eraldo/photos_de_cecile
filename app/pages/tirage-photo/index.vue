@@ -90,14 +90,12 @@ const products = computed(() => {
             <div>
               <p class="text-xs uppercase tracking-[0.24em] text-[#d8c9b7]">La collection</p>
               <h2 class="mt-4 font-playfair text-4xl leading-tight text-[#f7f2eb] md:text-5xl">Le charme du papier</h2>
-            </div>
-            <div>
-              <p class="text-lg font-medium text-[#f7f2eb]">Deux papiers d’exception pour vos tirages</p>
               <p class="mt-3 text-sm leading-7 text-[#e6ddd3] sm:text-base">
                 Pour que chaque image prenne toute sa force, je vous propose deux papiers haut de gamme,
                 chacun avec sa personnalité.
               </p>
             </div>
+
           </div>
 
           <div class="grid gap-10 py-10 md:grid-cols-2 md:gap-16 md:py-12">
@@ -132,14 +130,14 @@ const products = computed(() => {
           </div>
         </div>
 
-        <div v-if="pending" class="grid grid-cols-2 gap-5 md:grid-cols-4">
+        <div v-if="pending" class="grid grid-cols-2 gap-5">
           <Skeleton v-for="item in 4" :key="item" class="aspect-4/5 rounded-none bg-white/15" />
         </div>
         <Alert v-else-if="error" class="border-[#d8c9b7] bg-transparent text-[#f7f2eb]">
           <AlertDescription>La collection est momentanément indisponible. Veuillez réessayer dans un instant.
           </AlertDescription>
         </Alert>
-        <div v-else class="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 md:gap-x-7 lg:grid-cols-4">
+        <div v-else class="grid grid-cols-1 gap-x-4 gap-y-10 w-[50%] mx-auto md:grid-cols-2 md:gap-x-7">
           <TirageProductCard v-for="product in products" :key="product.slug" :product="product" />
         </div>
       </div>
