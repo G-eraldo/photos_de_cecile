@@ -463,6 +463,8 @@ Revue du 8 septembre : les deux galeries ne sont plus affichées. Composition la
 
 ## Boutique — anciennes URL en erreur 404
 
-- [ ] Harmoniser les liens internes, le sitemap et le retour de paiement sur `/tirage-photo`.
-- [ ] Rediriger les anciennes URL `/tirages-photo` en conservant chemin et paramètres.
-- [ ] Vérifier la compilation et les redirections.
+- [x] Harmoniser les liens internes, le sitemap et le retour de paiement sur `/tirage-photo`.
+- [x] Rediriger les anciennes URL `/tirages-photo` en conservant chemin et paramètres.
+- [x] Vérifier la compilation et les redirections.
+
+Revue : ancienne URL du produit baryté vérifiée en HTTP local (200 après redirection). Ancien retour de paiement : 301 vers `/tirage-photo/confirmation` avec paramètres conservés. Tests de redirection et compilation réussis.
