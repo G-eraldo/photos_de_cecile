@@ -1,7 +1,3 @@
-<script setup>
-import PhotoGallery from './PhotoGallery.vue';
-</script>
-
 <template>
   <div>
 
@@ -92,8 +88,6 @@ import PhotoGallery from './PhotoGallery.vue';
           </p>
 
         </div>
-
-        <PhotoGallery />
 
         <Button as-child class="mt-8  bg-[#676463] px-7 py-6 text-white hover:bg-[#5A3419]">
           <NuxtLink to="/portfolio">Découvrir quelques photos </NuxtLink>

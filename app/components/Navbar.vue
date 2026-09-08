@@ -60,7 +60,7 @@ onUnmounted(() => {
             </NuxtLink>
 
             <div class="flex items-center gap-1 lg:hidden">
-              <NuxtLink v-if="!cart.isEmpty" to="/tirages-photo/panier" aria-label="Panier" :class="cn(
+              <NuxtLink v-if="!cart.isEmpty" to="/tirage-photo/panier" aria-label="Panier" :class="cn(
                 'relative z-50 flex h-10 w-10 items-center justify-center rounded-lg transition-all duration-300',
                 isScrolled ? 'text-[#5A3419] hover:text-[#C9A227]' : 'text-white mix-blend-difference'
               )">
@@ -96,7 +96,7 @@ onUnmounted(() => {
 
               </li>
               <li v-if="!cart.isEmpty">
-                <NuxtLink to="/tirages-photo/panier" :class="cn(
+                <NuxtLink to="/tirage-photo/panier" :class="cn(
                   'flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-300',
                   isScrolled
                     ? 'text-[#5A3419] hover:text-[#C9A227]'

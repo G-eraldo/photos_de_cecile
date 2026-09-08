@@ -108,7 +108,7 @@ export default defineEventHandler(async (event) => {
       amount: total.toFixed(2),
       reference,
       description: `Commande — ${quantity} tirage${quantity > 1 ? 's' : ''}`,
-      confirmationPath: '/tirages-photo/confirmation',
+      confirmationPath: '/tirage-photo/confirmation',
       paymentType: 'commande',
     })
     await updateStoredOrder(config, order.data.documentId, { mollie_payment_id: payment.id })

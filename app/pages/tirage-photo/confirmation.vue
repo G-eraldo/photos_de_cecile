@@ -32,7 +32,7 @@ onMounted(() => {
   stopConfirmationWatch = watch(isConfirmed, (confirmed) => {
     if (confirmed) {
       cart.clearCart()
-      redirectTimer = window.setTimeout(() => navigateTo('/tirages-photo'), 7000)
+      redirectTimer = window.setTimeout(() => navigateTo('/tirage-photo'), 7000)
     }
   }, { immediate: true })
 })
@@ -55,7 +55,7 @@ onBeforeUnmount(() => {
         sera préparé avec soin.</CardDescription>
       <p class="text-sm text-[#9e8b8b]">Redirection vers les tirages dans quelques secondes…</p>
       <Button as-child variant="outline">
-        <NuxtLink to="/tirages-photo">Revenir aux tirages</NuxtLink>
+        <NuxtLink to="/tirage-photo">Revenir aux tirages</NuxtLink>
       </Button>
     </div>
     <div v-else-if="isFailed" class="space-y-4 py-4">
@@ -63,7 +63,7 @@ onBeforeUnmount(() => {
       <CardTitle class="font-playfair text-2xl text-[#613213]">Le paiement n’a pas abouti</CardTitle>
       <CardDescription>Votre commande n’est pas confirmée. Vous pouvez recommencer votre commande.</CardDescription>
       <Button as-child>
-        <NuxtLink to="/tirages-photo">Revenir aux tirages</NuxtLink>
+        <NuxtLink to="/tirage-photo">Revenir aux tirages</NuxtLink>
       </Button>
     </div>
     <div v-else class="space-y-4 py-4">

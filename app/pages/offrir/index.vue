@@ -22,7 +22,7 @@ const prestations = [
 ]
 const deliveryChoices = [
   { value: 'email', label: 'Par e-mail', description: 'Le bon cadeau PDF personnalisé est envoyé après paiement.' },
-  { value: 'courrier', label: 'Par courrier +5 €', description: 'Cécile préparera votre bon cadeau et vous l’enverra par courrier. Une enveloppe est fourni lors de l’envoi ' },
+  { value: 'courrier', label: 'Par courrier +5 €', description: "Je préparerai votre bon cadeau et vous l'enverrai par courrier. Une enveloppe est fourni lors de l’envoi " },
 ]
 const hasEmoji = (value) => /[\p{Extended_Pictographic}\p{Regional_Indicator}]/u.test(value)
 
@@ -45,7 +45,7 @@ const selectedChoice = computed(() => photoChoices.value.find((choice) => choice
 const total = computed(() => (selectedChoice.value?.price || 0) + (delivery.value === 'courrier' ? 5 : 0))
 const formattedTotal = computed(() => total.value.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
 const deliveryMessage = computed(() => delivery.value === 'courrier'
-  ? 'Cécile préparera votre bon cadeau et vous l’enverra par courrier. Une enveloppe est fourni lors de l’envoi '
+  ? "Je préparerai votre bon cadeau et vous l'enverrai par courrier. Une enveloppe est fourni lors de l’envoi "
   : 'Le bon personnalisé sera envoyé au format PDF après paiement.')
 
 watch(selectedPrestationData, (prestation) => {

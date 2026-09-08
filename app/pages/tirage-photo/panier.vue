@@ -68,7 +68,7 @@ async function checkout() {
 
     <div v-if="cart.isEmpty" class="mx-auto max-w-2xl px-5 text-center sm:px-8">
       <p class="text-lg text-[#6d5b4e]">Votre panier est vide.</p>
-      <Button as-child class="mt-6"><NuxtLink to="/tirages-photo">Découvrir les tirages</NuxtLink></Button>
+      <Button as-child class="mt-6"><NuxtLink to="/tirage-photo">Découvrir les tirages</NuxtLink></Button>
     </div>
 
     <div v-else class="mx-auto grid max-w-6xl gap-10 px-5 sm:px-8 lg:grid-cols-[1fr_0.8fr] lg:px-12">

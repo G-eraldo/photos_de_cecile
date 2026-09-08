@@ -452,3 +452,17 @@ Revue : galerie locale contrôlée visuellement, quatre portraits sans recadrage
 - [x] Vérifier le rendu et compiler.
 
 Revue : triptyque sans recadrage contrôlé dans le navigateur local, bouton shadcn avec lien unique vers les prestations ; compilation réussie. Photos optimisées locales pour aperçu, hébergement distant toujours en attente de l’accord demandé précédemment.
+
+## Accueil — disposition de référence et retrait portfolio
+
+- [x] Retirer les galeries et disposer le chien à gauche et le cheval à droite autour des formules centrées.
+- [x] Exclure la photo des bons cadeaux du portfolio sans supprimer le média.
+- [x] Vérifier les exclusions et compiler.
+
+Revue du 8 septembre : les deux galeries ne sont plus affichées. Composition latérale avec les deux URL fournies, texte et liens centrés ; images dans le flux sur mobile. Deux imports de la photo commerciale exclus du portfolio, page Offrir conservée. Assertions d’exclusion et compilation réussies. Les anciennes demandes d’hébergement des galeries sont devenues sans objet pour cet affichage.
+
+## Boutique — anciennes URL en erreur 404
+
+- [ ] Harmoniser les liens internes, le sitemap et le retour de paiement sur `/tirage-photo`.
+- [ ] Rediriger les anciennes URL `/tirages-photo` en conservant chemin et paramètres.
+- [ ] Vérifier la compilation et les redirections.

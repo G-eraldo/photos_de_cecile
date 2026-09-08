@@ -211,7 +211,7 @@ async function addToCart() {
       <AlertDescription>Ce tirage est momentanément indisponible.</AlertDescription>
     </Alert>
     <div v-else-if="product" class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
-      <NuxtLink to="/tirages-photo" class="mb-8 inline-flex text-sm text-[#806957] transition hover:text-[#503d30]">←
+      <NuxtLink to="/tirage-photo" class="mb-8 inline-flex text-sm text-[#806957] transition hover:text-[#503d30]">←
         Retour aux tirages</NuxtLink>
       <div class="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,0.7fr)] lg:gap-18">
         <div class="lg:sticky lg:top-28 lg:self-start">
@@ -267,10 +267,10 @@ async function addToCart() {
           </div>
           <div class="mt-10 border-t border-[#d8cec1] pt-8">
             <h2 class="font-playfair text-2xl">Ajouter votre tirage au panier</h2>
-            <p class="mt-2 text-sm leading-6 text-[#6d5b4e]">Importez la photo à imprimer. Vous pourrez réunir vos tirages et finaliser la commande depuis le panier.</p>
+            <p class="mt-2 text-sm leading-6 text-[#6d5b4e]">Importez la photo à imprimer. Vous pourrez réunir vos
+              tirages et finaliser la commande depuis le panier.</p>
             <div class="mt-4 grid gap-2"><Label for="order-photo">Photo à imprimer</Label><Input id="order-photo"
-                type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif"
-                @change="selectPhoto" />
+                type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" @change="selectPhoto" />
               <p class="text-xs text-[#806957]">JPG, PNG, WebP ou HEIC. Votre photo est envoyée directement dans un
                 espace Cloudflare privé.</p>
             </div>

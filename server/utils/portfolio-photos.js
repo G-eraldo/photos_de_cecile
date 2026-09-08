@@ -14,3 +14,9 @@ export function deduplicatePortfolioPhotos(photos) {
     return !duplicate;
   });
 }
+// Photo commerciale des bons cadeaux : conserver ses deux imports pour la
+// page Offrir, mais ne pas les présenter dans l’album de séances.
+export function isPortfolioPhoto(photo) {
+  const filename = String(photo.url || '').split(/[?#]/)[0].split('/').pop();
+  return !['DSC_01434_746f713442.jpg', 'DSC_01434_3ae18f4bf0.jpeg'].includes(filename);
+}

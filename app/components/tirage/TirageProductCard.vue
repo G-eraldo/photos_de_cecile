@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-  <NuxtLink :to="`/tirages-photo/${product.slug}`" class="group block text-center">
+  <NuxtLink :to="`/tirage-photo/${product.slug}`" class="group block text-center">
     <div class="aspect-4/5 overflow-hidden bg-[#ddd4c9]">
       <NuxtImg :src="product.imageUrl" :alt="product.titre"
         class="h-full w-full object-cover transition duration-700 group-hover:scale-105"

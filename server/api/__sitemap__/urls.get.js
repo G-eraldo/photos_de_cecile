@@ -19,7 +19,7 @@ export default defineEventHandler(async () => {
     return (response.data || [])
       .filter((product) => typeof product.slug === "string" && product.slug)
       .map((product) => ({
-        loc: `/tirages-photo/${product.slug}`,
+        loc: `/tirage-photo/${product.slug}`,
         lastmod: product.updatedAt,
       }));
   } catch (error) {

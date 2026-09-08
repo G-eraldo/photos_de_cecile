@@ -7,9 +7,9 @@ import Card from '~/components/ui/card/Card.vue'
 definePageMeta({ layout: 'default' })
 
 useSeoMeta({
-  title: 'Tirages photo | Les Photos de Cécile',
+  title: 'Tirage photo | Les Photos de Cécile',
   description: 'Des tirages photo d’art, choisis avec soin pour faire vivre vos souvenirs.',
-  ogTitle: 'Tirages photo | Les Photos de Cécile',
+  ogTitle: 'Tirage photo | Les Photos de Cécile',
   ogDescription: 'Des souvenirs à toucher, à offrir et à transmettre.',
 })
 
@@ -123,7 +123,8 @@ const products = computed(() => {
           </div>
 
           <div class="border-y border-[#d8c9b7]/25 py-8 text-center md:py-10">
-            <p class="font-playfair text-2xl leading-snug text-[#f7f2eb] md:text-3xl">Faites vivre vos photos à travers le temps</p>
+            <p class="font-playfair text-2xl leading-snug text-[#f7f2eb] md:text-3xl">Faites vivre vos photos à travers
+              le temps</p>
             <p class="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#e6ddd3] sm:text-base">
               Choisissez le papier qui correspond le mieux à votre univers : douceur et discrétion du mat,
               ou éclat et profondeur du satiné.
