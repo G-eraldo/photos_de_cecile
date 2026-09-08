@@ -531,3 +531,14 @@ Revue : les trois routes serveur importent désormais la constante via `~~/share
 Plan : conserver `NuxtImg` comme demandé, supprimer uniquement la valeur `sizes="100vw"` mal interprétée qui produit une image minuscule, conserver les URL de pages et restaurer leur point focal via `objectPosition`, sans modifier la configuration Nuxt protégée.
 
 Revue : `NuxtImg` est conservé avec une sortie WebP de 1 800 × 900 et le point focal fourni par chaque page. Les bannières À propos et Prestations ont été rechargées et contrôlées visuellement dans le navigateur local ; les photographies sont de nouveau visibles. Les 21 tests et `npm run build` passent ; `git diff --check` ne signale aucune erreur.
+
+## Commandes Strapi — distinguer bons cadeaux et tirages
+
+- [x] Identifier les deux parcours qui créent une commande.
+- [x] Ajouter un type de commande explicite dans la collection Strapi.
+- [x] Renseigner ce type pour les bons cadeaux et les tirages.
+- [x] Vérifier les tests, les builds et consigner la revue.
+
+Plan : ajouter une énumération `type_commande` avec les valeurs `bon_cadeau` et `tirage`, puis l'envoyer explicitement depuis chacun des deux endpoints de paiement. Les autres données de commande restent inchangées.
+
+Revue : la collection `commande` expose désormais l'énumération obligatoire `type_commande`. Les nouveaux bons cadeaux enregistrent `bon_cadeau`, les commandes de photos enregistrent `tirage`, et le bootstrap Strapi reclasse les anciennes commandes d'après `details.type`. Les tests isolés du schéma, des deux créations et de la reprise historique passent, tout comme les builds Nuxt et Strapi et `git diff --check`. Le démarrage Strapi local n'a pas pu atteindre le bootstrap car le binaire `better-sqlite3` installé cible une autre version de Node (`NODE_MODULE_VERSION 127` au lieu de `147`).

@@ -97,6 +97,7 @@ export default defineEventHandler(async (event) => {
   const order = await createStoredOrder(config, {
     reference,
     details: orderDetails,
+    type_commande: 'tirage',
     montant_total: total,
     mollie_payment_id: `pending_${reference}`,
     statut: 'en_attente',

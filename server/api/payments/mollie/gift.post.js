@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
   }
   const config = getMollieConfig()
   const order = await createStoredOrder(config, {
-    reference, details: orderDetails, montant_total: total, mollie_payment_id: `pending_${reference}`, statut: 'en_attente', photo_privee: { type: 'bon_cadeau' },
+    reference, details: orderDetails, type_commande: 'bon_cadeau', montant_total: total, mollie_payment_id: `pending_${reference}`, statut: 'en_attente', photo_privee: { type: 'bon_cadeau' },
   })
 
   try {
