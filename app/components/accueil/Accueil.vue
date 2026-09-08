@@ -36,7 +36,7 @@
       <div class="mx-auto max-w-295">
 
         <blockquote class="mx-auto mb-16 max-w-225 font-poppins text-[#9E8B8B] md:mb-20">
-          <p class="text-[clamp(0.72rem,1.3vw,0.95rem)] font-semibold uppercase leading-[2] tracking-[0.3em]">
+          <p class="text-[clamp(0.72rem,1.3vw,0.95rem)] font-semibold uppercase leading-loose tracking-[0.3em]">
             « La photographie est l’art de montrer de combien d’instants éphémères la vie est faite »
           </p>
           <cite class="mt-4 block text-sm italic tracking-[0.18em]">
