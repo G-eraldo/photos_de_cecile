@@ -1,5 +1,8 @@
 # Lessons
 
+- Quand une référence demande explicitement une image à gauche et le texte à droite, respecter cet ordre à la fois visuellement et dans le DOM ; ne pas conserver l’ordre d’une itération précédente.
+- Lors d’une refonte de disposition d’un bloc existant, préserver sa couleur de fond et son encombrement tant que l’utilisateur ne demande que de déplacer ou remplacer les visuels ; contrôler la hauteur finale par rapport à la capture précédente.
+
 - Avec `NuxtImg`, ne pas remplacer une image native validée ni retirer l’optimisation lorsque l’utilisateur veut la conserver : diagnostiquer d’abord les attributs générés. Dans `@nuxt/image` v2, vérifier la largeur IPX produite par `sizes` et contrôler visuellement le rendu.
 
 - Sur les nouveaux bons cadeaux, ne pas ajouter de ligne « Pour [bénéficiaire] » au-dessus des champs du modèle ; préremplir uniquement les champs demandés du gabarit.

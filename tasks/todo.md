@@ -1,5 +1,25 @@
 # Tirages photo
 
+## Accueil — bloc formules en arche
+
+- [x] Remplacer les deux portraits latéraux par la seule photo demandée à droite.
+- [x] Aligner le titre, le texte et le bouton à gauche dans une composition responsive.
+- [x] Vérifier les proportions d’après la capture corrigée, les tests et la compilation Nuxt.
+
+Plan : reprendre la composition épurée de la référence en conservant le fond olive existant, avec une colonne éditoriale à gauche et la photo `photo_illu_8680d7d338.jpg` découpée en arche à droite. Sur mobile, conserver le texte avant la photo et des espacements lisibles.
+
+Revue : le fond olive historique est conservé. La photo unique en arche est limitée à 288 px, puis 320 px sur grand écran, et les espacements verticaux ont été réduits pour retrouver l’encombrement précédent. Le texte et le bouton restent à gauche sur ordinateur et précèdent la photo sur mobile. `npm test`, `npm run build` et `git diff --check` passent. Le navigateur intégré n’était pas disponible ; les proportions ont été ajustées à partir de la capture fournie.
+
+## Accueil — arche inversée et citation
+
+- [x] Placer la photo en arche à gauche et le contenu des formules à droite sans changer le fond ni la hauteur.
+- [x] Ajouter la citation de Marcel Proust au-dessus du contenu de bienvenue.
+- [x] Vérifier la typographie, la compilation et le diff.
+
+Plan : conserver les proportions déjà réduites et inverser seulement les deux colonnes. Composer la citation avec la typographie Poppins capitale et espacée du surtitre « Photographe amiénoise », puis distinguer l’auteur en italique.
+
+Revue : l’arche de 288 à 320 px précède maintenant le contenu dans le DOM et occupe la colonne gauche sur ordinateur ; le fond olive et les espacements compacts restent inchangés. La citation guillemetée ouvre le bloc blanc de bienvenue en Poppins semi-gras, capitales et espacement `0.3em`, avec « Marcel Proust » en italique. `npm test`, `npm run build` et `git diff --check` passent. Le contrôle navigateur intégré reste indisponible dans cette session.
+
 ## Remplacement du logo — Les Photos de Cécile
 
 - [x] Auditer les usages du logo sur le site, les e-mails, les PDF et Strapi.
