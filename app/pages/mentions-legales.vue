@@ -19,7 +19,7 @@ useSeoMeta({
       <header class="border-b border-[#D9D2CF] pb-8 text-center">
         <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[#9e8b8b]">Les Photos de Cécile</p>
         <h2 class="mt-3 font-playfair text-2xl text-[#613213] md:text-3xl">Informations légales</h2>
-        <p class="mt-5 text-sm leading-7 text-[#676463]">Dernière mise à jour : 4 septembre 2026</p>
+        <p class="mt-5 text-sm leading-7 text-[#676463]">Dernière mise à jour : 8 septembre 2026</p>
       </header>
 
       <div class="mt-10 space-y-10 text-sm leading-7 text-[#676463]">
@@ -29,15 +29,15 @@ useSeoMeta({
         <section>
           <h2 class="font-playfair text-2xl text-[#5A3419]">Édition du site</h2>
           <div class="mt-4 rounded-xl bg-[#FAF8F7] p-5">
-            <p class="font-semibold text-[#5A3419]">La fabrique du code</p>
+            <p class="font-semibold text-[#5A3419]">Les Photos de Cécile — Cécile DELLENBACH</p>
             <p>Entreprise individuelle</p>
-            <p>SIRET : 994 074 458 00010</p>
-            <p>11 rue de la gare 80360 Guillemont, France</p>
-            <p>Téléphone : <a class="text-[#5A3419] underline" href="tel:+33767265366">07 67 26 53 66</a></p>
+            <p>SIRET : 93211664300010</p>
+            <p>8 allée sablée, 80000 Amiens, France</p>
+            <p>Téléphone : <a class="text-[#5A3419] underline" href="tel:+33771773859">07 71 77 38 59</a></p>
             <p>E-mail : <a class="text-[#5A3419] underline"
-                href="mailto:lafabriqueducode@gmail.com">lafabriqueducode@gmail.com</a></p>
+                href="mailto:lesphotosdececile80@gmail.com">lesphotosdececile80@gmail.com</a></p>
           </div>
-          <p class="mt-4">Directeur de la publication : Gérald FRANCOIS.</p>
+          <p class="mt-4">Directrice de la publication : Cécile DELLENBACH.</p><p class="mt-3">Conception et réalisation technique : La fabrique du code — Gérald FRANCOIS, SIRET 994 074 458 00010, 11 rue de la gare, 80360 Guillemont. Contact : <a class="underline" href="mailto:lafabriqueducode@gmail.com">lafabriqueducode@gmail.com</a>.</p>
         </section>
 
         <section>
@@ -52,7 +52,7 @@ useSeoMeta({
           <h2 class="font-playfair text-2xl text-[#5A3419]">Propriété intellectuelle</h2>
           <p class="mt-3">L’ensemble du site, notamment les photographies, textes, éléments graphiques, logos et sa
             structure, est protégé par le droit de la propriété intellectuelle. Toute reproduction, représentation,
-            adaptation ou exploitation, totale ou partielle, sans autorisation écrite préalable de La fabrique du code
+            adaptation ou exploitation, totale ou partielle, sans autorisation écrite préalable des titulaires des droits concernés
             est interdite, sauf exception légale.</p>
         </section>
 

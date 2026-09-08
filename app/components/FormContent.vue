@@ -47,7 +47,7 @@ const validateAndSubmit = async (e) => {
       toast.error(data.message);
     }
   } catch (err) {
-    toast.error("Une erreur est survenue lors de l'envoi. Veuillez réessayer.");
+    toast.error(err?.data?.statusMessage || "Une erreur est survenue lors de l'envoi. Veuillez réessayer.");
   } finally {
     pending.value = false;
   }
@@ -59,30 +59,30 @@ const validateAndSubmit = async (e) => {
     <CardTitle class="mb-4 font-playfair text-2xl font-bold text-[#613213] md:text-3xl">
       Parlons de votre projet
     </CardTitle>
-    <CardDescription class="mb-4 md:mb-6 text-[#9e8b8b]">
+    <CardDescription class="mb-4 md:mb-6 text-[#676463]">
       Pour toute demande, n'hésitez pas à m'écrire. Je serai ravie de vous
       répondre rapidement.
     </CardDescription>
-    <form @submit="validateAndSubmit" class="space-y-4 md:space-y-6 text-[#9e8b8b]">
+    <form @submit="validateAndSubmit" class="space-y-4 md:space-y-6 text-[#676463]">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="grid w-full items-center gap-2">
           <Label for="nom">Votre nom</Label>
-          <Input type="text" id="nom" v-model="nom" placeholder="Dupont" />
+          <Input required maxlength="100" autocomplete="family-name" type="text" id="nom" v-model="nom" placeholder="Dupont" />
         </div>
         <div class="grid w-full items-center gap-2">
           <Label for="prenom">Votre prénom</Label>
-          <Input type="text" id="prenom" v-model="prenom" placeholder="Jean" />
+          <Input required maxlength="100" autocomplete="given-name" type="text" id="prenom" v-model="prenom" placeholder="Jean" />
         </div>
       </div>
       <div class="grid w-full items-center gap-2">
         <Label for="email">Votre email</Label>
-        <Input type="email" id="email" v-model="email" placeholder="jean.dupont@example.com" />
+        <Input required maxlength="254" autocomplete="email" type="email" id="email" v-model="email" placeholder="jean.dupont@example.com" />
       </div>
       <div class="grid w-full gap-2">
         <Label for="message">Votre message</Label>
-        <Textarea required placeholder="Écrivez votre message ici..." id="message" v-model="message"
+        <Textarea required maxlength="3000" :aria-invalid="!!messageError" :aria-describedby="messageError ? 'message-error' : undefined" placeholder="Écrivez votre message ici..." id="message" v-model="message"
           :class="['min-h-37.5', messageError ? 'border-red-500' : '']" @input="messageError = ''" />
-        <p v-if="messageError" class="text-red-500 text-sm mt-1">{{ messageError }}</p>
+        <p id="message-error" role="alert" v-if="messageError" class="text-red-500 text-sm mt-1">{{ messageError }}</p>
       </div>
       <div class="flex justify-center">
         <Button type="submit" :disabled="pending">

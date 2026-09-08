@@ -31,7 +31,7 @@ onMounted(() => {
   }, 3000)
   stopConfirmationWatch = watch(isConfirmed, (confirmed) => {
     if (confirmed) {
-      cart.clearCart()
+      cart.completeCheckout(reference.value)
       redirectTimer = window.setTimeout(() => navigateTo('/tirage-photo'), 7000)
     }
   }, { immediate: true })

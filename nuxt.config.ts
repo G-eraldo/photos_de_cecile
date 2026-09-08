@@ -37,11 +37,15 @@ export default defineNuxtConfig({
   ],
 
   site: {
-    url: "https://photodececile.lafabriqueducode.fr",
+    url: process.env.NUXT_PUBLIC_SITE_URL || process.env.SITE_URL || "https://lesphotodececile.fr",
     name: "Les photos de Cécile",
     description:
       "Je photographie les moments de vie de façon authentique à Amiens & ses alentours.",
     defaultLocale: "fr",
+  },
+
+  image: {
+    domains: ["media-photodececile.lafabriqueducode.fr", "res.cloudinary.com"],
   },
 
   sitemap: {
@@ -50,10 +54,13 @@ export default defineNuxtConfig({
 
   routeRules: {
     "/reservation/confirmation": { robots: false, sitemap: false },
-    "/tirages-photo/confirmation": { robots: false, sitemap: false },
+    "/tirage-photo/confirmation": { robots: false, sitemap: false },
+    "/offrir/confirmation": { robots: false, sitemap: false },
+    "/tirage-photo/panier": { robots: false, sitemap: false },
+    "/connexion-agenda": { robots: false, sitemap: false },
     "/**": {
       headers: {
-        "Content-Security-Policy": `default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' https://static.elfsight.com https://elfsightcdn.com https://*.elfsightcdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com https://*.maptiler.com https://media-photodececile.lafabriqueducode.fr https://images-photodececile.lafabriqueducode.fr; connect-src ${connectSources} https://elfsightcdn.com https://*.elfsightcdn.com; frame-src https://*.mollie.com https://*.elfsight.com; upgrade-insecure-requests`,
+        "Content-Security-Policy": `default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' ${process.env.NODE_ENV === 'production' ? '' : "'unsafe-inline'"} https://static.elfsight.com https://elfsightcdn.com https://*.elfsightcdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com https://*.maptiler.com https://media-photodececile.lafabriqueducode.fr https://images-photodececile.lafabriqueducode.fr; connect-src ${connectSources} https://elfsightcdn.com https://*.elfsightcdn.com; frame-src https://*.mollie.com https://*.elfsight.com; upgrade-insecure-requests`,
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
@@ -65,6 +72,12 @@ export default defineNuxtConfig({
   },
 
   css: ["~/assets/css/main.css"],
+
+  nitro: {
+    alias: {
+      "#shared": "./shared/utils",
+    },
+  },
 
   vite: {
     plugins: [tailwindcss()],

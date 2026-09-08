@@ -31,6 +31,10 @@ async function enableReviews() {
 onMounted(() => {
     watch(consent, (value) => {
         if (value === 'accepted') enableReviews()
+        else {
+            reviewsHost.value?.replaceChildren()
+            reviewsEnabled.value = false
+        }
     }, { immediate: true })
 })
 </script>

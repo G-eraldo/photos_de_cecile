@@ -8,7 +8,7 @@ defineProps({
 
 <template>
   <section class="h-[52svh] min-h-96 max-h-168 overflow-hidden bg-[#e6dfdd]">
-    <img :src="src" :alt="alt" width="1800" height="900" loading="eager" decoding="async"
-      class="h-full w-full object-cover" :style="{ objectPosition: position }">
+    <NuxtImg :src="src" format="webp" :width="1800" :height="900" :alt="alt" loading="eager" fetchpriority="high"
+      decoding="async" class="h-full w-full object-cover" :style="{ objectPosition: position }" />
   </section>
 </template>

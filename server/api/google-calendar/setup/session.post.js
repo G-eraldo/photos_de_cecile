@@ -3,7 +3,7 @@ import { enforceRateLimit, enforceTrustedOrigin } from "../../../utils/request-s
 
 export default defineEventHandler(async (event) => {
   enforceTrustedOrigin(event);
-  enforceRateLimit(event, { scope: "google-calendar-setup", limit: 5, windowMs: 15 * 60 * 1000 });
+  await enforceRateLimit(event, { scope: "google-calendar-setup", limit: 5, windowMs: 15 * 60 * 1000 });
 
   const body = await readBody(event);
   createGoogleSetupSession(event, body?.secret);

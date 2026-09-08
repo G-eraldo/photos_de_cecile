@@ -41,6 +41,7 @@ export async function sendCecilePaymentNotification({
   details,
   total,
 }) {
+  if (details.notificationCecileEnvoyee === true) return true;
   if (!process.env.RESEND_API_KEY) {
     console.error(
       "RESEND_API_KEY est absente : la notification à Cécile ne peut pas être envoyée.",
@@ -118,7 +119,7 @@ export async function sendCecilePaymentNotification({
             </div>
           </div>
         </div>`,
-    });
+    }, { idempotencyKey: `payment-cecile-${reference}` });
     if (error)
       throw new Error(
         `Resend a refusé la notification à Cécile : ${error.message}`,

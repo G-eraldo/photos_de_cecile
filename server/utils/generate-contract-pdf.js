@@ -33,8 +33,8 @@ const formatDate = (date) => {
   }).format(parsed);
 };
 
-const getSignatureDate = () => {
-  const now = new Date();
+const getSignatureDate = (issuedAt) => {
+  const now = new Date(issuedAt);
 
   return new Intl.DateTimeFormat("fr-FR", {
     day: "2-digit",
@@ -96,8 +96,11 @@ export async function generateContractPdf({
   heure,
   forfait,
   socialUsage,
+  issuedAt = new Date().toISOString(),
 }) {
   const pdfDoc = await PDFDocument.create();
+  pdfDoc.setCreationDate(new Date(issuedAt));
+  pdfDoc.setModificationDate(new Date(issuedAt));
 
   const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
@@ -670,7 +673,7 @@ export async function generateContractPdf({
   // -------------------------------------------------------
 
   const clientFullName = `${safe(prenom)} ${safe(nom)}`;
-  const signatureDate = getSignatureDate();
+  const signatureDate = getSignatureDate(issuedAt);
 
   drawParagraph(
     `Je soussigné(e) ${clientFullName} atteste avoir lu les informations stipulées dans le contrat et m’engage à les respecter.`,

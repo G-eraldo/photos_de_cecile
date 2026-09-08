@@ -18,8 +18,9 @@ const getConfig = () => {
   const siteUrl = process.env.SITE_URL;
   const strapiUrl = process.env.STRAPI_URL;
   const strapiToken = process.env.STRAPI_API_TOKEN;
+  const operationsSecret = process.env.PAYMENT_OPERATIONS_SECRET;
 
-  if (!apiKey || !siteUrl || !strapiUrl || !strapiToken) {
+  if (!apiKey || !siteUrl || !strapiUrl || !strapiToken || !operationsSecret || operationsSecret.length < 32) {
     throw createError({
       statusCode: 503,
       statusMessage: "Le paiement n’est pas encore configuré.",
@@ -31,6 +32,7 @@ const getConfig = () => {
     siteUrl: siteUrl.replace(/\/$/, ""),
     strapiUrl: strapiUrl.replace(/\/$/, ""),
     strapiToken,
+    operationsSecret,
   };
 };
 
@@ -59,6 +61,7 @@ export const findFormula = async (config, { prestationId, prestationName, formul
     "populate[Formule][fields][1]": "prix",
     "populate[Formule][fields][2]": "acompte_pourcentage",
     "populate[Formule][fields][3]": "id",
+    "pagination[pageSize]": "1",
   });
 
   if (typeof prestationId === "string" && prestationId.trim()) {
@@ -97,6 +100,7 @@ export const findFormula = async (config, { prestationId, prestationName, formul
     amount: amount.toFixed(2),
     percentage,
     formule,
+    prestation,
   };
 };
 
@@ -108,23 +112,23 @@ export const getTravelFee = (location) => {
   return travelFees[location];
 };
 
-export const createStoredReservation = (config, data) =>
-  strapiFetch(config, "/reservations", { method: "POST", body: { data } });
+export const paymentOperation = (config, body) => $fetch(`${config.strapiUrl}/api/payment-operations`, {
+  method: "POST",
+  headers: { "x-payment-operations-secret": config.operationsSecret },
+  body,
+});
+
+export const createStoredReservation = (config, data, slot) =>
+  paymentOperation(config, { operation: "hold", type: "reservation", data, slot });
 
 export const createStoredOrder = (config, data) =>
   strapiFetch(config, "/commandes", { method: "POST", body: { data } });
 
 export const updateStoredReservation = (config, documentId, data) =>
-  strapiFetch(config, `/reservations/${encodeURIComponent(documentId)}`, {
-    method: "PUT",
-    body: { data },
-  });
+  paymentOperation(config, { operation: "update", type: "reservation", documentId, patch: data });
 
 export const updateStoredOrder = (config, documentId, data) =>
-  strapiFetch(config, `/commandes/${encodeURIComponent(documentId)}`, {
-    method: "PUT",
-    body: { data },
-  });
+  paymentOperation(config, { operation: "update", type: "commande", documentId, patch: data });
 
 export const findStoredReservation = async (config, field, value) => {
   const query = new URLSearchParams({
@@ -192,6 +196,7 @@ export const createMolliePayment = async (config, { amount, reference, descripti
     method: "POST",
     headers: {
       Authorization: `Bearer ${config.apiKey}`,
+      "Idempotency-Key": `checkout-${reference}`,
     },
     body: {
       amount: { currency: "EUR", value: amount },
@@ -213,3 +218,26 @@ export const getMolliePayment = (config, paymentId) =>
   $fetch(`${apiUrl}/${encodeURIComponent(paymentId)}`, {
     headers: { Authorization: `Bearer ${config.apiKey}` },
   });
+
+export const listPaymentsForReconciliation = (config, type, start, limit) => {
+  const query = new URLSearchParams({
+    "fields[0]": "reference", "fields[1]": "details", "fields[2]": "statut",
+    "fields[3]": "mollie_payment_id", "fields[4]": type === "commande" ? "montant_total" : "montant_acompte",
+    ...(type === "commande" ? { "fields[5]": "photo_privee" } : {}),
+    "sort[0]": "id:asc", "pagination[start]": String(start), "pagination[limit]": String(limit),
+  });
+  return strapiFetch(config, `/${type === "commande" ? "commandes" : "reservations"}?${query}`);
+};
+
+export const refundUnavailableReservation = async (config, record) => {
+  const url = `${apiUrl}/${encodeURIComponent(record.mollie_payment_id)}/refunds`;
+  const description = `Créneau indisponible — ${record.reference}`;
+  const existing = await $fetch(url, { headers: { Authorization: `Bearer ${config.apiKey}` } });
+  const previous = existing?._embedded?.refunds?.find((refund) => refund.description === description && !["failed", "canceled"].includes(refund.status));
+  if (previous) return previous;
+  return $fetch(url, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${config.apiKey}`, "Idempotency-Key": `slot-refund-${record.reference}` },
+    body: { amount: { currency: "EUR", value: Number(record.montant_acompte).toFixed(2) }, description },
+  });
+};

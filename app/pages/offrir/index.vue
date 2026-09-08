@@ -11,7 +11,7 @@ import EditorialPhotoBanner from '~/components/EditorialPhotoBanner.vue'
 definePageMeta({ layout: 'default' })
 
 useSeoMeta({
-  title: 'Offrir un bon cadeau | Les Photos de Cécile',
+  title: 'Offrir un bon cadeau',
   description: 'Offrez une séance photo et ses souvenirs, avec un bon cadeau personnalisé envoyé par e-mail.',
 })
 

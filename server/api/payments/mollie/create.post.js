@@ -8,8 +8,9 @@ import {
   getTravelFee,
   updateStoredReservation,
 } from "../../../utils/mollie.js";
-import { ensureGoogleCalendarWriterAccess } from "../../../utils/google-calendar.js";
+import { assertCalendarAvailability } from "../../../utils/google-calendar.js";
 import { dateTimeInParis } from "../../../utils/paris-date-time.js";
+import { RESERVATION_DURATION_MS } from "~~/shared/utils/reservation-duration.js";
 import { enforceRateLimit, enforceTrustedOrigin } from "../../../utils/request-security.js";
 
 const requiredFields = [
@@ -25,15 +26,22 @@ const requiredFields = [
   "lieu",
 ];
 
-const isNonEmptyString = (value) => typeof value === "string" && value.trim();
+const isNonEmptyString = (value) => typeof value === "string" && value.trim() && value.length <= 500;
 
 export default defineEventHandler(async (event) => {
   enforceTrustedOrigin(event);
-  enforceRateLimit(event, { scope: "reservation-payment", limit: 5, windowMs: 15 * 60 * 1000 });
+  await enforceRateLimit(event, { scope: "reservation-payment", limit: 5, windowMs: 15 * 60 * 1000 });
   const details = await readBody(event);
 
   if (!requiredFields.every((field) => isNonEmptyString(details?.[field]))) {
     throw createError({ statusCode: 400, statusMessage: "Informations de réservation incomplètes." });
+  }
+  if (!/^\S+@\S+\.\S+$/.test(details.email.trim()) || ["adresse", "message"].some((field) => details[field] != null && (typeof details[field] !== "string" || details[field].length > 2000))) {
+    throw createError({ statusCode: 400, statusMessage: "Coordonnées ou message invalides." });
+  }
+
+  if (!["autorise", "n_autorise_pas"].includes(details.socialUsage)) {
+    throw createError({ statusCode: 400, statusMessage: "Choix d’utilisation des photos invalide." });
   }
 
   if (details.conditionsAccepted !== true) {
@@ -50,10 +58,9 @@ export default defineEventHandler(async (event) => {
   }
 
   const config = getMollieConfig();
-  // Ne jamais encaisser un acompte si le compte Google ne peut pas créer le
-  // rendez-vous correspondant. Cette vérification ne modifie pas Calendar.
-  await ensureGoogleCalendarWriterAccess(useRuntimeConfig(event));
-  const { amount: formulaDeposit, percentage } = await findFormula(config, {
+  const end = new Date(start.getTime() + RESERVATION_DURATION_MS);
+  await assertCalendarAvailability(useRuntimeConfig(event), start, end);
+  const { amount: formulaDeposit, percentage, formule, prestation } = await findFormula(config, {
     prestationId: details.prestationId,
     prestationName: details.prestation.trim(),
     formuleId: details.formuleId,
@@ -63,13 +70,21 @@ export default defineEventHandler(async (event) => {
   const amount = (Number(formulaDeposit) + fraisKilometriques).toFixed(2);
   const reference = `r${randomUUID().replace(/-/g, "")}`;
   const reservationDetails = {
-    ...details,
     nom: details.nom.trim(),
     prenom: details.prenom.trim(),
     telephone: details.telephone.trim(),
     email: details.email.trim(),
-    prestation: details.prestation.trim(),
-    forfait: details.forfait.trim(),
+    prestation: prestation.nom,
+    prestationId: prestation.documentId,
+    forfait: formule.nom,
+    formuleId: formule.id,
+    date: details.date,
+    heure: details.heure,
+    lieu: details.lieu,
+    socialUsage: details.socialUsage,
+    conditionsAccepted: true,
+    adresse: details.adresse?.trim() || "",
+    message: details.message?.trim() || "",
     acomptePourcentage: percentage,
     fraisKilometriques,
     montantAcompteFormule: Number(formulaDeposit),
@@ -81,7 +96,7 @@ export default defineEventHandler(async (event) => {
     montant_acompte: Number(amount),
     mollie_payment_id: `pending_${reference}`,
     statut: "en_attente",
-  });
+  }, { start: start.toISOString(), end: end.toISOString() });
 
   try {
     const payment = await createMolliePayment(config, {

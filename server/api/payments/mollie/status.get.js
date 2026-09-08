@@ -1,5 +1,6 @@
 import { finalizePaidPayment } from "../../../utils/mollie-paid-payment.js";
 import { isFinalisationStale } from "../../../utils/payment-finalisation.js";
+import { enforceRateLimit } from "../../../utils/request-security.js";
 import {
   findStoredOrder,
   findStoredReservation,
@@ -8,8 +9,10 @@ import {
 } from "../../../utils/mollie.js";
 
 export default defineEventHandler(async (event) => {
+  await enforceRateLimit(event, { scope: "payment-status", limit: 60, windowMs: 15 * 60 * 1000 });
+  setResponseHeader(event, "Cache-Control", "no-store");
   const { reference } = getQuery(event);
-  if (typeof reference !== "string" || !reference) {
+  if (typeof reference !== "string" || !/^[cr][a-f0-9]{32}$/.test(reference)) {
     throw createError({ statusCode: 400, statusMessage: "Référence de réservation manquante." });
   }
 
@@ -23,10 +26,11 @@ export default defineEventHandler(async (event) => {
   // Seul Mollie est interrogé côté serveur ; le navigateur ne peut pas forcer
   // l'état « payé ».
   if (
-    paymentRecord.statut === "en_attente"
+    (paymentRecord.statut === "en_attente" && !paymentRecord.mollie_payment_id?.startsWith("pending_"))
     || paymentRecord.details?.finalisation?.statut === "erreur"
     || isFinalisationStale(paymentRecord.details)
     || paymentRecord.details?.notificationCecileEnvoyee === false
+    || paymentRecord.details?.emailEnvoye === false
   ) {
     const payment = await getMolliePayment(config, paymentRecord.mollie_payment_id);
     const expectedAmount = Number(order ? order.montant_total : reservation.montant_acompte).toFixed(2);

@@ -6,14 +6,15 @@ import { sendCecilePaymentNotification } from "../../utils/cecile-notification-e
 import { generateContractPdf } from "../../utils/generate-contract-pdf.js";
 import {
   calendarEventsUrl,
-  getGoogleAccessToken,
-  isAvailabilityEvent,
+  assertCalendarAvailability,
+  reservationCalendarId,
 } from "../../utils/google-calendar.js";
-import { dateTimeInParis, formatParisTime } from "../../utils/paris-date-time.js";
+import {
+  dateTimeInParis,
+  formatParisTime,
+} from "../../utils/paris-date-time.js";
 import { RESERVATION_DURATION_MS } from "~~/shared/utils/reservation-duration.js";
 
-const hasOverlap = (start, end, otherStart, otherEnd) =>
-  start < otherEnd && end > otherStart;
 const escapeHtml = (value) =>
   String(value || "").replace(
     /[&<>"']/g,
@@ -27,7 +28,11 @@ const escapeHtml = (value) =>
       })[character],
   );
 
-export const completeReservation = async (event, body) => {
+export const completeReservation = async (
+  event,
+  body,
+  { onCustomerSent, onCecileSent } = {},
+) => {
   const config = useRuntimeConfig(event);
 
   const {
@@ -83,79 +88,60 @@ export const completeReservation = async (event, body) => {
   const start = dateTimeInParis(date, heure);
   const end = new Date(start.getTime() + RESERVATION_DURATION_MS);
 
-  if (Number.isNaN(start.getTime()) || start <= new Date()) {
+  if (Number.isNaN(start.getTime())) {
     throw createError({
       statusCode: 400,
       statusMessage: "Ce créneau n’est plus disponible.",
     });
   }
 
-  const accessToken = await getGoogleAccessToken(config);
-
-  const url = new URL(calendarEventsUrl(config.googleCalendarId));
-
-  url.search = new URLSearchParams({
-    timeMin: start.toISOString(),
-    timeMax: end.toISOString(),
-    singleEvents: "true",
-  }).toString();
-
-  const existing = await $fetch(url.toString(), {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  const events = existing.items || [];
-
-  const inAvailability = events.some(
-    (item) =>
-      isAvailabilityEvent(item) &&
-      new Date(item.start?.dateTime || item.start?.date) <= start &&
-      new Date(item.end?.dateTime || item.end?.date) >= end,
+  const { accessToken, existingEvent } = await assertCalendarAvailability(
+    config,
+    start,
+    end,
+    reference,
   );
 
-  const alreadyReserved = events.some(
-    (item) =>
-      !isAvailabilityEvent(item) &&
-      hasOverlap(
-        start,
-        end,
-        new Date(item.start?.dateTime || item.start?.date),
-        new Date(item.end?.dateTime || item.end?.date),
-      ),
-  );
+  if (!existingEvent) {
+    if (start <= new Date())
+      throw createError({
+        statusCode: 409,
+        statusMessage: "Le créneau a expiré.",
+      });
+    try {
+      await $fetch(calendarEventsUrl(config.googleCalendarId), {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: {
+          id: reservationCalendarId(reference),
+          extendedProperties: { private: { reservationReference: reference } },
+          summary: `Réservation — ${prestation.trim()} (${forfait.trim()})`,
+          description: `Client : ${prenom.trim()} ${nom.trim()}\nEmail : ${email.trim()}\nTéléphone : ${telephone?.trim() || "Non renseigné"}\nPrestation : ${prestation.trim()}\nFormule : ${forfait.trim()}\nAcompte : payé${
+            message?.trim() ? `\nPrécisions : ${message.trim()}` : ""
+          }\nConditions acceptées : ${conditionsAccepted}\nUsage des photos : ${socialUsage}`,
 
-  if (!inAvailability || alreadyReserved) {
-    throw createError({
-      statusCode: 409,
-      statusMessage:
-        "Ce créneau vient d’être réservé. Merci d’en choisir un autre.",
-    });
+          start: {
+            dateTime: start.toISOString(),
+            timeZone: "Europe/Paris",
+          },
+
+          end: {
+            dateTime: end.toISOString(),
+            timeZone: "Europe/Paris",
+          },
+        },
+      });
+    } catch (error) {
+      if ((error?.statusCode || error?.status) !== 409) throw error;
+      // A concurrent retry inserted this deterministic event ID. Verify it exists.
+      await $fetch(
+        `${calendarEventsUrl(config.googleCalendarId)}/${reservationCalendarId(reference)}`,
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+    }
   }
-
-  await $fetch(calendarEventsUrl(config.googleCalendarId), {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: {
-      summary: `Réservation — ${prestation.trim()} (${forfait.trim()})`,
-      description: `Client : ${prenom.trim()} ${nom.trim()}\nEmail : ${email.trim()}\nTéléphone : ${telephone?.trim() || "Non renseigné"}\nPrestation : ${prestation.trim()}\nFormule : ${forfait.trim()}\nAcompte : payé${
-        message?.trim() ? `\nPrécisions : ${message.trim()}` : ""
-      }\nConditions acceptées : ${conditionsAccepted}\nUsage des photos : ${socialUsage}`,
-
-      start: {
-        dateTime: start.toISOString(),
-        timeZone: "Europe/Paris",
-      },
-
-      end: {
-        dateTime: end.toISOString(),
-        timeZone: "Europe/Paris",
-      },
-    },
-  });
 
   const pdfBuffer = await generateContractPdf({
     nom: nom.trim(),
@@ -169,6 +155,7 @@ export const completeReservation = async (event, body) => {
     heure,
     forfait: forfait.trim(),
     socialUsage,
+    issuedAt: body.paiementConfirmeLe,
   });
 
   /*
@@ -198,43 +185,45 @@ export const completeReservation = async (event, body) => {
   };
 
   try {
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    if (body.emailEnvoye !== true) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
 
-    /*
-     * Logo PNG haute résolution.
-     * Source : public/images/logo-email.png
-     */
-    const logoBuffer = await readFile(
-      resolve(process.cwd(), "public/images/logo-email.png"),
-    );
+      /*
+       * Logo PNG haute résolution.
+       * Source : public/images/logo-email.png
+       */
+      const logoBuffer = await readFile(
+        resolve(process.cwd(), "public/images/logo-email.png"),
+      );
 
-    const attachments = [
-      {
-        filename: "logo-email.png",
-        content: logoBuffer,
-        contentId: "logo-cecile",
-        content_type: "image/png",
-      },
-      {
-        filename: `Contrat_${prenom.trim()}_${nom.trim()}.pdf`,
-        content: pdfBuffer,
-      },
-    ];
+      const attachments = [
+        {
+          filename: "logo-email.png",
+          content: logoBuffer,
+          contentId: "logo-cecile",
+          content_type: "image/png",
+        },
+        {
+          filename: `Contrat_${prenom.trim()}_${nom.trim()}.pdf`,
+          content: pdfBuffer,
+        },
+      ];
 
-    if (guideCaninBuffer) {
-      attachments.push({
-        filename: "Guide_preparation_seance_canine.pdf",
-        content: guideCaninBuffer,
-      });
-    }
+      if (guideCaninBuffer) {
+        attachments.push({
+          filename: "Guide_preparation_seance_canine.pdf",
+          content: guideCaninBuffer,
+        });
+      }
 
-    const { error: customerEmailError } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL,
-      to: email.trim(),
+      const { error: customerEmailError } = await resend.emails.send(
+        {
+          from: process.env.RESEND_FROM_EMAIL,
+          to: email.trim(),
 
-      subject: "Confirmation de votre réservation — Les Photos de Cécile",
+          subject: "Confirmation de votre réservation — Les Photos de Cécile",
 
-      html: `
+          html: `
         <div style="
           margin:0;
           padding:40px 20px;
@@ -480,15 +469,20 @@ export const completeReservation = async (event, body) => {
         </div>
       `,
 
-      attachments: attachments.map((attachment) => ({
-        ...attachment,
-        contentType: attachment.content_type,
-        content_type: undefined,
-      })),
-    });
+          attachments: attachments.map((attachment) => ({
+            ...attachment,
+            contentType: attachment.content_type,
+            content_type: undefined,
+          })),
+        },
+        { idempotencyKey: `reservation-customer-${reference}` },
+      );
 
-    if (customerEmailError) {
-      throw new Error(`Resend a refusé l’e-mail de réservation : ${customerEmailError.message}`);
+      if (customerEmailError) {
+        throw new Error(
+          `Resend a refusé l’e-mail de réservation : ${customerEmailError.message}`,
+        );
+      }
     }
   } catch (error) {
     emailSent = false;
@@ -499,12 +493,14 @@ export const completeReservation = async (event, body) => {
     );
   }
 
+  if (emailSent && onCustomerSent) await onCustomerSent();
   const cecileEmailSent = await sendCecilePaymentNotification({
     type: "reservation",
     reference: reference || "Réservation",
     details: body,
   });
 
+  if (cecileEmailSent && onCecileSent) await onCecileSent();
   return {
     success: true,
     emailSent,

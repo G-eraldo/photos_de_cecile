@@ -1,5 +1,7 @@
 # Lessons
 
+- Avec `NuxtImg`, ne pas remplacer une image native validée ni retirer l’optimisation lorsque l’utilisateur veut la conserver : diagnostiquer d’abord les attributs générés. Dans `@nuxt/image` v2, vérifier la largeur IPX produite par `sizes` et contrôler visuellement le rendu.
+
 - Sur les nouveaux bons cadeaux, ne pas ajouter de ligne « Pour [bénéficiaire] » au-dessus des champs du modèle ; préremplir uniquement les champs demandés du gabarit.
 
 - Centraliser la durée d’une réservation entre le calendrier affiché et la création Google Calendar. Lorsqu’une durée métier change, vérifier à la fois les disponibilités d’exactement cette durée et le découpage des plages plus longues.

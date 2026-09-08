@@ -96,7 +96,7 @@ onUnmounted(() => {
 
               </li>
               <li v-if="!cart.isEmpty">
-                <NuxtLink to="/tirage-photo/panier" :class="cn(
+                <NuxtLink to="/tirage-photo/panier" aria-label="Panier" :class="cn(
                   'flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-300',
                   isScrolled
                     ? 'text-[#5A3419] hover:text-[#C9A227]'

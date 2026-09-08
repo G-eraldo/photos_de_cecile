@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 export const useCartStore = defineStore('cart', {
   state: () => ({
     items: [],
+    checkouts: {},
   }),
 
   getters: {
@@ -26,10 +27,34 @@ export const useCartStore = defineStore('cart', {
       this.items = this.items.filter((item) => item.id !== itemId)
     },
 
+    rememberCheckout(reference, items) {
+      this.checkouts[reference] = items.map(({ id, quantity }) => ({ id, quantity }))
+    },
+
+    completeCheckout(reference) {
+      const paidItems = this.checkouts[reference]
+      if (!paidItems) return
+      for (const paid of paidItems) {
+        const item = this.items.find((entry) => entry.id === paid.id)
+        if (!item) continue
+        if (item.quantity > paid.quantity) item.quantity -= paid.quantity
+        else this.removeItem(item.id)
+      }
+      delete this.checkouts[reference]
+    },
+
+    replacePhoto(itemId, photo) {
+      const item = this.items.find((entry) => entry.id === itemId)
+      if (!item) return
+      // A replaced photograph is a new cart item, distinct from any pending order.
+      item.id = crypto.randomUUID()
+      item.photo = photo
+    },
+
     clearCart() {
       this.items = []
     },
   },
 
-  persist: true,
+  persist: { storage: piniaPluginPersistedstate.localStorage() },
 })

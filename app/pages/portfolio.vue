@@ -8,12 +8,7 @@ import EditorialPhotoBanner from '~/components/EditorialPhotoBanner.vue';
 
 definePageMeta({ layout: 'default' });
 
-useSeoMeta({
-  title: 'Portfolio | Les Photos de Cécile',
-  description: 'Découvrez une sélection de photos de couples, familles, bébés, animaux et mariages par Les Photos de Cécile.',
-  ogTitle: 'Portfolio | Les Photos de Cécile',
-  ogDescription: 'Un album de souvenirs, d’émotions et de lumière naturelle.',
-});
+
 
 const {
   data,
@@ -24,10 +19,29 @@ const {
 const photos = computed(() => data.value?.photos || []);
 const initialAlbumCount = 20;
 const albumBatchSize = 12;
-const visibleAlbumCount = ref(initialAlbumCount);
+const route = useRoute();
+const currentPage = computed(() => {
+  const value = Number(route.query.page || 1);
+  return Number.isSafeInteger(value) && value > 0 ? value : 1;
+});
 const featuredPhotos = computed(() => photos.value.slice(0, 6));
 const albumPhotos = computed(() => photos.value.slice(6));
-const displayedAlbumPhotos = computed(() => albumPhotos.value.slice(0, visibleAlbumCount.value));
+const pageCount = computed(() => 1 + Math.ceil(Math.max(0, albumPhotos.value.length - initialAlbumCount) / albumBatchSize));
+const displayedAlbumPhotos = computed(() => {
+  const start = currentPage.value === 1 ? 0 : initialAlbumCount + (currentPage.value - 2) * albumBatchSize;
+  return albumPhotos.value.slice(start, start + (currentPage.value === 1 ? initialAlbumCount : albumBatchSize));
+});
+if (currentPage.value > pageCount.value && !error.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Page du portfolio introuvable' });
+}
+const portfolioUrl = (page) => page === 1 ? '/portfolio' : `/portfolio?page=${page}`;
+useHead(() => ({ link: [{ rel: 'canonical', href: new URL(portfolioUrl(currentPage.value), useSiteConfig().url).href }] }));
+useSeoMeta({
+  title: () => currentPage.value > 1 ? `Portfolio — page ${currentPage.value}` : 'Portfolio',
+  description: 'Découvrez une sélection de photos de couples, familles, bébés, animaux et mariages par Les Photos de Cécile.',
+  ogTitle: 'Portfolio | Les Photos de Cécile',
+  ogDescription: 'Un album de souvenirs, d’émotions et de lumière naturelle.',
+});
 const albumColumns = computed(() => {
   const columns = Array.from({ length: 3 }, () => ({ height: 0, photos: [] }));
 
@@ -43,10 +57,6 @@ const albumColumns = computed(() => {
 
   return columns.map((column) => column.photos);
 });
-const hasMorePhotos = computed(() => displayedAlbumPhotos.value.length < albumPhotos.value.length);
-const showMorePhotos = () => {
-  visibleAlbumCount.value += albumBatchSize;
-};
 const featuredLayouts = [
   'col-span-2 row-span-2 sm:col-span-3 sm:row-span-4',
   'col-span-1 row-span-1 sm:col-span-3 sm:row-span-2',
@@ -86,7 +96,7 @@ const featuredLayouts = [
         Les premières photos du portfolio arrivent bientôt.
       </div>
 
-      <section v-else aria-label="Sélection mise en avant" class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+      <section v-else-if="currentPage === 1" aria-label="Sélection mise en avant" class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         <div class="mb-5 flex items-center justify-between">
 
           <p class="font-playfair text-lg text-[#613213]">Découvrez mon univers</p>
@@ -144,12 +154,15 @@ const featuredLayouts = [
             </a>
           </div>
         </div>
-        <div v-if="hasMorePhotos" class="mt-10 text-center">
-          <Button variant="outline" class="border-[#b9957f] bg-transparent px-7 text-[#613213] hover:bg-[#f1e9e5]"
-            @click="showMorePhotos">
-            Afficher 12 photos de plus
+        <nav v-if="pageCount > 1" aria-label="Pagination du portfolio" class="mt-10 flex items-center justify-center gap-4">
+          <Button v-if="currentPage > 1" as-child variant="outline">
+            <NuxtLink :to="portfolioUrl(currentPage - 1)" rel="prev">Photos précédentes</NuxtLink>
           </Button>
-        </div>
+          <span class="text-sm">Page {{ currentPage }} sur {{ pageCount }}</span>
+          <Button v-if="currentPage < pageCount" as-child variant="outline">
+            <NuxtLink :to="portfolioUrl(currentPage + 1)" rel="next">Photos suivantes</NuxtLink>
+          </Button>
+        </nav>
       </section>
 
       <p v-if="photos.length"

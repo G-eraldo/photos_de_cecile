@@ -1,11 +1,12 @@
 import { enforceRateLimit } from "../../utils/request-security.js";
 import { RESERVATION_DURATION_MS } from "~~/shared/utils/reservation-duration.js";
+import { getGoogleAccessToken, listCalendarEvents } from "../../utils/google-calendar.js";
 
 export default defineEventHandler(async (event) => {
-  enforceRateLimit(event, { scope: "calendar-availability", limit: 90, windowMs: 15 * 60 * 1000 });
+  await enforceRateLimit(event, { scope: "calendar-availability", limit: 90, windowMs: 15 * 60 * 1000 });
   const config = useRuntimeConfig(event);
 
-  if (!config.googleCalendarApiKey || !config.googleCalendarId) {
+  if (!config.googleCalendarId) {
     throw createError({
       statusCode: 503,
       statusMessage: "Le calendrier n'est pas encore configuré.",
@@ -24,20 +25,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: "Période de recherche invalide." });
   }
 
-  const calendarUrl = new URL(
-    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(config.googleCalendarId)}/events`,
-  );
-  calendarUrl.search = new URLSearchParams({
-    key: config.googleCalendarApiKey,
-    timeMin: from.toISOString(),
-    timeMax: to.toISOString(),
-    singleEvents: "true",
-    orderBy: "startTime",
-    maxResults: "250",
-  }).toString();
-
   try {
-    const response = await $fetch(calendarUrl.toString());
+    const accessToken = await getGoogleAccessToken(config);
+    const response = { items: await listCalendarEvents(config, from, to, accessToken) };
 
     const isPhotoSession = (item) => item.summary
       ?.normalize("NFD")

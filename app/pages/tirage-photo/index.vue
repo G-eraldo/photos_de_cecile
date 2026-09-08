@@ -7,7 +7,7 @@ import Card from '~/components/ui/card/Card.vue'
 definePageMeta({ layout: 'default' })
 
 useSeoMeta({
-  title: 'Tirage photo | Les Photos de Cécile',
+  title: 'Tirage photo',
   description: 'Des tirages photo d’art, choisis avec soin pour faire vivre vos souvenirs.',
   ogTitle: 'Tirage photo | Les Photos de Cécile',
   ogDescription: 'Des souvenirs à toucher, à offrir et à transmettre.',

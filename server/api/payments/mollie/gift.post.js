@@ -13,7 +13,7 @@ const hasEmoji = (value) => /[\p{Extended_Pictographic}\p{Regional_Indicator}]/u
 
 export default defineEventHandler(async (event) => {
   enforceTrustedOrigin(event)
-  enforceRateLimit(event, { scope: 'gift-payment', limit: 5, windowMs: 15 * 60 * 1000 })
+  await enforceRateLimit(event, { scope: 'gift-payment', limit: 5, windowMs: 15 * 60 * 1000 })
 
   const details = await readBody(event)
   const nom = details?.nom || ''

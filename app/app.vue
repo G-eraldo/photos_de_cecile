@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { Toaster } from '@/components/ui/sonner';
 import 'vue-sonner/style.css';
 
@@ -7,12 +7,7 @@ useSeoMeta({
   title: 'les photos de Cécile',
   description: 'Je photographie les moments de vie de façon authentique à Amiens & ses alentours. Grossesse, naissance, shooting boudoir, baptême, mariage, anniversaire, animaux de compagnie, couple, famille...',
   ogImage: 'https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788172116/DSC_01869_a27295b7c4.jpg',
-  ogTitle: 'les photos de Cécile | Photographe à Amiens',
-  ogDescription: 'Je photographie les moments de vie de façon authentique à Amiens & ses alentours. Grossesse, naissance, shooting boudoir, baptême, mariage, anniversaire, animaux de compagnie, couple, famille...',
   twitterCard: 'summary_large_image',
-  twitterTitle: 'les photos de Cécile | Photographe à Amiens',
-  twitterDescription: 'Je photographie les moments de vie de façon authentique à Amiens & ses alentours. Grossesse, naissance, shooting boudoir, baptême, mariage, anniversaire, animaux de compagnie, couple, famille...',
-  twitterImage: 'https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788172116/DSC_01869_a27295b7c4.jpg',
 });
 
 useHead({
@@ -34,14 +29,17 @@ useHead({
       innerHTML: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
-        name: "Cécile",
-        url: "https://photodececile.lafabriqueducode.fr",
+        name: "Les Photos de Cécile",
+        "@id": `${useSiteConfig().url}/#business`,
+        url: useSiteConfig().url,
         image: "https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788172116/DSC_01869_a27295b7c4.jpg",
         description: "Je photographie les moments de vie de façon authentique à Amiens & ses alentours. Grossesse, naissance, shooting boudoir, baptême, mariage, anniversaire, animaux de compagnie, couple, famille...",
         address: {
           "@type": "PostalAddress",
           addressLocality: "Amiens",
-          addressCountry: "France"
+          addressCountry: "FR",
+          postalCode: "80000",
+          streetAddress: "8 allée sablée"
         },
         sameAs: [
           "https://www.instagram.com/lesphotosdececile80/",

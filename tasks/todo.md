@@ -396,10 +396,10 @@
 ## Audit global — 5 septembre 2026
 
 - [x] Explorer les deux applications et relire les leçons du projet.
-- [ ] Auditer la sécurité et les flux de paiement, réservation et fichiers privés.
-- [ ] Auditer SEO, accessibilité, performances et fiabilité.
-- [ ] Vérifier les dépendances et les réponses publiques sans opération métier.
-- [ ] Rédiger un rapport priorisé avec preuves, limites et recommandations.
+- [x] Auditer la sécurité et les flux de paiement, réservation et fichiers privés.
+- [x] Auditer SEO, accessibilité, performances et fiabilité.
+- [x] Vérifier les dépendances et les réponses publiques sans opération métier.
+- [x] Rédiger un rapport priorisé avec preuves, limites et recommandations.
 
 Périmètre : audit en lecture seule du code et contrôles publics non destructifs ; aucune modification applicative ni transaction réelle.
 
@@ -468,3 +468,46 @@ Revue du 8 septembre : les deux galeries ne sont plus affichées. Composition la
 - [x] Vérifier la compilation et les redirections.
 
 Revue : ancienne URL du produit baryté vérifiée en HTTP local (200 après redirection). Ancien retour de paiement : 301 vers `/tirage-photo/confirmation` avec paramètres conservés. Tests de redirection et compilation réussis.
+
+
+## Revue audit global — 8 septembre 2026
+
+- [x] Reprendre l’audit sur le code actuel frontend et backend.
+- [x] Contrôler les réponses HTTP publiques, robots, sitemap, redirections et refus Strapi anonymes.
+- [x] Interroger npm audit pour les deux applications et conserver les résultats.
+- [x] Reproduire localement le refus Resend mal traité et le jeton panier expiré.
+- [x] Rédiger le rapport priorisé : `tasks/audit-2026-09-08/rapport.md`.
+
+Avis : pas de feu vert pour les ventes/réservations, indépendamment de Mollie test. Aucun code applicatif changé. Les vérifications complètes navigateur, hébergement, sauvegardes et parcours externes restent nécessaires ; elles ne sont pas présentées comme réalisées.
+
+## Corrections audit production — 8 septembre 2026
+
+- [ ] Sécuriser créneaux, données commerciales et reprise idempotente des paiements.
+- [ ] Corriger contact, panier durable, consentement, fuseaux et accessibilité.
+- [ ] Encadrer uploads et limitations partagées, vérifier les droits administrateurs.
+- [ ] Corriger SEO, sitemap, métadonnées, pagination et images.
+- [ ] Actualiser dépendances, exemples de configuration et documentation d’exploitation.
+- [ ] Harmoniser les textes commerciaux vérifiables ; identifier les informations à fournir.
+- [ ] Exécuter tests de régression, builds et contrôles navigateur ; consigner la revue et les actions de déploiement.
+
+Plan : changements sur les deux dépôts, sans paiement réel ni envoi client ; les réglages externes seront documentés et les données légales absentes demandées.
+
+## Correctif warning alias Nitro — 8 septembre 2026
+
+- [x] Remplacer les imports utilisant l’alias relatif `#shared` par l’alias racine Nuxt.
+- [x] Vérifier l’absence du warning au build et exécuter les tests ciblés.
+- [x] Consigner le résultat du correctif.
+
+Plan : ne pas modifier `nuxt.config.ts`, protégé et déjà en cours d’édition ; utiliser l’alias absolu Nuxt `~~` déjà employé par le client pour partager la constante de durée.
+
+Revue : les trois routes serveur importent désormais la constante via `~~/shared/utils/reservation-duration.js`. Les 21 tests passent et `npm run build` réussit sans aucun warning `[plugin alias]`. Le warning distinct sur la taille d’un chunk client reste présent et n’entre pas dans ce correctif.
+
+## Correctif bannières sans photographie — 8 septembre 2026
+
+- [x] Restaurer le chargement optimisé des photographies dans le composant de bannière partagé.
+- [x] Contrôler visuellement les pages À propos et Prestations.
+- [x] Exécuter les tests, le build et consigner la revue.
+
+Plan : conserver `NuxtImg` comme demandé, supprimer uniquement la valeur `sizes="100vw"` mal interprétée qui produit une image minuscule, conserver les URL de pages et restaurer leur point focal via `objectPosition`, sans modifier la configuration Nuxt protégée.
+
+Revue : `NuxtImg` est conservé avec une sortie WebP de 1 800 × 900 et le point focal fourni par chaque page. Les bannières À propos et Prestations ont été rechargées et contrôlées visuellement dans le navigateur local ; les photographies sont de nouveau visibles. Les 21 tests et `npm run build` passent ; `git diff --check` ne signale aucune erreur.

@@ -1,0 +1,1169 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@ai-sdk/gateway": {
+      "name": "@ai-sdk/gateway",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@ai-sdk/provider-utils"
+      ],
+      "effects": [
+        "ai"
+      ],
+      "range": "<=2.0.147",
+      "nodes": [
+        "node_modules/@ai-sdk/gateway"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@ai-sdk/provider-utils": {
+      "name": "@ai-sdk/provider-utils",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1119676,
+          "name": "@ai-sdk/provider-utils",
+          "dependency": "@ai-sdk/provider-utils",
+          "title": "@ai-sdk/provider-utils has an Uncontrolled Resource Consumption issue",
+          "url": "https://github.com/advisories/GHSA-866g-f22w-33x8",
+          "severity": "low",
+          "cwe": [
+            "CWE-400"
+          ],
+          "cvss": {
+            "score": 4.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": "<=3.0.97"
+        }
+      ],
+      "effects": [
+        "@ai-sdk/gateway",
+        "@ai-sdk/react",
+        "ai"
+      ],
+      "range": "<=3.0.97",
+      "nodes": [
+        "node_modules/@ai-sdk/provider-utils"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@ai-sdk/react": {
+      "name": "@ai-sdk/react",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@ai-sdk/provider-utils",
+        "ai"
+      ],
+      "effects": [
+        "@strapi/content-type-builder"
+      ],
+      "range": "<=2.0.256",
+      "nodes": [
+        "node_modules/@ai-sdk/react"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/admin": {
+      "name": "@strapi/admin",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@strapi/data-transfer",
+        "@strapi/permissions",
+        "@strapi/types",
+        "qs",
+        "react-router-dom"
+      ],
+      "effects": [
+        "@strapi/core",
+        "@strapi/strapi"
+      ],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=4.6.0-alpha.0",
+      "nodes": [
+        "node_modules/@strapi/admin"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/content-manager": {
+      "name": "@strapi/content-manager",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@strapi/types",
+        "qs",
+        "react-router-dom"
+      ],
+      "effects": [
+        "@strapi/strapi"
+      ],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=5.0.0-beta.6",
+      "nodes": [
+        "node_modules/@strapi/content-manager"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/content-releases": {
+      "name": "@strapi/content-releases",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@strapi/types",
+        "qs",
+        "react-router-dom"
+      ],
+      "effects": [
+        "@strapi/strapi"
+      ],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=4.26.2",
+      "nodes": [
+        "node_modules/@strapi/content-releases"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/content-type-builder": {
+      "name": "@strapi/content-type-builder",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@ai-sdk/react",
+        "ai",
+        "qs",
+        "react-router-dom"
+      ],
+      "effects": [
+        "@strapi/strapi"
+      ],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=5.0.0-beta.6",
+      "nodes": [
+        "node_modules/@strapi/content-type-builder"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/core": {
+      "name": "@strapi/core",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@strapi/admin",
+        "@strapi/permissions",
+        "@strapi/types",
+        "qs"
+      ],
+      "effects": [
+        "@strapi/strapi"
+      ],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=5.36.1",
+      "nodes": [
+        "node_modules/@strapi/core"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/data-transfer": {
+      "name": "@strapi/data-transfer",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@strapi/types",
+        "stream-json"
+      ],
+      "effects": [
+        "@strapi/admin",
+        "@strapi/strapi"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@strapi/data-transfer"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/email": {
+      "name": "@strapi/email",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "react-router-dom"
+      ],
+      "effects": [
+        "@strapi/strapi"
+      ],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=5.0.0-beta.6",
+      "nodes": [
+        "node_modules/@strapi/email"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/i18n": {
+      "name": "@strapi/i18n",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "qs",
+        "react-router-dom"
+      ],
+      "effects": [
+        "@strapi/strapi"
+      ],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=5.0.0-beta.6",
+      "nodes": [
+        "node_modules/@strapi/i18n"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/permissions": {
+      "name": "@strapi/permissions",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "qs"
+      ],
+      "effects": [
+        "@strapi/admin",
+        "@strapi/core",
+        "@strapi/strapi",
+        "@strapi/types"
+      ],
+      "range": "4.26.2 || >=5.36.1",
+      "nodes": [
+        "node_modules/@strapi/permissions"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/plugin-cloud": {
+      "name": "@strapi/plugin-cloud",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@strapi/strapi",
+        "react-router-dom"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=5.0.0-alpha.0",
+      "nodes": [
+        "node_modules/@strapi/plugin-cloud"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/plugin-cloud",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/plugin-users-permissions": {
+      "name": "@strapi/plugin-users-permissions",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@strapi/strapi",
+        "react-router-dom"
+      ],
+      "effects": [],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=5.0.0-alpha.0",
+      "nodes": [
+        "node_modules/@strapi/plugin-users-permissions"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/plugin-users-permissions",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/review-workflows": {
+      "name": "@strapi/review-workflows",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "react-router-dom"
+      ],
+      "effects": [
+        "@strapi/strapi"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@strapi/review-workflows"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/strapi": {
+      "name": "@strapi/strapi",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@strapi/admin",
+        "@strapi/content-manager",
+        "@strapi/content-releases",
+        "@strapi/content-type-builder",
+        "@strapi/core",
+        "@strapi/data-transfer",
+        "@strapi/email",
+        "@strapi/i18n",
+        "@strapi/permissions",
+        "@strapi/review-workflows",
+        "@strapi/types",
+        "@strapi/upload",
+        "react-router-dom",
+        "vite"
+      ],
+      "effects": [
+        "@strapi/plugin-cloud",
+        "@strapi/plugin-users-permissions"
+      ],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=4.6.0-alpha.0",
+      "nodes": [
+        "node_modules/@strapi/strapi"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/types": {
+      "name": "@strapi/types",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@strapi/permissions"
+      ],
+      "effects": [
+        "@strapi/admin",
+        "@strapi/content-manager",
+        "@strapi/content-releases",
+        "@strapi/core",
+        "@strapi/data-transfer",
+        "@strapi/strapi"
+      ],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || 4.26.2 || >=5.36.1",
+      "nodes": [
+        "node_modules/@strapi/types"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "@strapi/upload": {
+      "name": "@strapi/upload",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "qs",
+        "react-router-dom"
+      ],
+      "effects": [
+        "@strapi/strapi"
+      ],
+      "range": "<=0.0.0-next.ffc36acb308febe288f1a31b62cbbb75b286585c || >=5.0.0-beta.6",
+      "nodes": [
+        "node_modules/@strapi/upload"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "ai": {
+      "name": "ai",
+      "severity": "low",
+      "isDirect": false,
+      "via": [
+        "@ai-sdk/gateway",
+        "@ai-sdk/provider-utils"
+      ],
+      "effects": [
+        "@ai-sdk/react",
+        "@strapi/content-type-builder"
+      ],
+      "range": "<=0.0.0-fd764a60-20260114143805 || 3.0.22 - 6.0.0 || 7.0.0-beta.0 - 7.0.0-beta.1-gr2m-test",
+      "nodes": [
+        "node_modules/ai"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "axios": {
+      "name": "axios",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1097679,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios Cross-Site Request Forgery Vulnerability",
+          "url": "https://github.com/advisories/GHSA-wf5p-g6vw-rhxx",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-352"
+          ],
+          "cvss": {
+            "score": 6.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=0.8.1 <0.28.0"
+        },
+        {
+          "source": 1111034,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "axios Requests Vulnerable To Possible SSRF and Credential Leakage via Absolute URL",
+          "url": "https://github.com/advisories/GHSA-jr5f-v2jv-69x6",
+          "severity": "high",
+          "cwe": [
+            "CWE-918"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<0.30.0"
+        },
+        {
+          "source": 1116672,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios has a NO_PROXY Hostname Normalization Bypass that Leads to SSRF",
+          "url": "https://github.com/advisories/GHSA-3p68-rc4w-qgx5",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-441",
+            "CWE-918"
+          ],
+          "cvss": {
+            "score": 4.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+          },
+          "range": "<0.31.0"
+        },
+        {
+          "source": 1117573,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: Authentication Bypass via Prototype Pollution Gadget in `validateStatus` Merge Strategy",
+          "url": "https://github.com/advisories/GHSA-w9j2-pvgh-6h63",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-287",
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 4.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+          },
+          "range": "<=0.31.0"
+        },
+        {
+          "source": 1117575,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: Incomplete Fix for CVE-2025-62718 — NO_PROXY Protection Bypassed via RFC 1122 Loopback Subnet (127.0.0.0/8) in Axios 1.15.0",
+          "url": "https://github.com/advisories/GHSA-pmwg-cvhr-8vh7",
+          "severity": "high",
+          "cwe": [
+            "CWE-183",
+            "CWE-441",
+            "CWE-918"
+          ],
+          "cvss": {
+            "score": 7.2,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:L/I:L/A:N"
+          },
+          "range": "<=0.31.0"
+        },
+        {
+          "source": 1117579,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: Null Byte Injection via Reverse-Encoding in AxiosURLSearchParams",
+          "url": "https://github.com/advisories/GHSA-xhjh-pmcv-23jw",
+          "severity": "low",
+          "cwe": [
+            "CWE-116",
+            "CWE-626"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
+          },
+          "range": "<=0.31.0"
+        },
+        {
+          "source": 1117582,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: no_proxy bypass via IP alias allows SSRF",
+          "url": "https://github.com/advisories/GHSA-m7pr-hjqh-92cm",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-918"
+          ],
+          "cvss": {
+            "score": 6.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:C/C:H/I:N/A:N"
+          },
+          "range": "<=0.31.0"
+        },
+        {
+          "source": 1117586,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios' HTTP adapter-streamed uploads bypass maxBodyLength when maxRedirects: 0",
+          "url": "https://github.com/advisories/GHSA-5c9x-8gcm-mpgx",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": "<=0.31.0"
+        },
+        {
+          "source": 1117588,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: HTTP adapter streamed responses bypass maxContentLength",
+          "url": "https://github.com/advisories/GHSA-vf2m-468p-8v99",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": "<=0.31.0"
+        },
+        {
+          "source": 1117590,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: Prototype Pollution Gadgets - Response Tampering, Data Exfiltration, and Request Hijacking",
+          "url": "https://github.com/advisories/GHSA-pf86-5x62-jrwf",
+          "severity": "high",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 7.4,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N"
+          },
+          "range": "<=0.31.0"
+        },
+        {
+          "source": 1117592,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: Header Injection via Prototype Pollution",
+          "url": "https://github.com/advisories/GHSA-6chq-wfr3-2hj9",
+          "severity": "high",
+          "cwe": [
+            "CWE-113",
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 7.4,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N"
+          },
+          "range": "<=0.31.0"
+        },
+        {
+          "source": 1117594,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: XSRF Token Cross-Origin Leakage via Prototype Pollution Gadget in `withXSRFToken` Boolean Coercion",
+          "url": "https://github.com/advisories/GHSA-xx6v-rp6x-q39c",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-183",
+            "CWE-201"
+          ],
+          "cvss": {
+            "score": 5.4,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"
+          },
+          "range": "<=0.31.0"
+        },
+        {
+          "source": 1117857,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios is Vulnerable to Denial of Service via __proto__ Key in mergeConfig",
+          "url": "https://github.com/advisories/GHSA-43fc-jf86-j433",
+          "severity": "high",
+          "cwe": [
+            "CWE-754",
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<=0.30.2"
+        },
+        {
+          "source": 1119403,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios has Unrestricted Cloud Metadata Exfiltration via Header Injection Chain",
+          "url": "https://github.com/advisories/GHSA-fvcv-3m26-pcqx",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-113",
+            "CWE-444",
+            "CWE-918"
+          ],
+          "cvss": {
+            "score": 4.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N"
+          },
+          "range": "<0.31.0"
+        },
+        {
+          "source": 1120124,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: unbounded recursion in toFormData causes DoS via deeply nested request data",
+          "url": "https://github.com/advisories/GHSA-62hf-57xw-28j9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-674"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<=0.31.0"
+        },
+        {
+          "source": 1120546,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: Regular Expression Denial of Service (ReDoS) via Cookie Name Injection",
+          "url": "https://github.com/advisories/GHSA-hfxv-24rg-xrqf",
+          "severity": "high",
+          "cwe": [
+            "CWE-400",
+            "CWE-1333"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<=0.31.1"
+        },
+        {
+          "source": 1120644,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: Proxy-Authorization Credential Leak to Origin Server Across HTTP-to-HTTPS Redirect in Axios Node.js HTTP Adapter",
+          "url": "https://github.com/advisories/GHSA-p92q-9vqr-4j8v",
+          "severity": "high",
+          "cwe": [
+            "CWE-201"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=0.31.1"
+        },
+        {
+          "source": 1120646,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: Proxy-Authorization header leaks to redirect target when proxy is re-evaluated to direct connection",
+          "url": "https://github.com/advisories/GHSA-j5f8-grm9-p9fc",
+          "severity": "high",
+          "cwe": [
+            "CWE-200"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": "<=0.31.1"
+        },
+        {
+          "source": 1120648,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "axios Vulnerable to Credential Theft and Response Hijacking via Prototype Pollution Gadget in Config Merge",
+          "url": "https://github.com/advisories/GHSA-3g43-6gmg-66jw",
+          "severity": "high",
+          "cwe": [
+            "CWE-94",
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:L/A:L"
+          },
+          "range": ">=0.19.0 <0.31.1"
+        },
+        {
+          "source": 1120651,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "axios has DoS & Header Injection via Prototype Pollution Read-Side Gadgets in axios merge functions",
+          "url": "https://github.com/advisories/GHSA-898c-q2cr-xwhg",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 4.8,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:L"
+          },
+          "range": "<=0.31.1"
+        },
+        {
+          "source": 1123825,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "axios's shouldBypassProxy does not recognize IPv4-mapped IPv6 addresses, allowing NO_PROXY bypass (incomplete fix for CVE-2025-62718)",
+          "url": "https://github.com/advisories/GHSA-pjwm-pj3p-43mv",
+          "severity": "high",
+          "cwe": [
+            "CWE-289",
+            "CWE-918"
+          ],
+          "cvss": {
+            "score": 8.6,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:N/A:N"
+          },
+          "range": "<=0.31.1"
+        },
+        {
+          "source": 1147948,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: Prototype pollution gadgets can alter axios request construction",
+          "url": "https://github.com/advisories/GHSA-mmx7-hfxf-jppx",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<0.33.0"
+        },
+        {
+          "source": 1153181,
+          "name": "axios",
+          "dependency": "axios",
+          "title": "Axios: Nested axios option objects can consume polluted prototype values",
+          "url": "https://github.com/advisories/GHSA-7q8q-rj6j-mhjq",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=0.8.0 <0.33.0"
+        }
+      ],
+      "effects": [
+        "resend"
+      ],
+      "range": "<=0.32.0",
+      "nodes": [
+        "node_modules/resend/node_modules/axios"
+      ],
+      "fixAvailable": false
+    },
+    "esbuild": {
+      "name": "esbuild",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1102341,
+          "name": "esbuild",
+          "dependency": "esbuild",
+          "title": "esbuild enables any website to send any requests to the development server and read the response",
+          "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-346"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+          },
+          "range": "<=0.24.2"
+        }
+      ],
+      "effects": [
+        "vite"
+      ],
+      "range": "<=0.24.2",
+      "nodes": [
+        "node_modules/vite/node_modules/esbuild"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "qs": {
+      "name": "qs",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1158506,
+          "name": "qs",
+          "dependency": "qs",
+          "title": "qs array-limit bypass via bracket-key comma parsing",
+          "url": "https://github.com/advisories/GHSA-x5fp-wj9c-mxmx",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-770"
+          ],
+          "cvss": {
+            "score": 3.7,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": ">=6.14.2 <=6.15.3"
+        },
+        {
+          "source": 1158507,
+          "name": "qs",
+          "dependency": "qs",
+          "title": "qs: Denial of Service via Attacker Controlled isBuffer",
+          "url": "https://github.com/advisories/GHSA-4mjr-xmp4-gh2g",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-248",
+            "CWE-703"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": ">=2.2.5 <6.16.0"
+        }
+      ],
+      "effects": [
+        "@strapi/admin",
+        "@strapi/content-manager",
+        "@strapi/content-releases",
+        "@strapi/content-type-builder",
+        "@strapi/core",
+        "@strapi/i18n",
+        "@strapi/permissions",
+        "@strapi/upload"
+      ],
+      "range": "2.2.5 - 6.15.3",
+      "nodes": [
+        "node_modules/qs"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "react-router": {
+      "name": "react-router",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1124268,
+          "name": "react-router",
+          "dependency": "react-router",
+          "title": "React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass)",
+          "url": "https://github.com/advisories/GHSA-wrjc-x8rr-h8h6",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-601"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=6.0.0 <7.18.0"
+        },
+        {
+          "source": 1124272,
+          "name": "react-router",
+          "dependency": "react-router",
+          "title": "React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration",
+          "url": "https://github.com/advisories/GHSA-337j-9hxr-rhxg",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-470"
+          ],
+          "cvss": {
+            "score": 6.1,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N"
+          },
+          "range": ">=6.4.0 <7.18.0"
+        }
+      ],
+      "effects": [
+        "react-router-dom"
+      ],
+      "range": "6.0.0 - 7.17.0",
+      "nodes": [
+        "node_modules/react-router"
+      ],
+      "fixAvailable": {
+        "name": "react-router-dom",
+        "version": "7.18.3",
+        "isSemVerMajor": true
+      }
+    },
+    "react-router-dom": {
+      "name": "react-router-dom",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "react-router"
+      ],
+      "effects": [
+        "@strapi/admin",
+        "@strapi/content-manager",
+        "@strapi/content-releases",
+        "@strapi/content-type-builder",
+        "@strapi/email",
+        "@strapi/i18n",
+        "@strapi/plugin-cloud",
+        "@strapi/plugin-users-permissions",
+        "@strapi/review-workflows",
+        "@strapi/strapi",
+        "@strapi/upload"
+      ],
+      "range": "6.0.0-alpha.0 - 7.17.0",
+      "nodes": [
+        "node_modules/react-router-dom"
+      ],
+      "fixAvailable": {
+        "name": "react-router-dom",
+        "version": "7.18.3",
+        "isSemVerMajor": true
+      }
+    },
+    "resend": {
+      "name": "resend",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "axios"
+      ],
+      "effects": [
+        "strapi-provider-email-resend"
+      ],
+      "range": "0.8.0 - 0.11.1",
+      "nodes": [
+        "node_modules/resend"
+      ],
+      "fixAvailable": false
+    },
+    "strapi-provider-email-resend": {
+      "name": "strapi-provider-email-resend",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "resend"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/strapi-provider-email-resend"
+      ],
+      "fixAvailable": false
+    },
+    "stream-json": {
+      "name": "stream-json",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1164823,
+          "name": "stream-json",
+          "dependency": "stream-json",
+          "title": "stream-json: pick/ignore/filter/replace filters are O(depth²) on nested input — small crafted JSON blocks the event loop for seconds→minutes (DoS)",
+          "url": "https://github.com/advisories/GHSA-528h-pc64-c93x",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-407"
+          ],
+          "cvss": {
+            "score": 6.2,
+            "vectorString": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<=3.4.0"
+        }
+      ],
+      "effects": [
+        "@strapi/data-transfer"
+      ],
+      "range": "<=3.4.0",
+      "nodes": [
+        "node_modules/stream-json"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    },
+    "vite": {
+      "name": "vite",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1116229,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling",
+          "url": "https://github.com/advisories/GHSA-4w7w-66w2-5vf9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22",
+            "CWE-200"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=6.4.1"
+        },
+        {
+          "source": 1120784,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows",
+          "url": "https://github.com/advisories/GHSA-v6wh-96g9-6wx3",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-73",
+            "CWE-522"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=6.4.2"
+        },
+        {
+          "source": 1123525,
+          "name": "vite",
+          "dependency": "vite",
+          "title": "vite: `server.fs.deny` bypass on Windows alternate paths",
+          "url": "https://github.com/advisories/GHSA-fx2h-pf6j-xcff",
+          "severity": "high",
+          "cwe": [
+            "CWE-22",
+            "CWE-200"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": "<=6.4.2"
+        },
+        "esbuild"
+      ],
+      "effects": [
+        "@strapi/strapi"
+      ],
+      "range": "<=6.4.2",
+      "nodes": [
+        "node_modules/vite"
+      ],
+      "fixAvailable": {
+        "name": "@strapi/strapi",
+        "version": "4.26.2",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 4,
+      "moderate": 20,
+      "high": 4,
+      "critical": 0,
+      "total": 28
+    },
+    "dependencies": {
+      "prod": 1617,
+      "dev": 0,
+      "optional": 119,
+      "peer": 1,
+      "peerOptional": 0,
+      "total": 1736
+    }
+  }
+}

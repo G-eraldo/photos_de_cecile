@@ -110,10 +110,28 @@ if (!pending.value && !product.value && !error.value) {
 }
 
 useSeoMeta({
-  title: () => product.value ? `${product.value.titre} | Les Photos de Cécile` : 'Tirage photo | Les Photos de Cécile',
+  title: () => product.value ? `${product.value.titre}` : 'Tirage photo',
   description: () => product.value?.accroche || 'Découvrez les tirages photo des Photos de Cécile.',
   ogImage: () => product.value?.imageUrl,
 })
+
+useSchemaOrg([computed(() => product.value ? {
+  '@type': 'Product',
+  name: product.value.titre,
+  description: product.value.accroche,
+  image: product.value.galerieUrls,
+  url: new URL(`/tirage-photo/${route.params.slug}`, useSiteConfig().url).href,
+  offers: {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'EUR',
+    lowPrice: Math.min(...(product.value.tarifsFormats.length
+      ? product.value.tarifsFormats.map((format) => Number(format.prix))
+      : [Number(product.value.prix_a_partir_de)])),
+    highPrice: Math.max(...(product.value.tarifsFormats.length
+      ? product.value.tarifsFormats.map((format) => Number(format.prix))
+      : [Number(product.value.prix_a_partir_de)])),
+  },
+} : {})]);
 
 const selectedImage = ref(0)
 const selectedFormat = ref('')
@@ -182,7 +200,7 @@ async function addToCart() {
       quantity: quantity.value,
       unitPrice: unitPrice.value,
       supplementCourrier: product.value.supplementCourrier,
-      photo: { filename: photo.value.name, uploadToken: signedUpload.uploadToken },
+      photo: { filename: photo.value.name, uploadToken: signedUpload.uploadToken, expiresAt: signedUpload.expiresAt },
     })
     photo.value = null
     toast.success('Le tirage a été ajouté au panier.')

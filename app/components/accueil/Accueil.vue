@@ -35,9 +35,9 @@
 
       <div class="mx-auto max-w-295">
 
-        <h2 class="font-playfair text-[clamp(2.1rem,4.4vw,3rem)] font-semibold tracking-[0.01em] text-[#5A3419]">
-          Bienvenue
-        </h2>
+        <h1 class="font-playfair text-[clamp(2.1rem,4.4vw,3rem)] font-semibold tracking-[0.01em] text-[#5A3419]">
+          Photographe à Amiens
+        </h1>
 
         <div class="mx-auto my-5 h-px w-17.5 bg-[#D9D2CF]" />
 

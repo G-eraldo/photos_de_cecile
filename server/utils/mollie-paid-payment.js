@@ -1,142 +1,65 @@
-import { randomUUID } from "node:crypto";
-
 import { completeReservation } from "../api/calendar/reservations.post.js";
-import { sendCecilePaymentNotification } from "./cecile-notification-email.js";
 import { sendOrderConfirmation } from "./order-email.js";
-import { isFinalisationStale } from "./payment-finalisation.js";
 import { finalizePrivateUpload } from "./r2-private.js";
-import {
-  findStoredOrder,
-  findStoredReservation,
-  updateStoredOrder,
-  updateStoredReservation,
-} from "./mollie.js";
+import { paymentOperation, refundUnavailableReservation } from "./mollie.js";
 
-// Réduit les appels simultanés dans une même instance. Le verrou est aussi
-// enregistré dans Strapi afin qu'un nouvel appel puisse reprendre proprement
-// une finalisation interrompue après un redémarrage.
-const processingPaymentIds = new Set();
-
-const getFinalisation = (details) => details?.finalisation || null;
-
-export const finalizePaidPayment = async ({ event, config, order, reservation, paymentId }) => {
-  const isOrder = Boolean(order);
-  const record = order || reservation;
-  const updateRecord = isOrder ? updateStoredOrder : updateStoredReservation;
-  const findRecord = isOrder ? findStoredOrder : findStoredReservation;
-  const finalisation = getFinalisation(record.details);
-
-  // Les paiements déjà finalisés (ou historiques) ne doivent jamais renvoyer
-  // d'e-mail ou créer un second événement Calendar.
-  if (record.statut === "paye") {
-    // La cliente ne doit jamais recevoir une seconde confirmation. En
-    // revanche, une notification Cécile qui a échoué peut être reprise
-    // séparément depuis la page de confirmation.
-    if (finalisation?.statut === "terminee" && record.details?.notificationCecileEnvoyee === false) {
-      const cecileEmailSent = await sendCecilePaymentNotification({
-        type: isOrder ? "commande" : "reservation",
-        reference: record.reference,
-        details: record.details,
-        total: isOrder ? record.montant_total : record.montant_acompte,
-      });
-      await updateRecord(config, record.documentId, {
-        details: { ...record.details, notificationCecileEnvoyee: cecileEmailSent },
-      });
-      return { notificationRetried: cecileEmailSent };
-    }
-    if (!finalisation || finalisation.statut === "terminee") return { alreadyFinalized: true };
-    if (finalisation.statut === "en_cours" && !isFinalisationStale(record.details)) {
-      return { processing: true };
-    }
-  }
-  if (processingPaymentIds.has(paymentId)) return { processing: true };
-
-  processingPaymentIds.add(paymentId);
-  const attemptId = randomUUID();
-  const startedAt = new Date().toISOString();
-  const claimedDetails = {
-    ...record.details,
-    paiementConfirmeLe: record.details?.paiementConfirmeLe || startedAt,
-    finalisation: {
-      statut: "en_cours",
-      tentativeId: attemptId,
-      demarreeLe: startedAt,
-    },
+// The database lease serializes workers. Calendar IDs and Resend keys make
+// external effects safe when a worker crashes before committing its result.
+export const finalizePaidPayment = async ({ event, config, order, reservation }) => {
+  const type = order ? "commande" : "reservation";
+  const original = order || reservation;
+  const claim = await paymentOperation(config, { operation: "claim", type, documentId: original.documentId });
+  if (!claim.data) return claim;
+  const record = claim.data;
+  const checkpoint = (details) => paymentOperation(config, { operation: "checkpoint", type, documentId: record.documentId, attemptId: claim.attemptId, patch: { details } });
+  const callbacks = {
+    onCustomerSent: () => checkpoint({ emailEnvoye: true }),
+    onCecileSent: () => checkpoint({ notificationCecileEnvoyee: true }),
   };
-
+  const finish = (state, patch) => paymentOperation(config, {
+    operation: "finish", type, documentId: record.documentId,
+    attemptId: claim.attemptId, state, patch,
+  });
+  const refund = async () => {
+    const result = await refundUnavailableReservation(config, record);
+    await finish("remboursement_demande", { statut: "annule", details: { remboursementId: result.id, remboursementStatut: result.status } });
+    return { refunded: true };
+  };
   try {
-    // Le paiement est visible immédiatement : une panne e-mail/Calendar ne
-    // laisse plus une cliente payée bloquée sur « en attente ».
-    await updateRecord(config, record.documentId, {
-      statut: "paye",
-      details: claimedDetails,
-    });
-
-    const latestRecord = await findRecord(config, "mollie_payment_id", paymentId);
-    if (latestRecord?.details?.finalisation?.tentativeId !== attemptId) {
-      return { processing: true };
+    if (claim.slotConflict) return await refund();
+    // Resend guarantees deduplication for 24 hours. After that, stop uncertain
+    // delivery for manual verification rather than risk sending a second email.
+    if (Date.now() - Date.parse(record.details.paiementConfirmeLe) >= 23 * 60 * 60 * 1000 &&
+      (record.details.emailEnvoye !== true || record.details.notificationCecileEnvoyee !== true)) {
+      await finish("erreur", { details: { verificationEmailRequise: true } });
+      return { manualReview: true };
     }
-
-    if (isOrder) {
-      const photoPrivee = record.details?.type === "bon_cadeau"
-        ? record.photo_privee
+    if (order) {
+      const photoPrivee = record.details?.type === "bon_cadeau" ? record.photo_privee
         : Array.isArray(record.photo_privee)
           ? await Promise.all(record.photo_privee.map((photo) => finalizePrivateUpload(photo, record.reference)))
           : await finalizePrivateUpload(record.photo_privee, record.reference);
-      const emailResult = await sendOrderConfirmation({
-        reference: record.reference,
-        details: record.details,
-        total: record.montant_total,
-      });
-      await updateStoredOrder(config, record.documentId, {
-        statut: "paye",
+      const result = await sendOrderConfirmation({ reference: record.reference, details: record.details, total: record.montant_total }, callbacks);
+      await finish(result.customerEmailSent && result.cecileEmailSent ? "terminee" : "erreur", {
         photo_privee: photoPrivee,
-        details: {
-          ...claimedDetails,
-          emailEnvoye: emailResult.customerEmailSent,
-          notificationCecileEnvoyee: emailResult.cecileEmailSent,
-          finalisation: { ...claimedDetails.finalisation, statut: "terminee", termineeLe: new Date().toISOString() },
-        },
+        details: { emailEnvoye: result.customerEmailSent, notificationCecileEnvoyee: result.cecileEmailSent },
       });
-      return { completed: true };
+      return { completed: result.customerEmailSent && result.cecileEmailSent };
     }
-
-    const result = await completeReservation(event, {
-      ...reservation.details,
-      reference: reservation.reference,
+    let result;
+    try {
+      result = await completeReservation(event, { ...record.details, reference: record.reference }, callbacks);
+    } catch (error) {
+      if ((error?.statusCode || error?.status) === 409) return await refund();
+      throw error;
+    }
+    await finish(result.emailSent && result.cecileEmailSent ? "terminee" : "erreur", {
+      details: { emailEnvoye: result.emailSent, notificationCecileEnvoyee: result.cecileEmailSent },
     });
-    await updateStoredReservation(config, reservation.documentId, {
-      statut: "paye",
-      details: {
-        ...claimedDetails,
-        emailEnvoye: result.emailSent,
-        notificationCecileEnvoyee: result.cecileEmailSent,
-        finalisation: { ...claimedDetails.finalisation, statut: "terminee", termineeLe: new Date().toISOString() },
-      },
-    });
-    return { completed: true };
+    return { completed: result.emailSent && result.cecileEmailSent };
   } catch (error) {
-    console.error("La finalisation du paiement a échoué.", {
-      reference: record.reference,
-      paymentId,
-      type: isOrder ? "commande" : "reservation",
-      message: error?.message,
-      statusCode: error?.statusCode,
-    });
-    await updateRecord(config, record.documentId, {
-      statut: "paye",
-      details: {
-        ...claimedDetails,
-        finalisation: {
-          ...claimedDetails.finalisation,
-          statut: "erreur",
-          derniereErreur: "La confirmation automatique doit être relancée.",
-          echoueeLe: new Date().toISOString(),
-        },
-      },
-    }).catch(() => {});
+    console.error("La finalisation du paiement a échoué.", { reference: record.reference, type, statusCode: error?.statusCode });
+    await finish("erreur", { details: { derniereErreur: "La confirmation automatique doit être relancée." } }).catch(() => {});
     throw error;
-  } finally {
-    processingPaymentIds.delete(paymentId);
   }
 };

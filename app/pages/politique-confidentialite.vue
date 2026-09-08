@@ -19,7 +19,7 @@ useSeoMeta({
       <header class="border-b border-[#D9D2CF] pb-8 text-center">
         <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[#9e8b8b]">Les Photos de Cécile</p>
         <h2 class="mt-3 font-playfair text-2xl text-[#613213] md:text-3xl">Politique de confidentialité</h2>
-        <p class="mt-5 text-sm leading-7 text-[#676463]">Dernière mise à jour : 4 septembre 2026</p>
+        <p class="mt-5 text-sm leading-7 text-[#676463]">Dernière mise à jour : 8 septembre 2026</p>
       </header>
 
       <div class="mt-10 space-y-10 text-sm leading-7 text-[#676463]">
@@ -64,7 +64,7 @@ useSeoMeta({
 
         <section>
           <h2 class="font-playfair text-2xl text-[#5A3419]">6. Cookies et services tiers</h2>
-          <p class="mt-3">Le site ne dépose pas de cookie publicitaire ni de mesure d’audience. Les avis Elfsight ne sont chargés qu’après votre consentement ; ce choix est conservé pendant six mois afin de ne pas vous le redemander à chaque visite. Ce service tiers peut alors déposer ses propres traceurs selon sa politique. La carte MapTiler et le paiement Mollie peuvent également entraîner des communications avec ces prestataires lorsque vous utilisez ces fonctionnalités.</p>
+          <p class="mt-3">Le site ne dépose pas de cookie publicitaire ni de mesure d’audience. Les avis Elfsight ne sont chargés qu’après votre consentement ; ce choix est conservé pendant six mois afin de ne pas vous le redemander à chaque visite. Vous pouvez le modifier ou le retirer à tout moment via « Gérer mes cookies » dans le pied de page. Le panier est conservé dans le stockage local du navigateur pour retrouver vos articles ; vous pouvez les supprimer depuis le panier ou les paramètres du navigateur. Ce service tiers peut alors déposer ses propres traceurs selon sa politique. La carte MapTiler et le paiement Mollie peuvent également entraîner des communications avec ces prestataires lorsque vous utilisez ces fonctionnalités.</p>
         </section>
 
         <section>

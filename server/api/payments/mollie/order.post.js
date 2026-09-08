@@ -52,7 +52,7 @@ const validateCartItem = async (config, item) => {
 
 export default defineEventHandler(async (event) => {
   enforceTrustedOrigin(event)
-  enforceRateLimit(event, { scope: 'order-payment', limit: 5, windowMs: 15 * 60 * 1000 })
+  await enforceRateLimit(event, { scope: 'order-payment', limit: 5, windowMs: 15 * 60 * 1000 })
 
   const body = await readBody(event)
   const nom = body?.nom || ''
@@ -112,7 +112,7 @@ export default defineEventHandler(async (event) => {
       paymentType: 'commande',
     })
     await updateStoredOrder(config, order.data.documentId, { mollie_payment_id: payment.id })
-    return { checkoutUrl: payment._links.checkout.href }
+    return { checkoutUrl: payment._links.checkout.href, reference }
   } catch (error) {
     await updateStoredOrder(config, order.data.documentId, { statut: 'echoue' })
     throw error

@@ -15,8 +15,17 @@ export default defineEventHandler(async () => {
       "pagination[pageSize]": "100",
       "sort": "updatedAt:desc",
     });
-    const response = await $fetch(`${strapiUrl}/api/produits?${query}`);
-    return (response.data || [])
+    const products = [];
+    let page = 1;
+    let pageCount = 1;
+    do {
+      query.set("pagination[page]", String(page));
+      const response = await $fetch(`${strapiUrl}/api/produits?${query}`);
+      products.push(...(response.data || []));
+      pageCount = Number(response.meta?.pagination?.pageCount || 1);
+      page += 1;
+    } while (page <= pageCount);
+    return products
       .filter((product) => typeof product.slug === "string" && product.slug)
       .map((product) => ({
         loc: `/tirage-photo/${product.slug}`,

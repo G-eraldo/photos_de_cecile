@@ -566,12 +566,10 @@ useSeoMeta({
         >
 
           <p class="text-sm leading-7 text-[#676463]">
-            L’acompte devra être réglé dans un délai de
-            <strong class="font-semibold text-[#5A3419]">
-              7 jours
-            </strong>
-            à compter de la réception du contrat, passé ce délai la réservation
-            ne pourra être garantie.
+            Pour une réservation en ligne, l’acompte est réglé lors de la commande via le paiement sécurisé.
+            La réservation est confirmée après vérification du paiement et du créneau.
+            Le contrat est ensuite adressé par e-mail pour signature. En cas de conflit de disponibilité
+            empêchant la confirmation, les sommes encaissées pour cette réservation sont remboursées.
           </p>
 
         </section>

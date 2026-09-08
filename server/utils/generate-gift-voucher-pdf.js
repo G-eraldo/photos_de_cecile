@@ -52,7 +52,10 @@ export async function generateGiftVoucherPdf({ details }) {
   if (templatePage === undefined) throw new Error('Le modèle de bon cadeau est introuvable.')
 
   const template = await readFile(resolve(process.cwd(), 'public/images/bons-cadeaux/modeles-bons-cadeaux.pdf'))
+  const issuedAt = new Date(details.paiementConfirmeLe || Date.now())
   const pdf = await PDFDocument.create()
+  pdf.setCreationDate(issuedAt)
+  pdf.setModificationDate(issuedAt)
   const source = await PDFDocument.load(template)
   const sourcePage = source.getPage(templatePage)
   const { x, y, width: sourceWidth, height: sourceHeight } = sourcePage.getMediaBox()
@@ -68,7 +71,7 @@ export async function generateGiftVoucherPdf({ details }) {
   const scaleX = width / 1100
   const scaleY = scaleX
   const toPdfY = (top) => height - top * scaleY
-  const validUntil = new Date()
+  const validUntil = new Date(issuedAt)
   validUntil.setFullYear(validUntil.getFullYear() + 1)
 
   page.drawPage(voucher, { x: 0, y: 0, width, height })

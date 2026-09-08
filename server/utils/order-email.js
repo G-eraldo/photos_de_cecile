@@ -21,7 +21,7 @@ const escapeHtml = (value) =>
 const formatPrice = (value) =>
   `${Number(value).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 
-export async function sendOrderConfirmation({ reference, details, total }) {
+export async function sendOrderConfirmation({ reference, details, total }, { onCustomerSent, onCecileSent } = {}) {
   if (!process.env.RESEND_API_KEY) {
     console.error(
       "RESEND_API_KEY est absente : la facture de commande ne peut pas être envoyée.",
@@ -34,6 +34,7 @@ export async function sendOrderConfirmation({ reference, details, total }) {
     isGift && details.options?.réception?.startsWith("Par courrier");
   let customerEmailSent = true;
   try {
+    if (details.emailEnvoye !== true) {
     const invoice = await generateOrderInvoicePdf({
       reference,
       details,
@@ -107,16 +108,18 @@ export async function sendOrderConfirmation({ reference, details, total }) {
             ]
           : []),
       ],
-    });
+    }, { idempotencyKey: `order-customer-${reference}` });
     if (error)
       throw new Error(
         `Resend a refusé la confirmation de commande : ${error.message}`,
       );
+    }
   } catch (error) {
     console.error("Impossible d’envoyer la confirmation de commande.", error);
     customerEmailSent = false;
   }
 
+  if (customerEmailSent && onCustomerSent) await onCustomerSent();
   const cecileEmailSent = await sendCecilePaymentNotification({
     type: "commande",
     reference,
@@ -124,5 +127,6 @@ export async function sendOrderConfirmation({ reference, details, total }) {
     total,
   });
 
+  if (cecileEmailSent && onCecileSent) await onCecileSent();
   return { customerEmailSent, cecileEmailSent };
 }

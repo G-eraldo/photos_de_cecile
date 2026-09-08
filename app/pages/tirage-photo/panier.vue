@@ -16,12 +16,33 @@ const rue = ref('')
 const codePostal = ref('')
 const ville = ref('')
 const paymentPending = ref(false)
+const replacingPhoto = ref(null)
 
 const deliveryFee = computed(() => Math.max(0, ...cart.items.map((item) => Number(item.supplementCourrier ?? 5))))
 const total = computed(() => Number((cart.subtotal + deliveryFee.value).toFixed(2)))
 
 function formatPrice(value) {
   return Number(value).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+async function replacePhoto(item, event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  replacingPhoto.value = item.id
+  try {
+    const signed = await $fetch('/api/uploads/private/presign', {
+      method: 'POST', body: { filename: file.name, type: file.type, size: file.size },
+    })
+    const uploaded = await fetch(signed.uploadUrl, { method: 'PUT', headers: { 'Content-Type': file.type }, body: file })
+    if (!uploaded.ok) throw new Error('Le téléversement de la photo a échoué.')
+    cart.replacePhoto(item.id, { filename: file.name, uploadToken: signed.uploadToken, expiresAt: signed.expiresAt })
+    toast.success('La photo du tirage a été actualisée.')
+  } catch (error) {
+    toast.error(error?.data?.statusMessage || error.message || 'Impossible de remplacer la photo.')
+  } finally {
+    replacingPhoto.value = null
+    event.target.value = ''
+  }
 }
 
 async function checkout() {
@@ -31,6 +52,7 @@ async function checkout() {
     return
   }
 
+  const checkoutItems = cart.items.map((item) => ({ ...item }))
   paymentPending.value = true
   try {
     const response = await $fetch('/api/payments/mollie/order', {
@@ -41,7 +63,7 @@ async function checkout() {
         email: email.value,
         adresse: `${rue.value.trim()}\n${codePostal.value.trim()} ${ville.value.trim()}`,
         delivery: 'courrier',
-        items: cart.items.map((item) => ({
+        items: checkoutItems.map((item) => ({
           productId: item.productId,
           slug: item.slug,
           format: item.format,
@@ -51,7 +73,8 @@ async function checkout() {
         })),
       },
     })
-    if (!response.checkoutUrl) throw new Error('Impossible de créer votre paiement.')
+    if (!response.checkoutUrl || !response.reference) throw new Error('Impossible de créer votre paiement.')
+    cart.rememberCheckout(response.reference, checkoutItems)
     window.location.assign(response.checkoutUrl)
   } catch (error) {
     toast.error(error?.data?.statusMessage || error?.statusMessage || error?.message || 'Une erreur est survenue. Veuillez réessayer.')
@@ -86,6 +109,12 @@ async function checkout() {
                 <Trash2 class="size-4" />
               </button>
             </div>
+            <div class="mt-3 grid gap-2">
+              <Label :for="`replace-photo-${item.id}`">Remplacer ou renouveler la photo</Label>
+              <Input :id="`replace-photo-${item.id}`" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" :disabled="!!replacingPhoto || paymentPending" @change="replacePhoto(item, $event)" />
+              <p v-if="item.photo?.expiresAt && item.photo.expiresAt < Date.now()" role="alert" class="text-sm text-red-700">Cette photo a expiré. Sélectionnez-la à nouveau pour poursuivre la commande.</p>
+              <p v-if="replacingPhoto === item.id" role="status" class="text-sm">Envoi de la photo…</p>
+            </div>
             <div class="mt-4 flex items-center justify-between gap-4">
               <div class="inline-flex border border-[#a99888]">
                 <button type="button" class="px-3 py-1.5 hover:bg-[#ebe4da]" aria-label="Retirer un tirage" @click="cart.updateQuantity(item.id, item.quantity - 1)"><Minus class="size-3" /></button>
@@ -98,28 +127,28 @@ async function checkout() {
         </article>
       </section>
 
-      <section class="border border-[#d8cec1] bg-white/55 p-6 sm:p-8">
+      <form class="border border-[#d8cec1] bg-white/55 p-6 sm:p-8" @submit.prevent="checkout">
         <h2 class="font-playfair text-2xl">Finaliser la commande</h2>
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-          <div class="grid gap-2"><Label for="cart-nom">Nom</Label><Input id="cart-nom" v-model="nom" autocomplete="family-name" /></div>
-          <div class="grid gap-2"><Label for="cart-prenom">Prénom</Label><Input id="cart-prenom" v-model="prenom" autocomplete="given-name" /></div>
+          <div class="grid gap-2"><Label for="cart-nom">Nom</Label><Input required maxlength="500" id="cart-nom" v-model="nom" autocomplete="family-name" /></div>
+          <div class="grid gap-2"><Label for="cart-prenom">Prénom</Label><Input required maxlength="500" id="cart-prenom" v-model="prenom" autocomplete="given-name" /></div>
         </div>
-        <div class="mt-4 grid gap-2"><Label for="cart-email">E-mail</Label><Input id="cart-email" v-model="email" type="email" autocomplete="email" /></div>
+        <div class="mt-4 grid gap-2"><Label for="cart-email">E-mail</Label><Input required maxlength="500" id="cart-email" v-model="email" type="email" autocomplete="email" /></div>
         <p class="mt-6 text-sm text-[#6d5b4e]">Vos tirages seront envoyés par courrier (+{{ formatPrice(deliveryFee) }} €).</p>
         <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-          <div class="grid gap-2"><Label for="cart-rue">Numéro et rue</Label><Input id="cart-rue" v-model="rue" autocomplete="street-address" /></div>
-          <div class="grid gap-2"><Label for="cart-code-postal">Code postal</Label><Input id="cart-code-postal" v-model="codePostal" inputmode="numeric" autocomplete="postal-code" /></div>
-          <div class="grid gap-2"><Label for="cart-ville">Ville</Label><Input id="cart-ville" v-model="ville" autocomplete="address-level2" /></div>
+          <div class="grid gap-2"><Label for="cart-rue">Numéro et rue</Label><Input required maxlength="500" id="cart-rue" v-model="rue" autocomplete="street-address" /></div>
+          <div class="grid gap-2"><Label for="cart-code-postal">Code postal</Label><Input required maxlength="500" id="cart-code-postal" v-model="codePostal" inputmode="numeric" autocomplete="postal-code" /></div>
+          <div class="grid gap-2"><Label for="cart-ville">Ville</Label><Input required maxlength="500" id="cart-ville" v-model="ville" autocomplete="address-level2" /></div>
         </div>
         <div class="mt-7 border-t border-[#d8cec1] pt-5 text-sm">
           <p class="flex justify-between"><span>Sous-total</span><span>{{ formatPrice(cart.subtotal) }} €</span></p>
           <p v-if="deliveryFee" class="mt-2 flex justify-between"><span>Envoi par courrier</span><span>{{ formatPrice(deliveryFee) }} €</span></p>
           <p class="mt-4 flex justify-between font-playfair text-xl text-[#613213]"><span>Total</span><span>{{ formatPrice(total) }} €</span></p>
         </div>
-        <Button type="button" class="mt-6 w-full" :disabled="paymentPending" @click="checkout">
+        <Button type="submit" class="mt-6 w-full" :disabled="paymentPending || !!replacingPhoto">
           {{ paymentPending ? 'Redirection vers le paiement…' : `Payer ${formatPrice(total)} €` }}
         </Button>
-      </section>
+      </form>
     </div>
   </main>
 </template>

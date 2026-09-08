@@ -26,7 +26,7 @@ const isEmail = (value) =>
 
 export default defineEventHandler(async (event) => {
   enforceTrustedOrigin(event);
-  enforceRateLimit(event, {
+  await enforceRateLimit(event, {
     scope: "contact",
     limit: 5,
     windowMs: 60 * 60 * 1000,
@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
         "Merci de renseigner un nom, un prénom, un e-mail et un message valide.",
     });
   }
-  if (!process.env.RESEND_API_KEY) {
+  if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL || !process.env.RESEND_CECILE_NOTIFICATION_EMAIL) {
     throw createError({
       statusCode: 503,
       statusMessage: "Le formulaire de contact n’est pas encore configuré.",
@@ -58,13 +58,17 @@ export default defineEventHandler(async (event) => {
   const safeMessage = escapeHtml(message.trim()).replace(/\r?\n/g, "<br>");
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  await resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev",
+  const { error } = await resend.emails.send({
+    from: process.env.RESEND_FROM_EMAIL,
     to: process.env.RESEND_CECILE_NOTIFICATION_EMAIL,
     replyTo: email.trim(),
     subject: `Nouvelle demande de contact — ${prenom.trim()} ${nom.trim()}`,
     html: `<div style="margin:0;padding:40px 20px;background:#E6DFDD;font-family:Arial,sans-serif;color:#676463;"><div style="max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;"><div style="padding:30px 35px;background:#503D30;color:#fff;"><p style="margin:0;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#E6D4C4;">Les Photos de Cécile</p><h1 style="margin:8px 0 0;font-family:Georgia,serif;font-size:27px;font-weight:normal;">Nouvelle demande de contact</h1></div><div style="padding:30px 35px;"><p>Bonjour Cécile,</p><table role="presentation" width="100%" style="margin:22px 0;border-collapse:collapse;"><tr><td style="padding:7px 0;color:#8F8C85;width:35%;">Nom</td><td style="padding:7px 0;color:#503D30;font-weight:600;">${safePrenom} ${safeNom}</td></tr><tr><td style="padding:7px 0;color:#8F8C85;">E-mail</td><td style="padding:7px 0;color:#503D30;font-weight:600;">${safeEmail}</td></tr></table><p style="margin:0 0 8px;color:#5A3419;font-weight:bold;">Message</p><div style="padding:18px;background:#FAF8F7;border-left:3px solid #5A3419;border-radius:8px;line-height:1.7;">${safeMessage}</div></div></div></div>`,
   });
+  if (error) {
+    console.error("Échec du formulaire de contact.", { code: error.name || "email_rejected" });
+    throw createError({ statusCode: 502, statusMessage: "Votre message n’a pas pu être envoyé. Veuillez réessayer." });
+  }
   return {
     success: true,
     message:

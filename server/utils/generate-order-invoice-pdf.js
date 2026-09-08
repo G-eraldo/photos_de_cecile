@@ -6,7 +6,10 @@ const safe = (value) => String(value || "").trim() || "Non renseigné";
 const euros = (value) => `${Number(value).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 
 export async function generateOrderInvoicePdf({ reference, details, total }) {
+  const issuedAt = new Date(details.paiementConfirmeLe || Date.now());
   const pdf = await PDFDocument.create();
+  pdf.setCreationDate(issuedAt);
+  pdf.setModificationDate(issuedAt);
   const page = pdf.addPage([595.28, 841.89]);
   const regular = await pdf.embedFont(StandardFonts.Helvetica);
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
@@ -29,7 +32,7 @@ export async function generateOrderInvoicePdf({ reference, details, total }) {
   line("DELLENBACH Cécile — Entrepreneur individuel", { gap: 15 });
   line("8 allée sablée, 80000 Amiens — SIRET : 93211664300010", { gap: 34 });
   line(`Référence : ${safe(reference)}`, { font: bold, size: 11 });
-  line(`Émise le : ${new Intl.DateTimeFormat("fr-FR").format(new Date())}`, { gap: 30 });
+  line(`Émise le : ${new Intl.DateTimeFormat("fr-FR").format(issuedAt)}`, { gap: 30 });
   line("FACTURÉ À", { font: bold, size: 11, color: brown, gap: 20 });
   line(`${safe(details.prenom)} ${safe(details.nom)}`);
   line(safe(details.email));

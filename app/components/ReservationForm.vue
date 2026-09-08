@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { CalendarDays, Mail } from 'lucide-vue-next';
 import { computed, onMounted, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { parisDate, parisTime } from '~/lib/paris-calendar.js';
 import { RESERVATION_DURATION_MS } from '~~/shared/utils/reservation-duration.js';
 import Select from './ui/select/Select.vue';
 import SelectContent from './ui/select/SelectContent.vue';
@@ -42,11 +43,11 @@ const availableDates = computed(() => {
 
   availability.value.forEach((item) => {
     const start = new Date(item.start);
-    const value = [start.getFullYear(), String(start.getMonth() + 1).padStart(2, '0'), String(start.getDate()).padStart(2, '0')].join('-');
+    const value = parisDate(start);
     if (!dates.has(value)) {
       dates.set(value, {
         value,
-        label: new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(start),
+        label: new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', weekday: 'long', day: 'numeric', month: 'long' }).format(start),
       });
     }
   });
@@ -86,15 +87,15 @@ const availableSlots = computed(() => {
   return availability.value.flatMap((item) => {
     const start = new Date(item.start);
     const end = new Date(item.end);
-    const itemDate = [start.getFullYear(), String(start.getMonth() + 1).padStart(2, '0'), String(start.getDate()).padStart(2, '0')].join('-');
+    const itemDate = parisDate(start);
     if (itemDate !== date.value) return [];
 
     const slots = [];
     for (const slotStart = new Date(start); slotStart.getTime() + RESERVATION_DURATION_MS <= end.getTime(); slotStart.setTime(slotStart.getTime() + RESERVATION_DURATION_MS)) {
       const slotEnd = new Date(slotStart.getTime() + RESERVATION_DURATION_MS);
       slots.push({
-        value: `${String(slotStart.getHours()).padStart(2, '0')}:${String(slotStart.getMinutes()).padStart(2, '0')}`,
-        label: `${String(slotStart.getHours()).padStart(2, '0')}h – ${String(slotEnd.getHours()).padStart(2, '0')}h`,
+        value: parisTime(slotStart),
+        label: `${parisTime(slotStart)} – ${parisTime(slotEnd)}`,
       });
     }
     return slots;
@@ -252,12 +253,12 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
       <CalendarDays class="h-6 w-6 text-[#613213]" />
       <CardTitle class="font-playfair text-2xl font-bold text-[#613213] md:text-3xl">Préparons votre séance</CardTitle>
     </div>
-    <CardDescription class="mb-6 text-[#9e8b8b]">
+    <CardDescription class="mb-6 text-[#676463]">
       Les créneaux affichés sont ceux définis par Cécile dans son agenda. Chaque rendez-vous dure une heure et sera
       confirmé après vérification.
     </CardDescription>
 
-    <form class="space-y-4 text-[#9e8b8b]" @submit.prevent="submit">
+    <form class="space-y-4 text-[#676463]" @submit.prevent="submit">
       <p v-if="prestation" class="text-sm">Prestation choisie : <strong>{{ prestation }}</strong></p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="grid gap-2"><Label for="reservation-nom">Votre nom</Label><Input id="reservation-nom" v-model="nom"
@@ -346,7 +347,7 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
             </Button>
           </div>
         </div>
-        <p class="mt-3 text-xs">Les dates en surbrillance sont disponibles.</p>
+        <p class="mt-3 text-xs">Les dates en surbrillance sont disponibles. Horaires de Paris.</p>
         <p v-if="loadingCalendar" class="mt-2 text-sm">Chargement des disponibilités…</p>
         <p v-if="calendarError" class="text-sm text-red-500">Les disponibilités sont momentanément indisponibles.</p>
       </div>
