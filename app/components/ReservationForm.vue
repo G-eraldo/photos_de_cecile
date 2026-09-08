@@ -420,7 +420,8 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
       <div class="flex justify-center">
         <Button type="submit" :disabled="pending || !conditionsAccepted || !socialUsage">
           <Mail class="mr-2 h-4 w-4" />
-          {{ pending ? 'Redirection vers le paiement…' : montantAcompte ? `Payer l’acompte de ${formatPrice(montantAcompte)} €` : 'Réserver ma séance' }}
+          {{ pending ? 'Redirection vers le paiement…' : montantAcompte ? `Payer l’acompte de
+          ${formatPrice(montantAcompte)} €` : 'Réserver ma séance' }}
         </Button>
       </div>
     </form>
