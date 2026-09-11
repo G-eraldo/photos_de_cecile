@@ -4,4 +4,3 @@ Disallow: /reservation/confirmation
 Disallow: /offrir/confirmation
 Disallow: /tirage-photo/confirmation
 Disallow: /tirage-photo/panier
-Disallow: /api/
