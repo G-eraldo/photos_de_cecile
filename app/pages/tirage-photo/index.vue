@@ -8,18 +8,10 @@ definePageMeta({ layout: 'default' })
 
 useSeoMeta({
   title: 'Tirage photo',
-  description: 'Des tirages photo d’art, choisis avec soin pour faire vivre vos souvenirs.',
-  ogTitle: 'Tirage photo | Les Photos de Cécile',
-  ogDescription: 'Des souvenirs à toucher, à offrir et à transmettre.',
+  description: 'Commandez un tirage photo d’art imprimé à Amiens, sur papier baryté ou coton, à offrir ou à garder.',
 })
 
 const { find } = useStrapi()
-
-const fallbackProducts = [
-  { titre: 'Tirage Fine Art', slug: 'tirage-fine-art', prix: '8', imageUrl: '/images/impression.png' },
-  { titre: 'Tirage traditionnel', slug: 'tirage-traditionnel', prix: '6', imageUrl: '/images/format.png' },
-  { titre: 'Pack souvenirs', slug: 'pack-souvenirs', prix: '32', imageUrl: '/images/cta.png' },
-]
 
 const { data, pending, error } = await useAsyncData('produits-tirages', () =>
   find('produits', {
@@ -40,7 +32,7 @@ function mediaUrl(image, fallback) {
 
 const products = computed(() => {
   const entries = data.value?.data || data.value || []
-  if (!entries.length) return fallbackProducts
+  if (!entries.length) return []
 
   return entries.map((product) => ({
     ...product,
@@ -51,7 +43,7 @@ const products = computed(() => {
 </script>
 
 <template>
-  <main class="overflow-hidden text-[#503d30]">
+  <div class="overflow-hidden text-[#503d30]">
     <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/4_da7bfa672c.png"
       alt="La patte d’un chien reposant dans des mains" position="center 50%" />
     <section class="pb-16 pt-10 sm:pt-16 md:pb-24">
@@ -157,5 +149,5 @@ const products = computed(() => {
         </div>
       </Card>
     </section>
-  </main>
+  </div>
 </template>

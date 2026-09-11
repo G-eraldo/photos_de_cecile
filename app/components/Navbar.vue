@@ -9,6 +9,7 @@ const menuItems = [
   { name: 'Portfolio', href: '/portfolio' },
   { name: 'Tirage photo', href: '/tirage-photo' },
   { name: 'Offrir', href: '/offrir' },
+  { name: 'Réserver', href: '/reservation' },
   { name: 'Contact', href: '/contact' },
 ]
 

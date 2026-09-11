@@ -500,6 +500,15 @@ Revue : ancienne URL du produit baryté vérifiée en HTTP local (200 après red
 
 Avis : pas de feu vert pour les ventes/réservations, indépendamment de Mollie test. Aucun code applicatif changé. Les vérifications complètes navigateur, hébergement, sauvegardes et parcours externes restent nécessaires ; elles ne sont pas présentées comme réalisées.
 
+## Audit sécurité et SEO — 11 septembre 2026
+
+- [x] Relire l’audit du 8 septembre et le code actuel.
+- [x] Corriger les 500 publics `/portfolio` et fiches tirage.
+- [x] Page d’erreur française en noindex.
+- [x] SEO : H1, JSON-LD, robots, panier, CGV, liens internes.
+- [x] Sécurité : CORS, CSP avis, origine POST, créneaux, OAuth, webhook.
+- [ ] Redéployer frontend et backend, puis vérifier `/portfolio` et une fiche produit en 200.
+
 ## Corrections audit production — 8 septembre 2026
 
 - [ ] Sécuriser créneaux, données commerciales et reprise idempotente des paiements.

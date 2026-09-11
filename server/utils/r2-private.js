@@ -1,15 +1,30 @@
-import { createHash, createHmac, randomUUID, timingSafeEqual } from "node:crypto";
+import {
+  createHash,
+  createHmac,
+  randomUUID,
+  timingSafeEqual,
+} from "node:crypto";
 
 const algorithm = "AWS4-HMAC-SHA256";
 const service = "s3";
 const region = "auto";
-const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
+const allowedImageTypes = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+]);
 const defaultMaxUploadBytes = 50 * 1024 * 1024;
 export const PRIVATE_UPLOAD_TOKEN_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 const hmac = (key, value) => createHmac("sha256", key).update(value).digest();
-const encode = (value) => encodeURIComponent(value).replace(/[!'()*]/g, (character) => `%${character.charCodeAt(0).toString(16).toUpperCase()}`);
+const encode = (value) =>
+  encodeURIComponent(value).replace(
+    /[!'()*]/g,
+    (character) => `%${character.charCodeAt(0).toString(16).toUpperCase()}`,
+  );
 const timestamp = (date) => date.toISOString().replace(/[:-]|\.\d{3}/g, "");
 
 const config = () => {
@@ -18,15 +33,35 @@ const config = () => {
   const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
   const bucket = process.env.R2_PRIVATE_BUCKET;
   const uploadSigningSecret = process.env.ORDER_UPLOAD_SIGNING_SECRET;
-  if (!accountId || !accessKeyId || !secretAccessKey || !bucket || !uploadSigningSecret) {
-    throw createError({ statusCode: 503, statusMessage: "Le téléversement privé n’est pas encore configuré." });
+  if (
+    !accountId ||
+    !accessKeyId ||
+    !secretAccessKey ||
+    !bucket ||
+    !uploadSigningSecret
+  ) {
+    throw createError({
+      statusCode: 503,
+      statusMessage: "Le téléversement privé n’est pas encore configuré.",
+    });
   }
-  return { accountId, accessKeyId, secretAccessKey, bucket, uploadSigningSecret, host: `${accountId}.r2.cloudflarestorage.com` };
+  return {
+    accountId,
+    accessKeyId,
+    secretAccessKey,
+    bucket,
+    uploadSigningSecret,
+    host: `${accountId}.r2.cloudflarestorage.com`,
+  };
 };
 
 export const maxUploadBytes = () => {
-  const configured = Number(process.env.ORDER_UPLOAD_MAX_BYTES || defaultMaxUploadBytes);
-  return Number.isFinite(configured) && configured > 0 && configured <= 100 * 1024 ** 2
+  const configured = Number(
+    process.env.ORDER_UPLOAD_MAX_BYTES || defaultMaxUploadBytes,
+  );
+  return Number.isFinite(configured) &&
+    configured > 0 &&
+    configured <= 100 * 1024 ** 2
     ? configured
     : defaultMaxUploadBytes;
 };
@@ -38,44 +73,93 @@ const signingKey = (secretAccessKey, dateStamp) => {
   return hmac(serviceKey, "aws4_request");
 };
 
-const pathFor = ({ bucket }, key) => `/${encode(bucket)}/${key.split("/").map(encode).join("/")}`;
-const canonicalHeaders = (headers) => Object.entries(headers).sort(([a], [b]) => a.localeCompare(b)).map(([name, value]) => `${name}:${String(value).trim()}\n`).join("");
+const pathFor = ({ bucket }, key) =>
+  `/${encode(bucket)}/${key.split("/").map(encode).join("/")}`;
+const canonicalHeaders = (headers) =>
+  Object.entries(headers)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, value]) => `${name}:${String(value).trim()}\n`)
+    .join("");
 const signedHeaders = (headers) => Object.keys(headers).sort().join(";");
 
 export const validateOrderImage = ({ filename, type, size }) => {
-  if (typeof filename !== "string" || !filename.trim() || !allowedImageTypes.has(type) || !Number.isSafeInteger(Number(size)) || Number(size) <= 0 || Number(size) > maxUploadBytes()) {
-    throw createError({ statusCode: 400, statusMessage: "Ajoutez une photo JPG, PNG, WebP ou HEIC valide." });
+  if (
+    typeof filename !== "string" ||
+    !filename.trim() ||
+    !allowedImageTypes.has(type) ||
+    !Number.isSafeInteger(Number(size)) ||
+    Number(size) <= 0 ||
+    Number(size) > maxUploadBytes()
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Ajoutez une photo JPG, PNG, WebP ou HEIC valide.",
+    });
   }
 };
 
 export const createPrivateUpload = ({ filename, type, size }) => {
   validateOrderImage({ filename, type, size });
-  const extension = filename.trim().split(".").pop().replace(/[^a-zA-Z0-9]/g, "").slice(0, 12) || "image";
-  return { key: `commandes/pending/${randomUUID()}.${extension.toLowerCase()}`, filename: filename.trim().slice(0, 180), type, size: Number(size) };
+  const extension =
+    filename
+      .trim()
+      .split(".")
+      .pop()
+      .replace(/[^a-zA-Z0-9]/g, "")
+      .slice(0, 12) || "image";
+  return {
+    key: `commandes/pending/${randomUUID()}.${extension.toLowerCase()}`,
+    filename: filename.trim().slice(0, 180),
+    type,
+    size: Number(size),
+  };
 };
 
 const encodeToken = (payload, secret) => {
   const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
-  const signature = createHmac("sha256", secret).update(body).digest("base64url");
+  const signature = createHmac("sha256", secret)
+    .update(body)
+    .digest("base64url");
   return `${body}.${signature}`;
 };
 
 export const verifyPrivateUploadToken = (token) => {
-  if (typeof token !== "string") throw createError({ statusCode: 400, statusMessage: "Référence de photo invalide." });
+  if (typeof token !== "string")
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Référence de photo invalide.",
+    });
   const [body, signature, extra] = token.split(".");
   const r2 = config();
-  if (!body || !signature || extra) throw createError({ statusCode: 400, statusMessage: "Référence de photo invalide." });
-  const expected = createHmac("sha256", r2.uploadSigningSecret).update(body).digest("base64url");
-  if (!/^[A-Za-z0-9_-]{43}$/.test(signature) || !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) {
-    throw createError({ statusCode: 400, statusMessage: "Référence de photo invalide." });
+  if (!body || !signature || extra)
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Référence de photo invalide.",
+    });
+  const expected = createHmac("sha256", r2.uploadSigningSecret)
+    .update(body)
+    .digest("base64url");
+  if (
+    !/^[A-Za-z0-9_-]{43}$/.test(signature) ||
+    !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Référence de photo invalide.",
+    });
   }
   try {
     const upload = JSON.parse(Buffer.from(body, "base64url").toString("utf8"));
     validateOrderImage(upload);
-    if (typeof upload.expiresAt !== "number" || upload.expiresAt < Date.now()) throw new Error("expired");
+    if (typeof upload.expiresAt !== "number" || upload.expiresAt < Date.now())
+      throw new Error("expired");
     return upload;
   } catch {
-    throw createError({ statusCode: 400, statusMessage: "Le lien de téléversement a expiré. Veuillez choisir votre photo à nouveau." });
+    throw createError({
+      statusCode: 400,
+      statusMessage:
+        "Le lien de téléversement a expiré. Veuillez choisir votre photo à nouveau.",
+    });
   }
 };
 
@@ -84,7 +168,11 @@ export const createPrivateUploadUrl = (upload, now = new Date()) => {
   const amzDate = timestamp(now);
   const dateStamp = amzDate.slice(0, 8);
   const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
-  const headers = { "content-length": String(upload.size), "content-type": upload.type, host: r2.host };
+  const headers = {
+    "content-length": String(upload.size),
+    "content-type": upload.type,
+    host: r2.host,
+  };
   const parameters = [
     ["X-Amz-Algorithm", algorithm],
     ["X-Amz-Credential", `${r2.accessKeyId}/${credentialScope}`],
@@ -92,12 +180,37 @@ export const createPrivateUploadUrl = (upload, now = new Date()) => {
     ["X-Amz-Expires", "900"],
     ["X-Amz-SignedHeaders", signedHeaders(headers)],
   ];
-  const canonicalQuery = parameters.sort(([first], [second]) => first.localeCompare(second)).map(([name, value]) => `${encode(name)}=${encode(value)}`).join("&");
-  const canonicalRequest = ["PUT", pathFor(r2, upload.key), canonicalQuery, canonicalHeaders(headers), signedHeaders(headers), "UNSIGNED-PAYLOAD"].join("\n");
-  const stringToSign = [algorithm, amzDate, credentialScope, sha256(canonicalRequest)].join("\n");
-  const signature = createHmac("sha256", signingKey(r2.secretAccessKey, dateStamp)).update(stringToSign).digest("hex");
+  const canonicalQuery = parameters
+    .sort(([first], [second]) => first.localeCompare(second))
+    .map(([name, value]) => `${encode(name)}=${encode(value)}`)
+    .join("&");
+  const canonicalRequest = [
+    "PUT",
+    pathFor(r2, upload.key),
+    canonicalQuery,
+    canonicalHeaders(headers),
+    signedHeaders(headers),
+    "UNSIGNED-PAYLOAD",
+  ].join("\n");
+  const stringToSign = [
+    algorithm,
+    amzDate,
+    credentialScope,
+    sha256(canonicalRequest),
+  ].join("\n");
+  const signature = createHmac(
+    "sha256",
+    signingKey(r2.secretAccessKey, dateStamp),
+  )
+    .update(stringToSign)
+    .digest("hex");
   const expiresAt = now.getTime() + PRIVATE_UPLOAD_TOKEN_TTL_MS;
-  return { uploadUrl: `https://${r2.host}${pathFor(r2, upload.key)}?${canonicalQuery}&X-Amz-Signature=${signature}`, uploadToken: encodeToken({ ...upload, expiresAt }, r2.uploadSigningSecret), expiresAt, maxUploadBytes: maxUploadBytes() };
+  return {
+    uploadUrl: `https://${r2.host}${pathFor(r2, upload.key)}?${canonicalQuery}&X-Amz-Signature=${signature}`,
+    uploadToken: encodeToken({ ...upload, expiresAt }, r2.uploadSigningSecret),
+    expiresAt,
+    maxUploadBytes: maxUploadBytes(),
+  };
 };
 
 const signedR2Request = async (method, key, additionalHeaders = {}) => {
@@ -106,27 +219,63 @@ const signedR2Request = async (method, key, additionalHeaders = {}) => {
   const amzDate = timestamp(now);
   const dateStamp = amzDate.slice(0, 8);
   const credentialScope = `${dateStamp}/${region}/${service}/aws4_request`;
-  const headers = { host: r2.host, "x-amz-content-sha256": sha256(""), "x-amz-date": amzDate, ...additionalHeaders };
-  const canonicalRequest = [method, pathFor(r2, key), "", canonicalHeaders(headers), signedHeaders(headers), headers["x-amz-content-sha256"]].join("\n");
-  const stringToSign = [algorithm, amzDate, credentialScope, sha256(canonicalRequest)].join("\n");
-  const signature = createHmac("sha256", signingKey(r2.secretAccessKey, dateStamp)).update(stringToSign).digest("hex");
+  const headers = {
+    host: r2.host,
+    "x-amz-content-sha256": sha256(""),
+    "x-amz-date": amzDate,
+    ...additionalHeaders,
+  };
+  const canonicalRequest = [
+    method,
+    pathFor(r2, key),
+    "",
+    canonicalHeaders(headers),
+    signedHeaders(headers),
+    headers["x-amz-content-sha256"],
+  ].join("\n");
+  const stringToSign = [
+    algorithm,
+    amzDate,
+    credentialScope,
+    sha256(canonicalRequest),
+  ].join("\n");
+  const signature = createHmac(
+    "sha256",
+    signingKey(r2.secretAccessKey, dateStamp),
+  )
+    .update(stringToSign)
+    .digest("hex");
   const authorization = `${algorithm} Credential=${r2.accessKeyId}/${credentialScope}, SignedHeaders=${signedHeaders(headers)}, Signature=${signature}`;
-  return fetch(`https://${r2.host}${pathFor(r2, key)}`, { method, headers: { ...headers, authorization }, signal: AbortSignal.timeout(30000) });
+  return fetch(`https://${r2.host}${pathFor(r2, key)}`, {
+    method,
+    headers: { ...headers, authorization },
+    signal: AbortSignal.timeout(30000),
+  });
 };
 
 const isMatchingImageSignature = (bytes, type) => {
-  const startsWith = (...values) => values.every((value, index) => bytes[index] === value);
+  const startsWith = (...values) =>
+    values.every((value, index) => bytes[index] === value);
   if (type === "image/jpeg") return startsWith(0xff, 0xd8, 0xff);
-  if (type === "image/png") return startsWith(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
-  if (type === "image/webp") return startsWith(0x52, 0x49, 0x46, 0x46) && String.fromCharCode(...bytes.slice(8, 12)) === "WEBP";
+  if (type === "image/png")
+    return startsWith(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a);
+  if (type === "image/webp")
+    return (
+      startsWith(0x52, 0x49, 0x46, 0x46) &&
+      String.fromCharCode(...bytes.slice(8, 12)) === "WEBP"
+    );
   if (type === "image/heic" || type === "image/heif") {
     const brand = String.fromCharCode(...bytes.slice(8, 12)).toLowerCase();
-    return String.fromCharCode(...bytes.slice(4, 8)) === "ftyp" && ["heic", "heix", "hevc", "hevx", "mif1", "msf1"].includes(brand);
+    return (
+      String.fromCharCode(...bytes.slice(4, 8)) === "ftyp" &&
+      ["heic", "heix", "hevc", "hevx", "mif1", "msf1"].includes(brand)
+    );
   }
   return false;
 };
 
-const pendingKeyPattern = /^commandes\/pending\/([a-f0-9-]{36}\.[a-z0-9]{1,12})$/;
+const pendingKeyPattern =
+  /^commandes\/pending\/([a-f0-9-]{36}\.[a-z0-9]{1,12})$/;
 
 const objectExists = async (key) => {
   const response = await signedR2Request("HEAD", key);
@@ -142,15 +291,24 @@ export const deletePrivateUpload = async (key) => {
 export const finalizePrivateUpload = async (upload, reference) => {
   const match = pendingKeyPattern.exec(upload?.key || "");
   if (!match || !/^c[a-f0-9]{32}$/.test(reference || "")) {
-    throw createError({ statusCode: 400, statusMessage: "Référence de photo invalide." });
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Référence de photo invalide.",
+    });
   }
 
   const targetKey = `commandes/payees/${reference}/${match[1]}`;
-  if (!await objectExists(targetKey)) {
+  if (!(await objectExists(targetKey))) {
     const r2 = config();
     const source = `/${encode(r2.bucket)}/${upload.key.split("/").map(encode).join("/")}`;
-    const copyResponse = await signedR2Request("PUT", targetKey, { "x-amz-copy-source": source });
-    if (!copyResponse.ok) throw createError({ statusCode: 502, statusMessage: "Impossible de sécuriser la photo de commande." });
+    const copyResponse = await signedR2Request("PUT", targetKey, {
+      "x-amz-copy-source": source,
+    });
+    if (!copyResponse.ok)
+      throw createError({
+        statusCode: 502,
+        statusMessage: "Impossible de sécuriser la photo de commande.",
+      });
   }
 
   await deletePrivateUpload(upload.key);
@@ -159,24 +317,59 @@ export const finalizePrivateUpload = async (upload, reference) => {
 
 export const inspectPrivateUpload = async (upload) => {
   if (!pendingKeyPattern.test(upload?.key || "")) {
-    throw createError({ statusCode: 400, statusMessage: "Référence de photo invalide." });
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Référence de photo invalide.",
+    });
   }
   const response = await signedR2Request("HEAD", upload.key);
-  if (!response.ok) throw createError({ statusCode: 400, statusMessage: "La photo privée est introuvable." });
+  if (!response.ok)
+    throw createError({
+      statusCode: 400,
+      statusMessage: "La photo privée est introuvable.",
+    });
   const type = response.headers.get("content-type")?.toLowerCase();
   const size = Number(response.headers.get("content-length"));
-  if (!allowedImageTypes.has(type) || type !== upload.type || size !== Number(upload.size) || !Number.isFinite(size) || size <= 0 || size > maxUploadBytes()) {
+  if (
+    !allowedImageTypes.has(type) ||
+    type !== upload.type ||
+    size !== Number(upload.size) ||
+    !Number.isFinite(size) ||
+    size <= 0 ||
+    size > maxUploadBytes()
+  ) {
     await deletePrivateUpload(upload.key);
-    throw createError({ statusCode: 400, statusMessage: "La photo privée est invalide." });
+    throw createError({
+      statusCode: 400,
+      statusMessage: "La photo privée est invalide.",
+    });
   }
-  const signatureResponse = await signedR2Request("GET", upload.key, { range: "bytes=0-31" });
-  if (signatureResponse.status !== 206 || Number(signatureResponse.headers.get("content-length")) > 32) {
+  const signatureResponse = await signedR2Request("GET", upload.key, {
+    range: "bytes=0-31",
+  });
+  if (
+    signatureResponse.status !== 206 ||
+    Number(signatureResponse.headers.get("content-length")) > 32
+  ) {
     await signatureResponse.body?.cancel();
-    throw createError({ statusCode: 502, statusMessage: "Impossible de vérifier la photo privée." });
+    throw createError({
+      statusCode: 502,
+      statusMessage: "Impossible de vérifier la photo privée.",
+    });
   }
   const signature = new Uint8Array(await signatureResponse.arrayBuffer());
   if (!signatureResponse.ok || !isMatchingImageSignature(signature, type)) {
-    throw createError({ statusCode: 400, statusMessage: "Le contenu de la photo ne correspond pas à son format annoncé." });
+    await deletePrivateUpload(upload.key);
+    throw createError({
+      statusCode: 400,
+      statusMessage:
+        "Le contenu de la photo ne correspond pas à son format annoncé.",
+    });
   }
-  return { key: upload.key, filename: String(upload.filename || "photo").slice(0, 180), type, size };
+  return {
+    key: upload.key,
+    filename: String(upload.filename || "photo").slice(0, 180),
+    type,
+    size,
+  };
 };

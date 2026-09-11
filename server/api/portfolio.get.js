@@ -1,3 +1,4 @@
+import { enforceRateLimit } from "../utils/request-security.js";
 import { deduplicatePortfolioPhotos, isPortfolioPhoto } from '../utils/portfolio-photos.js';
 
 const getStrapiConfig = () => {
@@ -75,27 +76,56 @@ const getAltText = (file) =>
     .replace(/#portfolio-une(?:-\d+)?\b/gi, "")
     .trim() || "Photo du portfolio de Cécile";
 
-export default defineEventHandler(async () => {
+const toPublicPhoto = (file, imageDeliveryOrigin) => ({
+  id: file.id,
+  alt: getAltText(file),
+  height: file.height,
+  name: file.name,
+  featuredSrcset: getResponsiveSrcset(file.url, [800, 1200, 1600], imageDeliveryOrigin),
+  featuredUrl: getOptimizedUrl(file.url, 1200, imageDeliveryOrigin),
+  thumbnailSrcset: getResponsiveSrcset(file.url, [480, 800, 1200], imageDeliveryOrigin),
+  thumbnailUrl: getOptimizedUrl(file.url, 800, imageDeliveryOrigin),
+  url: file.url,
+  width: file.width,
+});
+
+export default defineEventHandler(async (event) => {
+  await enforceRateLimit(event, {
+    scope: "portfolio",
+    limit: 60,
+    windowMs: 15 * 60 * 1000,
+  });
+  const page = Number(getQuery(event).page || 1);
+  if (!Number.isSafeInteger(page) || page < 1) {
+    throw createError({ statusCode: 404, statusMessage: "Page du portfolio introuvable" });
+  }
+
   const { strapiUrl, strapiToken } = getStrapiConfig();
   const imageDeliveryOrigin = getImageDeliveryOrigin();
   const response = await $fetch(`${strapiUrl}/api/upload/files`, {
     headers: { Authorization: `Bearer ${strapiToken}` },
   });
   const files = Array.isArray(response) ? response : response.data || [];
+  const photos = deduplicatePortfolioPhotos(
+    prioritizeFeaturedPhotos(
+      files.filter((file) => file.mime?.startsWith("image/") && file.url && isPortfolioPhoto(file)),
+    ),
+  ).map((file) => toPublicPhoto(file, imageDeliveryOrigin));
 
+  const featured = photos.slice(0, 6);
+  const album = photos.slice(6);
+  const initialAlbumCount = 20;
+  const albumBatchSize = 12;
+  const pageCount = Math.max(1, 1 + Math.ceil(Math.max(0, album.length - initialAlbumCount) / albumBatchSize));
+  if (page > pageCount) {
+    throw createError({ statusCode: 404, statusMessage: "Page du portfolio introuvable" });
+  }
+  const start = page === 1 ? 0 : initialAlbumCount + (page - 2) * albumBatchSize;
   return {
-    photos: deduplicatePortfolioPhotos(prioritizeFeaturedPhotos(files.filter((file) => file.mime?.startsWith("image/") && file.url && isPortfolioPhoto(file))))
-      .map((file) => ({
-        id: file.id,
-        alt: getAltText(file),
-        height: file.height,
-        name: file.name,
-        featuredSrcset: getResponsiveSrcset(file.url, [800, 1200, 1600], imageDeliveryOrigin),
-        featuredUrl: getOptimizedUrl(file.url, 1200, imageDeliveryOrigin),
-        thumbnailSrcset: getResponsiveSrcset(file.url, [480, 800, 1200], imageDeliveryOrigin),
-        thumbnailUrl: getOptimizedUrl(file.url, 800, imageDeliveryOrigin),
-        url: file.url,
-        width: file.width,
-      })),
+    featured: page === 1 ? featured : [],
+    photos: album.slice(start, start + (page === 1 ? initialAlbumCount : albumBatchSize)),
+    page,
+    pageCount,
+    total: photos.length,
   };
 });

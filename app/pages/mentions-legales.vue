@@ -5,13 +5,13 @@ definePageMeta({ layout: 'default' })
 
 useSeoMeta({
   title: 'Mentions légales',
-  description: 'Les mentions légales du site Les Photos de Cécile.',
+  description: 'Mentions légales du site Les Photos de Cécile : éditeur, SIRET, hébergeur et propriété des photographies.',
   robots: 'index, follow',
 })
 </script>
 
 <template>
-  <main class="mt-20 min-h-screen bg-[#E6DFDD] pb-20 pt-10 font-poppins sm:mt-24 sm:pt-16">
+  <div class="mt-20 min-h-screen bg-[#E6DFDD] pb-20 pt-10 font-poppins sm:mt-24 sm:pt-16">
     <EditorialPageHeader title="Mentions légales"
       description="Les informations essentielles relatives à l’édition et à l’utilisation du site." />
 
@@ -185,5 +185,5 @@ useSeoMeta({
         </div>
       </article>
     </div>
-  </main>
+  </div>
 </template>

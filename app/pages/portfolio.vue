@@ -10,37 +10,35 @@ definePageMeta({ layout: 'default' });
 
 
 
-const {
-  data,
-  error,
-  pending,
-} = await useAsyncData('portfolio-photos', () => $fetch('/api/portfolio'));
-
-const photos = computed(() => data.value?.photos || []);
-const initialAlbumCount = 20;
-const albumBatchSize = 12;
 const route = useRoute();
 const currentPage = computed(() => {
   const value = Number(route.query.page || 1);
   return Number.isSafeInteger(value) && value > 0 ? value : 1;
 });
-const featuredPhotos = computed(() => photos.value.slice(0, 6));
-const albumPhotos = computed(() => photos.value.slice(6));
-const pageCount = computed(() => 1 + Math.ceil(Math.max(0, albumPhotos.value.length - initialAlbumCount) / albumBatchSize));
-const displayedAlbumPhotos = computed(() => {
-  const start = currentPage.value === 1 ? 0 : initialAlbumCount + (currentPage.value - 2) * albumBatchSize;
-  return albumPhotos.value.slice(start, start + (currentPage.value === 1 ? initialAlbumCount : albumBatchSize));
-});
-if (currentPage.value > pageCount.value && !error.value) {
+const {
+  data,
+  error,
+  pending,
+} = await useAsyncData(
+  () => `portfolio-photos-${currentPage.value}`,
+  () => $fetch('/api/portfolio', { query: { page: currentPage.value } }),
+);
+if (error.value?.statusCode === 404) {
   throw createError({ statusCode: 404, statusMessage: 'Page du portfolio introuvable' });
 }
+
+const featuredPhotos = computed(() => data.value?.featured || []);
+const displayedAlbumPhotos = computed(() => data.value?.photos || []);
+const pageCount = computed(() => Number(data.value?.pageCount || 1));
+const photosCount = computed(() => Number(data.value?.total || 0));
+const siteUrl = useSiteConfig().url || 'https://lesphotodececile.fr';
 const portfolioUrl = (page) => page === 1 ? '/portfolio' : `/portfolio?page=${page}`;
-useHead(() => ({ link: [{ rel: 'canonical', href: new URL(portfolioUrl(currentPage.value), useSiteConfig().url).href }] }));
+useHead(() => ({
+  link: [{ rel: 'canonical', href: new URL(portfolioUrl(currentPage.value), siteUrl).href }],
+}));
 useSeoMeta({
   title: () => currentPage.value > 1 ? `Portfolio — page ${currentPage.value}` : 'Portfolio',
-  description: 'Découvrez une sélection de photos de couples, familles, bébés, animaux et mariages par Les Photos de Cécile.',
-  ogTitle: 'Portfolio | Les Photos de Cécile',
-  ogDescription: 'Un album de souvenirs, d’émotions et de lumière naturelle.',
+  description: 'Découvrez une sélection de photos de couples, familles, bébés, animaux et mariages réalisées à Amiens et en Picardie par Les Photos de Cécile.',
 });
 const albumColumns = computed(() => {
   const columns = Array.from({ length: 3 }, () => ({ height: 0, photos: [] }));
@@ -74,7 +72,7 @@ const featuredLayouts = [
 </script>
 
 <template>
-  <main class="overflow-hidden pb-20">
+  <div class="overflow-hidden pb-20">
     <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/5_034a70c674.png"
       alt="Un couple entouré de ses chiens dans la forêt" position="center 48%" />
     <div class="pt-10 sm:pt-16">
@@ -91,12 +89,13 @@ const featuredLayouts = [
           instants.</AlertDescription>
       </Alert>
 
-      <div v-else-if="!photos.length"
+      <div v-else-if="!photosCount">
         class="mx-auto max-w-xl rounded-2xl border border-[#e9ded8] bg-[#fdfaf8] px-6 py-10 text-center text-[#786b68]">
         Les premières photos du portfolio arrivent bientôt.
       </div>
 
-      <section v-else-if="currentPage === 1" aria-label="Sélection mise en avant" class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+      <section v-else-if="currentPage === 1 && featuredPhotos.length" aria-label="Sélection mise en avant"
+        class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
         <div class="mb-5 flex items-center justify-between">
 
           <p class="font-playfair text-lg text-[#613213]">Découvrez mon univers</p>
@@ -120,7 +119,7 @@ const featuredLayouts = [
         </div>
       </section>
 
-      <section v-if="albumPhotos.length" aria-label="Toutes les photos"
+      <section v-if="displayedAlbumPhotos.length" aria-label="Toutes les photos"
         class="mx-auto mt-5 max-w-7xl px-5 sm:mt-6 sm:px-8 lg:px-12">
         <div class="columns-1 gap-4 sm:hidden">
           <a v-for="photo in displayedAlbumPhotos" :key="photo.id" :href="photo.url" target="_blank"
@@ -154,7 +153,8 @@ const featuredLayouts = [
             </a>
           </div>
         </div>
-        <nav v-if="pageCount > 1" aria-label="Pagination du portfolio" class="mt-10 flex items-center justify-center gap-4">
+        <nav v-if="pageCount > 1" aria-label="Pagination du portfolio"
+          class="mt-10 flex items-center justify-center gap-4">
           <Button v-if="currentPage > 1" as-child variant="outline">
             <NuxtLink :to="portfolioUrl(currentPage - 1)" rel="prev">Photos précédentes</NuxtLink>
           </Button>
@@ -165,10 +165,10 @@ const featuredLayouts = [
         </nav>
       </section>
 
-      <p v-if="photos.length"
+      <p v-if="photosCount">
         class="mt-12 flex items-center justify-center gap-2 px-5 text-center text-sm text-[#9e8b8b]">
         <Images class="size-4" /> Cliquez sur une photo pour l’ouvrir en grand format.
       </p>
     </div>
-  </main>
+  </div>
 </template>

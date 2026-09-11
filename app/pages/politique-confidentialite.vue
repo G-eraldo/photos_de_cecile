@@ -5,13 +5,13 @@ definePageMeta({ layout: 'default' })
 
 useSeoMeta({
   title: 'Politique de confidentialité',
-  description: 'La politique de confidentialité du site Les Photos de Cécile.',
+  description: 'Politique de confidentialité des Photos de Cécile : données collectées, cookies d’avis, paiements et droits RGPD.',
   robots: 'index, follow',
 })
 </script>
 
 <template>
-  <main class="mt-20 min-h-screen bg-[#E6DFDD] pb-20 pt-10 font-poppins sm:mt-24 sm:pt-16">
+  <div class="mt-20 min-h-screen bg-[#E6DFDD] pb-20 pt-10 font-poppins sm:mt-24 sm:pt-16">
     <EditorialPageHeader title="Confidentialité"
       description="Comment vos données sont utilisées et protégées lorsque vous naviguez sur le site." />
     <div class="px-4 sm:px-6 lg:px-8">
@@ -137,5 +137,5 @@ useSeoMeta({
         </div>
       </article>
     </div>
-  </main>
+  </div>
 </template>

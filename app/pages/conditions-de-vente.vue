@@ -5,12 +5,12 @@ definePageMeta({ layout: 'default' })
 
 useSeoMeta({
   title: 'Conditions de vente',
-  description: 'Conditions de vente et contrat de prestation photographique des Photos de Cécile.',
+  description: 'Conditions de vente des Photos de Cécile : séances, acomptes, tirages, bons cadeaux et médiation de la consommation.',
 })
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#E6DFDD] px-4 py-24 font-poppins sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-[#E6DFDD] px-4 py-24 font-poppins sm:px-6 lg:px-8">
     <EditorialPageHeader title="Conditions de vente"
       description="Les conditions qui encadrent votre séance photo, avec clarté et simplicité." />
 
@@ -149,13 +149,12 @@ useSeoMeta({
           </h2>
 
           <p class="contract-text">
-            La réservation de la prestation est effective uniquement après :
+            Pour une réservation en ligne, la séance est confirmée après le
+            paiement sécurisé de l’acompte et la vérification du créneau.
+            Le contrat est ensuite adressé par e-mail. L’acompte correspond
+            au pourcentage indiqué sur la formule choisie, frais kilométriques
+            inclus le cas échéant.
           </p>
-
-          <ul class="contract-list">
-            <li>La signature du présent contrat</li>
-            <li>Le versement d’un acompte de 30% du montant total</li>
-          </ul>
 
           <p class="contract-text">
             Le solde devra être réglé au plus tard le jour de la prestation,
@@ -569,9 +568,55 @@ useSeoMeta({
             Pour une réservation en ligne, l’acompte est réglé lors de la commande via le paiement sécurisé.
             La réservation est confirmée après vérification du paiement et du créneau.
             Le contrat est ensuite adressé par e-mail pour signature. En cas de conflit de disponibilité
-            empêchant la confirmation, les sommes encaissées pour cette réservation sont remboursées.
+            empêchant la confirmation, les sommes encaissées pour cette réservation sont
+            remboursées.
           </p>
 
+        </section>
+
+        <section class="mt-12">
+          <h2 class="contract-title">Tirages photo</h2>
+          <p class="contract-text">
+            Les tirages sont des impressions personnalisées à partir de la photographie
+            fournie par le Client. Ils sont expédiés uniquement par courrier. Les délais
+            d’expédition sont communiqués après confirmation du paiement. Une photographie
+            illisible, trop compressée ou dont les droits n’appartiennent pas au Client
+            peut entraîner l’annulation de la commande et le remboursement.
+          </p>
+        </section>
+
+        <section class="mt-12">
+          <h2 class="contract-title">Bons cadeaux</h2>
+          <p class="contract-text">
+            Un bon cadeau est valable un an à compter de la date d’achat. Il peut être
+            envoyé par e-mail (PDF) ou par courrier. Il est nominatif et non échangeable
+            contre un remboursement, hors cas prévus par la loi.
+          </p>
+        </section>
+
+        <section class="mt-12">
+          <h2 class="contract-title">Droit de rétractation</h2>
+          <p class="contract-text">
+            Conformément à l’article L.221-28 du Code de la consommation, le droit de
+            rétractation ne s’applique pas aux prestations de loisirs fournies à une date
+            déterminée (séances photo réservées) ni aux biens confectionnés selon les
+            spécifications du consommateur (tirages à partir d’une photo fournie).
+            Pour un bon cadeau non utilisé, le Client dispose d’un délai de 14 jours
+            pour exercer son droit de rétractation, sauf s’il a demandé l’exécution
+            immédiate du service.
+          </p>
+        </section>
+
+        <section class="mt-12">
+          <h2 class="contract-title">Médiation de la consommation</h2>
+          <p class="contract-text">
+            Conformément aux articles L.611-1 et suivants du Code de la consommation,
+            le Client peut recourir gratuitement à un médiateur de la consommation en
+            vue de la résolution amiable d’un litige. Les coordonnées du médiateur
+            désigné par Cécile DELLENBACH sont communiquées sur simple demande à
+            <a class="underline" href="mailto:lesphotosdececile80@gmail.com">lesphotosdececile80@gmail.com</a>
+            et figureront sur les factures dès leur désignation.
+          </p>
         </section>
 
 
@@ -617,5 +662,5 @@ useSeoMeta({
 
     </div>
 
-  </main>
+  </div>
 </template>

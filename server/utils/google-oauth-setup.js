@@ -18,7 +18,8 @@ const setupSecret = () => {
   if (!secret) {
     throw createError({
       statusCode: 503,
-      statusMessage: "La configuration temporaire de Google Agenda est indisponible.",
+      statusMessage:
+        "La configuration temporaire de Google Agenda est indisponible.",
     });
   }
   return secret;
@@ -28,12 +29,25 @@ const secretsMatch = (first, second) => {
   if (typeof first !== "string" || typeof second !== "string") return false;
   const firstBuffer = Buffer.from(first);
   const secondBuffer = Buffer.from(second);
-  return firstBuffer.length === secondBuffer.length && timingSafeEqual(firstBuffer, secondBuffer);
+  return (
+    firstBuffer.length === secondBuffer.length &&
+    timingSafeEqual(firstBuffer, secondBuffer)
+  );
+};
+
+export const assertGoogleSetupEnabled = () => {
+  if (process.env.GOOGLE_REFRESH_TOKEN) {
+    throw createError({ statusCode: 404, statusMessage: "Page introuvable." });
+  }
 };
 
 export const requireGoogleSetupSession = (event) => {
-  if (!secretsMatch(getCookie(event, SESSION_COOKIE), setupSecret())) {
-    throw createError({ statusCode: 401, statusMessage: "Accès non autorisé." });
+  const session = getCookie(event, SESSION_COOKIE);
+  if (!session || !/^[A-Za-z0-9_-]{43}$/.test(session)) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: "Accès non autorisé.",
+    });
   }
 };
 
@@ -41,7 +55,12 @@ export const createGoogleSetupSession = (event, secret) => {
   if (!secretsMatch(secret, setupSecret())) {
     throw createError({ statusCode: 401, statusMessage: "Secret invalide." });
   }
-  setCookie(event, SESSION_COOKIE, setupSecret(), cookieOptions());
+  setCookie(
+    event,
+    SESSION_COOKIE,
+    randomBytes(32).toString("base64url"),
+    cookieOptions(),
+  );
 };
 
 export const createGoogleSetupState = (event) => {
@@ -54,7 +73,10 @@ export const consumeGoogleSetupState = (event, state) => {
   const expectedState = getCookie(event, STATE_COOKIE);
   deleteCookie(event, STATE_COOKIE, { path: "/api/google-calendar/setup" });
   if (!secretsMatch(state, expectedState)) {
-    throw createError({ statusCode: 403, statusMessage: "Autorisation Google invalide ou expirée." });
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Autorisation Google invalide ou expirée.",
+    });
   }
 };
 
@@ -66,7 +88,10 @@ export const consumeGoogleRefreshToken = (event) => {
   const refreshToken = getCookie(event, TOKEN_COOKIE);
   deleteCookie(event, TOKEN_COOKIE, { path: "/api/google-calendar/setup" });
   if (!refreshToken) {
-    throw createError({ statusCode: 404, statusMessage: "Aucun token temporaire à afficher." });
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Aucun token temporaire à afficher.",
+    });
   }
   return refreshToken;
 };

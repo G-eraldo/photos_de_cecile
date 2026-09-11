@@ -1,15 +1,25 @@
-import { createGoogleSetupState, requireGoogleSetupSession } from "../../../utils/google-oauth-setup.js";
+import {
+  assertGoogleSetupEnabled,
+  createGoogleSetupState,
+  requireGoogleSetupSession,
+} from "../../../utils/google-oauth-setup.js";
 
 export default defineEventHandler((event) => {
+  assertGoogleSetupEnabled();
   requireGoogleSetupSession(event);
 
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const redirectUri = process.env.GOOGLE_REDIRECT_URI;
   if (!clientId || !redirectUri) {
-    throw createError({ statusCode: 503, statusMessage: "GOOGLE_CLIENT_ID ou GOOGLE_REDIRECT_URI est absent." });
+    throw createError({
+      statusCode: 503,
+      statusMessage: "GOOGLE_CLIENT_ID ou GOOGLE_REDIRECT_URI est absent.",
+    });
   }
 
-  const authorizationUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+  const authorizationUrl = new URL(
+    "https://accounts.google.com/o/oauth2/v2/auth",
+  );
   authorizationUrl.search = new URLSearchParams({
     client_id: clientId,
     redirect_uri: redirectUri,

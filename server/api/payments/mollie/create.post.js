@@ -1,20 +1,28 @@
 import { randomUUID } from "node:crypto";
 
+import { RESERVATION_DURATION_MS } from "../../../../shared/utils/reservation-duration.js";
+import {
+  getGoogleAccessToken,
+  listCalendarEvents,
+} from "../../../utils/google-calendar.js";
 import {
   createMolliePayment,
   createStoredReservation,
   findFormula,
   getMollieConfig,
   getTravelFee,
+  listActiveReservationHolds,
   updateStoredReservation,
 } from "../../../utils/mollie.js";
-import { assertCalendarAvailability } from "../../../utils/google-calendar.js";
 import { dateTimeInParis } from "../../../utils/paris-date-time.js";
-import { RESERVATION_DURATION_MS } from "../../../../shared/utils/reservation-duration.js";
 import {
   enforceRateLimit,
   enforceTrustedOrigin,
 } from "../../../utils/request-security.js";
+import {
+  buildAvailabilitySlots,
+  isOfferedSlot,
+} from "../../../utils/reservation-slots.js";
 
 const requiredFields = [
   "nom",
@@ -95,7 +103,28 @@ export default defineEventHandler(async (event) => {
 
   const config = getMollieConfig();
   const end = new Date(start.getTime() + RESERVATION_DURATION_MS);
-  await assertCalendarAvailability(useRuntimeConfig(event), start, end);
+  const calendarConfig = useRuntimeConfig(event);
+  const accessToken = await getGoogleAccessToken(calendarConfig);
+  const events = await listCalendarEvents(
+    calendarConfig,
+    start,
+    end,
+    accessToken,
+  );
+  let holds = [];
+  try {
+    holds = await listActiveReservationHolds(config);
+  } catch {
+    holds = [];
+  }
+  const slots = buildAvailabilitySlots({ events, now: new Date(), holds });
+  if (!isOfferedSlot(slots, start)) {
+    throw createError({
+      statusCode: 409,
+      statusMessage:
+        "Ce créneau n’est plus disponible. Merci d’en choisir un autre.",
+    });
+  }
   const {
     amount: formulaDeposit,
     percentage,

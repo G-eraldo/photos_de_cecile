@@ -8,7 +8,9 @@
 
       <div class="absolute inset-0 -z-20">
         <NuxtImg src="https://media-photodececile.lafabriqueducode.fr/7_74ede68670.png"
-          alt="Photographie Les Photos de Cécile" class="h-full w-full object-cover" />
+          alt="Photographe professionnelle à Amiens, lumière naturelle"
+          width="1800" height="1200" format="webp" loading="eager" fetchpriority="high"
+          class="h-full w-full object-cover" />
         <div class="absolute inset-0 bg-linear-to-b from-[rgba(70,48,38,0.20)] to-[rgba(45,32,26,0.55)]" />
       </div>
 
@@ -35,7 +37,7 @@
 
       <div class="mx-auto max-w-295">
 
-        <blockquote class="mx-auto mb-16 max-w-225 font-poppins text-[#9E8B8B] md:mb-20">
+        <blockquote class="mx-auto mb-16 max-w-225 font-poppins text-[#786b68] md:mb-20">
           <p class="text-[clamp(0.72rem,1.3vw,0.95rem)] font-semibold uppercase leading-loose tracking-[0.3em]">
             « La photographie est l’art de montrer de combien d’instants éphémères la vie est faite »
           </p>
@@ -45,8 +47,11 @@
         </blockquote>
 
         <h1 class="font-playfair text-[clamp(2.1rem,4.4vw,3rem)] font-semibold tracking-[0.01em] text-[#5A3419]">
-          Bienvenue dans mon univers
+          Photographe à Amiens
         </h1>
+        <p class="mt-4 font-playfair text-[clamp(1.35rem,2.6vw,1.85rem)] text-[#5A3419]">
+          Bienvenue dans mon univers
+        </p>
 
         <div class="mx-auto my-5 h-px w-17.5 bg-[#D9D2CF]" />
 

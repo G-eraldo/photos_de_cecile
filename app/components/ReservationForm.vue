@@ -185,7 +185,10 @@ const {
   error,
 } = await useAsyncData('prestations', () =>
   find('prestations', {
-    populate: '*',
+    fields: ['nom', 'documentId'],
+    populate: {
+      Formule: { fields: ['nom', 'prix', 'acompte_pourcentage', 'id', 'ordre'] },
+    },
     sort: ['ordre:asc'],
     filters: {
       actif: {

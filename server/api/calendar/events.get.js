@@ -1,9 +1,13 @@
-import { enforceRateLimit } from "../../utils/request-security.js";
-import { RESERVATION_DURATION_MS } from "../../../shared/utils/reservation-duration.js";
 import {
   getGoogleAccessToken,
   listCalendarEvents,
 } from "../../utils/google-calendar.js";
+import {
+  getMollieConfig,
+  listActiveReservationHolds,
+} from "../../utils/mollie.js";
+import { enforceRateLimit } from "../../utils/request-security.js";
+import { buildAvailabilitySlots } from "../../utils/reservation-slots.js";
 
 export default defineEventHandler(async (event) => {
   await enforceRateLimit(event, {
@@ -43,60 +47,17 @@ export default defineEventHandler(async (event) => {
 
   try {
     const accessToken = await getGoogleAccessToken(config);
-    const response = {
-      items: await listCalendarEvents(config, from, to, accessToken),
+    const events = await listCalendarEvents(config, from, to, accessToken);
+    let holds = [];
+    try {
+      holds = await listActiveReservationHolds(getMollieConfig());
+    } catch {
+      holds = [];
+    }
+
+    return {
+      availability: buildAvailabilitySlots({ events, now, holds }),
     };
-
-    const isPhotoSession = (item) =>
-      item.summary
-        ?.normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .includes("seance photo");
-    const getInterval = (item) => ({
-      start: new Date(item.start?.dateTime || item.start?.date),
-      end: new Date(item.end?.dateTime || item.end?.date),
-    });
-    const blockedIntervals = (response.items || [])
-      .filter((item) => !isPhotoSession(item))
-      .map(getInterval)
-      .filter(
-        (item) =>
-          !Number.isNaN(item.start.getTime()) &&
-          !Number.isNaN(item.end.getTime()),
-      );
-
-    // Le client ne reçoit jamais les rendez-vous personnels : seulement les créneaux
-    // d'une heure encore effectivement réservables.
-    const availability = (response.items || [])
-      .filter(isPhotoSession)
-      .flatMap((item) => {
-        const interval = getInterval(item);
-        if (
-          Number.isNaN(interval.start.getTime()) ||
-          Number.isNaN(interval.end.getTime())
-        )
-          return [];
-
-        const slots = [];
-        for (
-          const start = new Date(
-            Math.max(interval.start.getTime(), now.getTime()),
-          );
-          start.getTime() + RESERVATION_DURATION_MS <= interval.end.getTime();
-          start.setTime(start.getTime() + RESERVATION_DURATION_MS)
-        ) {
-          const end = new Date(start.getTime() + RESERVATION_DURATION_MS);
-          const blocked = blockedIntervals.some(
-            (other) => start < other.end && end > other.start,
-          );
-          if (!blocked)
-            slots.push({ start: start.toISOString(), end: end.toISOString() });
-        }
-        return slots;
-      });
-
-    return { availability };
   } catch (error) {
     console.error(
       "Impossible de récupérer les disponibilités Google Calendar.",

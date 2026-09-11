@@ -29,7 +29,11 @@ const {
   error,
 } = await useAsyncData('prestations', () =>
   find('prestations', {
-    populate: '*',
+    fields: ['nom', 'description', 'pack', 'ordre', 'documentId'],
+    populate: {
+      image: { fields: ['url', 'alternativeText'] },
+      Formule: { fields: ['nom', 'prix', 'acompte_pourcentage', 'id', 'ordre'] },
+    },
     sort: ['ordre:asc'],
     filters: {
       actif: {
@@ -177,7 +181,12 @@ const formatPrice = (price) => {
             </div>
 
             <!-- Bouton -->
-            <div class="mt-auto flex justify-center">
+            <div class="mt-auto flex flex-wrap justify-center gap-2">
+              <Button as-child variant="outline">
+                <NuxtLink :to="{ path: '/reservation', query: { prestation: prestas.nom } }">
+                  Réserver
+                </NuxtLink>
+              </Button>
               <Dialog>
 
                 <DialogTrigger :class="cn(

@@ -7,17 +7,17 @@ definePageMeta({ layout: 'default' })
 
 useSeoMeta({
   title: 'Contact',
-  description: 'Contactez Les Photos de Cécile pour organiser votre séance photo à Amiens et ses alentours.',
+  description: 'Écrivez à Les Photos de Cécile pour organiser une séance photo à Amiens, en Somme ou en Picardie.',
 })
 </script>
 
 <template>
-  <main class="pb-20">
+  <div class="pb-20">
     <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/3_4fa71f2d6a.png"
       alt="Une femme avec son chien et son lapin en extérieur" position="center 48%" />
     <div class="pt-10 sm:pt-16">
       <EditorialPageHeader title="Contact" />
       <FormContent />
     </div>
-  </main>
+  </div>
 </template>

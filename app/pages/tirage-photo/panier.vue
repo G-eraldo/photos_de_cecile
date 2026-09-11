@@ -1,5 +1,6 @@
 <script setup>
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Minus, Plus, Trash2 } from 'lucide-vue-next'
@@ -7,6 +8,12 @@ import { toast } from 'vue-sonner'
 import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
 
 definePageMeta({ layout: 'default' })
+
+useSeoMeta({
+  title: 'Panier',
+  description: 'Votre panier de tirages photo.',
+  robots: 'noindex, nofollow',
+})
 
 const cart = useCartStore()
 const nom = ref('')
@@ -17,6 +24,7 @@ const codePostal = ref('')
 const ville = ref('')
 const paymentPending = ref(false)
 const replacingPhoto = ref(null)
+const conditionsAccepted = ref(false)
 
 const deliveryFee = computed(() => Math.max(0, ...cart.items.map((item) => Number(item.supplementCourrier ?? 5))))
 const total = computed(() => Number((cart.subtotal + deliveryFee.value).toFixed(2)))
@@ -51,6 +59,10 @@ async function checkout() {
     toast.error('Merci de renseigner vos coordonnées et l’adresse de livraison.')
     return
   }
+  if (!conditionsAccepted.value) {
+    toast.error('Merci d’accepter les conditions de vente pour continuer.')
+    return
+  }
 
   const checkoutItems = cart.items.map((item) => ({ ...item }))
   paymentPending.value = true
@@ -63,6 +75,7 @@ async function checkout() {
         email: email.value,
         adresse: `${rue.value.trim()}\n${codePostal.value.trim()} ${ville.value.trim()}`,
         delivery: 'courrier',
+        conditionsAccepted: conditionsAccepted.value,
         items: checkoutItems.map((item) => ({
           productId: item.productId,
           slug: item.slug,
@@ -85,7 +98,7 @@ async function checkout() {
 </script>
 
 <template>
-  <main class="mt-20 min-h-screen bg-[#E6DFDD] pb-20 pt-10 text-[#503d30] sm:mt-24 sm:pt-16">
+  <div class="mt-20 min-h-screen bg-[#E6DFDD] pb-20 pt-10 text-[#503d30] sm:mt-24 sm:pt-16">
     <EditorialPageHeader eyebrow="La boutique — Les Photos de Cécile" title="Votre panier"
       description="Vérifiez vos tirages, puis finalisez votre commande en une seule fois." />
 
@@ -145,10 +158,17 @@ async function checkout() {
           <p v-if="deliveryFee" class="mt-2 flex justify-between"><span>Envoi par courrier</span><span>{{ formatPrice(deliveryFee) }} €</span></p>
           <p class="mt-4 flex justify-between font-playfair text-xl text-[#613213]"><span>Total</span><span>{{ formatPrice(total) }} €</span></p>
         </div>
-        <Button type="submit" class="mt-6 w-full" :disabled="paymentPending || !!replacingPhoto">
+        <div class="mt-5 flex items-start gap-3">
+          <Checkbox id="cart-conditions" v-model="conditionsAccepted" required class="mt-1 shrink-0" />
+          <Label for="cart-conditions" class="leading-6">
+            J’accepte les
+            <NuxtLink to="/conditions-de-vente" target="_blank" class="underline underline-offset-2">conditions de vente</NuxtLink>.
+          </Label>
+        </div>
+        <Button type="submit" class="mt-6 w-full" :disabled="paymentPending || !!replacingPhoto || !conditionsAccepted">
           {{ paymentPending ? 'Redirection vers le paiement…' : `Payer ${formatPrice(total)} €` }}
         </Button>
       </form>
     </div>
-  </main>
+  </div>
 </template>

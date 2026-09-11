@@ -8,8 +8,10 @@ const links = [
 
   { title: "Tirage photo", href: "/tirage-photo" },
   { title: "Offrir", href: "/offrir" },
+  { title: "Réserver", href: "/reservation" },
   { title: "Contact", href: "/contact" },
   { title: "Mentions légales", href: "/mentions-legales" },
+  { title: "Conditions de vente", href: "/conditions-de-vente" },
   { title: "Confidentialité", href: "/politique-confidentialite" },
 ];
 </script>
@@ -56,11 +58,10 @@ const links = [
         </a>
       </div>
       <span class="block text-center text-sm text-[#676463]">
-        © {{ new Date().getFullYear() }} Les photos de Cécile, tous droits réservés - site édité par <NuxtLink
-          to="https://lafabriqueducode.fr" target="_blank" rel="noopener noreferrer" aria-label="La fabrique du code"
-          class="text-[#676463] hover:text-primary block">
-          <span class="text-[#676463]">La fabrique du code</span>
-        </NuxtLink>
+        © {{ new Date().getFullYear() }} Les photos de Cécile, tous droits réservés — site réalisé par
+        <a href="https://lafabriqueducode.fr" target="_blank" rel="noopener noreferrer" class="text-[#676463] hover:text-primary">
+          La fabrique du code
+        </a>
       </span>
     </div>
   </footer>

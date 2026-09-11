@@ -1,5 +1,6 @@
 <script setup>
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -12,7 +13,7 @@ definePageMeta({ layout: 'default' })
 
 useSeoMeta({
   title: 'Offrir un bon cadeau',
-  description: 'Offrez une séance photo et ses souvenirs, avec un bon cadeau personnalisé envoyé par e-mail.',
+  description: 'Offrez une séance photo à Amiens avec un bon cadeau personnalisé, envoyé par e-mail ou par courrier.',
 })
 
 const prestations = [
@@ -38,6 +39,7 @@ const rue = ref('')
 const codePostal = ref('')
 const ville = ref('')
 const paymentPending = ref(false)
+const conditionsAccepted = ref(false)
 
 const selectedPrestationData = computed(() => prestations.find((prestation) => prestation.value === selectedPrestation.value))
 const photoChoices = computed(() => selectedPrestationData.value?.choices || [])
@@ -65,6 +67,10 @@ async function submitGiftCard() {
     toast.error('Les emojis ne sont pas autorisés dans le message.')
     return
   }
+  if (!conditionsAccepted.value) {
+    toast.error('Merci d’accepter les conditions de vente pour continuer.')
+    return
+  }
 
   paymentPending.value = true
   try {
@@ -77,6 +83,7 @@ async function submitGiftCard() {
         beneficiaire: beneficiaire.value,
         message: message.value,
         adresse: delivery.value === 'courrier' ? `${rue.value.trim()}\n${codePostal.value.trim()} ${ville.value.trim()}` : '',
+        conditionsAccepted: conditionsAccepted.value,
         prestation: selectedPrestation.value,
         photos: selectedPhotos.value,
         delivery: delivery.value,
@@ -93,7 +100,7 @@ async function submitGiftCard() {
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#E6DFDD] text-[#503d30]">
+  <div class="min-h-screen bg-[#E6DFDD] text-[#503d30]">
     <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/6_6c966f4ef3.png"
       alt="Alliances, bouquet et accessoires de mariage" position="center 48%" />
     <div class="px-6 pb-20 pt-10 sm:pt-16">
@@ -177,7 +184,15 @@ async function submitGiftCard() {
                 <div class="grid gap-2"><Label for="gift-ville">Ville</Label><Input id="gift-ville" v-model="ville"
                     autocomplete="address-level2" required /></div>
               </div>
-              <Button type="submit" class="mt-6 w-full" :disabled="paymentPending">
+              <div class="mt-5 flex items-start gap-3">
+                <Checkbox id="gift-conditions" v-model="conditionsAccepted" required class="mt-1 shrink-0" />
+                <Label for="gift-conditions" class="leading-6">
+                  J’accepte les
+                  <NuxtLink to="/conditions-de-vente" target="_blank" class="underline underline-offset-2">conditions de
+                    vente</NuxtLink>.
+                </Label>
+              </div>
+              <Button type="submit" class="mt-6 w-full" :disabled="paymentPending || !conditionsAccepted">
                 <Mail class="mr-2 h-4 w-4" />{{ paymentPending ? 'Redirection vers le paiement…' : `Payer
                 ${formattedTotal} €` }}
               </Button>
@@ -186,5 +201,5 @@ async function submitGiftCard() {
         </div>
       </div>
     </div>
-  </main>
+  </div>
 </template>

@@ -8,12 +8,12 @@ definePageMeta({ layout: 'default' })
 
 useSeoMeta({
   title: 'À propos',
-  description: 'Découvrez Cécile, photographe professionnelle à Amiens, et son approche sensible de la photographie.',
+  description: 'Cécile, photographe professionnelle à Amiens : une approche sensible des portraits de famille, naissance, couple et animaux en Picardie.',
 })
 </script>
 
 <template>
-  <main class="pb-20">
+  <div class="pb-20">
     <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/1_e1d5cd0f04.png"
       alt="Une femme et son cheval au coucher du soleil" position="center 52%" />
     <div class="pt-10 sm:pt-16">
@@ -21,5 +21,5 @@ useSeoMeta({
       <ProposContent />
       <MapContent />
     </div>
-  </main>
+  </div>
 </template>

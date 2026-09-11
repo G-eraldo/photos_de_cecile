@@ -12,51 +12,6 @@ const route = useRoute()
 const { find } = useStrapi()
 const cart = useCartStore()
 
-const fallbackProducts = {
-  'tirage-fine-art': {
-    titre: 'Tirage Fine Art',
-    accroche: 'Un papier d’art à la texture douce, pour des images qui traversent le temps.',
-    prix_a_partir_de: 8,
-    tarifs_formats: [
-      { format: '10 × 10 cm', prix: 3 }, { format: '10 × 15 cm', prix: 3 },
-      { format: '13 × 18 cm', prix: 4 }, { format: '15 × 15 cm', prix: 4 },
-      { format: '20 × 20 cm', prix: 10 }, { format: '18 × 24 cm', prix: 10 },
-      { format: 'A4', prix: 10 }, { format: '20 × 30 cm', prix: 10 }, { format: 'A3', prix: 20 },
-    ],
-    supplement_bords_franges: 1,
-    supplement_courrier: 5,
-    imageUrl: '/images/impression.png',
-    galerieUrls: ['/images/impression.png', '/images/format.png'],
-    caracteristiques: [
-      { texte: 'Papier d’art soigneusement sélectionné' },
-      { texte: 'Rendu mat et profond' },
-      { texte: 'Impression réalisée avec soin' },
-    ],
-    formats: ['10 × 10 cm', '10 × 15 cm', '13 × 18 cm', '15 × 15 cm', '20 × 20 cm', '18 × 24 cm', 'A4', '20 × 30 cm', 'A3'],
-    options: { marge: ['Sans marge', 'Avec marge'], finition: ['Bords droits', 'Bords frangés'] },
-  },
-  'tirage-traditionnel': {
-    titre: 'Tirage traditionnel',
-    accroche: 'Une impression lumineuse et fidèle pour garder vos instants du quotidien tout près de vous.',
-    prix_a_partir_de: 6,
-    imageUrl: '/images/format.png',
-    galerieUrls: ['/images/format.png', '/images/impression.png'],
-    caracteristiques: [{ texte: 'Papier photo traditionnel' }, { texte: 'Couleurs fidèles et durables' }, { texte: 'Plusieurs formats disponibles' }],
-    formats: ['10 × 15 cm', '13 × 18 cm', '20 × 30 cm', 'A4'],
-    options: { marge: ['Sans marge', 'Avec marge'] },
-  },
-  'pack-souvenirs': {
-    titre: 'Pack souvenirs',
-    accroche: 'Une sélection de tirages pensée pour offrir, partager et revivre les moments qui comptent.',
-    prix_a_partir_de: 32,
-    imageUrl: '/images/cta.png',
-    galerieUrls: ['/images/cta.png', '/images/impression.png'],
-    caracteristiques: [{ texte: 'Une sélection de tirages variés' }, { texte: 'Idéal à offrir' }, { texte: 'Préparé avec attention' }],
-    formats: ['Pack de 10 tirages', 'Pack de 20 tirages'],
-    options: {},
-  },
-}
-
 const { data, pending, error } = await useAsyncData(
   `produit-${route.params.slug}`,
   () => find('produits', {
@@ -83,8 +38,9 @@ const apiProduct = computed(() => {
   return Array.isArray(response) ? response[0] : response
 })
 
+const siteUrl = useSiteConfig().url || 'https://lesphotodececile.fr'
 const product = computed(() => {
-  const source = apiProduct.value || fallbackProducts[route.params.slug]
+  const source = apiProduct.value
   if (!source) return null
 
   const gallery = source.galerieUrls || [
@@ -111,27 +67,31 @@ if (!pending.value && !product.value && !error.value) {
 
 useSeoMeta({
   title: () => product.value ? `${product.value.titre}` : 'Tirage photo',
-  description: () => product.value?.accroche || 'Découvrez les tirages photo des Photos de Cécile.',
-  ogImage: () => product.value?.imageUrl,
+  description: () => product.value?.accroche || 'Découvrez les tirages photo d’art des Photos de Cécile, imprimés à Amiens.',
 })
 
-useSchemaOrg([computed(() => product.value ? {
-  '@type': 'Product',
-  name: product.value.titre,
-  description: product.value.accroche,
-  image: product.value.galerieUrls,
-  url: new URL(`/tirage-photo/${route.params.slug}`, useSiteConfig().url).href,
-  offers: {
-    '@type': 'AggregateOffer',
-    priceCurrency: 'EUR',
-    lowPrice: Math.min(...(product.value.tarifsFormats.length
-      ? product.value.tarifsFormats.map((format) => Number(format.prix))
-      : [Number(product.value.prix_a_partir_de)])),
-    highPrice: Math.max(...(product.value.tarifsFormats.length
-      ? product.value.tarifsFormats.map((format) => Number(format.prix))
-      : [Number(product.value.prix_a_partir_de)])),
-  },
-} : {})]);
+useSchemaOrg([computed(() => {
+  if (!product.value) return null
+  const prices = (product.value.tarifsFormats.length
+    ? product.value.tarifsFormats.map((format) => Number(format.prix))
+    : [Number(product.value.prix_a_partir_de)]).filter((price) => Number.isFinite(price))
+  if (!prices.length) return null
+  return {
+    '@type': 'Product',
+    name: product.value.titre,
+    description: product.value.accroche,
+    image: product.value.galerieUrls,
+    url: new URL(`/tirage-photo/${route.params.slug}`, siteUrl).href,
+    offers: {
+      '@type': 'AggregateOffer',
+      priceCurrency: 'EUR',
+      availability: 'https://schema.org/InStock',
+      lowPrice: Math.min(...prices),
+      highPrice: Math.max(...prices),
+      url: new URL(`/tirage-photo/${route.params.slug}`, siteUrl).href,
+    },
+  }
+})]);
 
 const selectedImage = ref(0)
 const selectedFormat = ref('')
@@ -213,7 +173,7 @@ async function addToCart() {
 </script>
 
 <template>
-  <main class="mt-20 min-h-screen bg-[#E6DFDD] pb-20 pt-10 text-[#503d30] sm:mt-24 sm:pt-16">
+  <div class="mt-20 min-h-screen bg-[#E6DFDD] pb-20 pt-10 text-[#503d30] sm:mt-24 sm:pt-16">
     <EditorialPageHeader v-if="product" eyebrow="La boutique — Les Photos de Cécile" :title="product.titre"
       :description="product.accroche" />
     <div v-if="pending" class="mx-auto grid max-w-6xl gap-12 md:grid-cols-2">
@@ -300,5 +260,5 @@ async function addToCart() {
         </div>
       </div>
     </div>
-  </main>
+  </div>
 </template>

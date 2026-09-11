@@ -1,6 +1,10 @@
 <script setup>
 definePageMeta({ layout: false })
 
+if (import.meta.server && process.env.GOOGLE_REFRESH_TOKEN) {
+  throw createError({ statusCode: 404, statusMessage: 'Page introuvable' })
+}
+
 useSeoMeta({
   title: 'Connexion Google Agenda',
   robots: 'noindex, nofollow',

@@ -1,6 +1,11 @@
-import { consumeGoogleRefreshToken, requireGoogleSetupSession } from "../../../utils/google-oauth-setup.js";
+import {
+  assertGoogleSetupEnabled,
+  consumeGoogleRefreshToken,
+  requireGoogleSetupSession,
+} from "../../../utils/google-oauth-setup.js";
 
 export default defineEventHandler((event) => {
+  assertGoogleSetupEnabled();
   requireGoogleSetupSession(event);
   setResponseHeader(event, "Cache-Control", "no-store");
   return { refreshToken: consumeGoogleRefreshToken(event) };

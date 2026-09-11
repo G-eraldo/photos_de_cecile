@@ -8,9 +8,7 @@ definePageMeta({ layout: 'default' })
 
 useSeoMeta({
   title: 'Photographe à Amiens',
-  description: 'Les Photos de Cécile, photographe à Amiens : grossesse, naissance, famille, couple, mariage, baptême et animaux.',
-  ogTitle: 'Les Photos de Cécile | Photographe à Amiens',
-  ogDescription: 'Des moments de vie photographiés avec naturel et sensibilité à Amiens et ses alentours.',
+  description: 'Les Photos de Cécile, photographe à Amiens : grossesse, naissance, famille, couple, mariage, baptême et animaux, en lumière naturelle.',
 })
 </script>
 
