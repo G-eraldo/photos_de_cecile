@@ -63,3 +63,5 @@
 - Avec `@nuxt/image` v2, ne pas remettre `sizes="100vw"` sur les bannières : cela a déjà produit une image minuscule.
 
 - Pour les détails des forfaits, inclure `nombre_photos`, `duree` et `details` dans les champs Strapi ; donner des clés `useAsyncData` différentes aux requêtes de structures différentes.
+
+- Si les détails semblent encore incomplets après correction de la requête, comparer le texte exact de la popup aux données publiées de la même prestation dans Strapi avant de modifier un autre écran ; ne pas confondre les détails de deux prestations différentes.

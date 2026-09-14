@@ -562,3 +562,18 @@ Revue : la collection `commande` expose désormais l'énumération obligatoire `
 Plan : utiliser les champs existants du CMS ; appliquer la demande explicite de changement des URL aux configurations et aux `.env`, sans modifier les secrets ni les domaines des médias.
 
 Revue : les champs `nombre_photos`, `duree` et `details` sont récupérés pour la fenêtre existante. Le formulaire utilise une clé de cache distincte. Les tailles des titres sont inversées. Les domaines sont remplacés dans les configurations, les replis SEO, les `.env.example` et les `.env` locaux (site, Strapi, retour OAuth Google, origine frontend Strapi). Les domaines des médias et les rapports historiques sont conservés. Contrôles ciblés des champs/schéma/affichage et environnements réussis ; build Nuxt et `git diff --check` des deux dépôts réussis. `npm test` se termine sans échec mais découvre zéro test (dossier tests absent). Pas de validation visuelle ni de déploiement effectué. Pour la production, synchroniser les variables chez l’hébergeur et autoriser la nouvelle URI de retour OAuth dans Google avant redéploiement.
+
+## Diagnostic détails de la popup — 14 septembre 2026
+
+- [x] Comparer la capture Grossesse aux champs publiés renvoyés par le nouveau backend.
+- [x] Vérifier que le template affiche le champ complet sans troncature.
+
+Résultat : Strapi renvoie exactement « 15€ par photo supplémentaire. » et « 10€ par photo supplémentaire. » pour les deux forfaits Grossesse, conformément à la capture. Le texte long de la capture précédente appartient à Animaux de compagnie / Séance à thème, dont le champ publié est complet. Les deux champs details de Famille sont vides. Aucun texte commercial inventé ni donnée CMS modifiée ; contenu attendu pour Grossesse à préciser par l’utilisateur.
+
+## Redirections permanentes — tarifs et prestations-1
+
+- [x] Ajouter les 301 `/tarifs` et `/prestations-1` vers `/prestations`.
+- [x] Vérifier les redirections en local.
+- [x] Consigner la revue.
+
+Revue : les deux anciennes URLs sont redirigées en 301 vers `/prestations` par le middleware Nitro déjà utilisé pour `/tirages-photo`. Les slashs finaux et les paramètres d’URL sont conservés. Contrôles isolés : `/tarifs` et `/prestations-1` → 301 `/prestations` ; `/tirages-photo` reste 301 `/tirage-photo`. En production actuelle, `/tarifs` et `/prestations-1` répondent encore 404 jusqu’au redéploiement du frontend.
