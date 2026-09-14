@@ -59,3 +59,5 @@
 - Ne pas appeler `useSiteConfig()` dans un getter `useHead`/`computed` : le résoudre dans le setup, sinon Nuxt peut répondre 500 en SSR.
 - `useSchemaOrg` ne doit jamais recevoir `{}` : renvoyer `null` si le produit n’est pas prêt.
 - Avec `@nuxt/image` v2, ne pas remettre `sizes="100vw"` sur les bannières : cela a déjà produit une image minuscule.
+
+- Pour les détails des forfaits, inclure `nombre_photos`, `duree` et `details` dans les champs Strapi ; donner des clés `useAsyncData` différentes aux requêtes de structures différentes.

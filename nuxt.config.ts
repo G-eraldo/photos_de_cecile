@@ -2,7 +2,7 @@
 import tailwindcss from "@tailwindcss/vite";
 
 const strapiOrigin = (
-  process.env.STRAPI_URL || "https://back-cecile.lafabriqueducode.fr"
+  process.env.STRAPI_URL || "https://backend.lesphotosdececile.fr"
 ).replace(/\/$/, "");
 const r2Origin = process.env.R2_ACCOUNT_ID
   ? `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`
@@ -37,7 +37,7 @@ export default defineNuxtConfig({
   ],
 
   site: {
-    url: process.env.SITE_URL,
+    url: process.env.SITE_URL || "https://lesphotosdececile.fr",
     name: "Les photos de Cécile",
     description:
       "Je photographie les moments de vie de façon authentique à Amiens & ses alentours.",
@@ -112,7 +112,7 @@ export default defineNuxtConfig({
       maptilerApiKey: process.env.NUXT_PUBLIC_MAPTILER_API_KEY,
     },
     strapi: {
-      url: process.env.STRAPI_URL || "http://localhost:1337",
+      url: strapiOrigin,
       prefix: "/api",
       admin: "/admin",
       version: "v5",

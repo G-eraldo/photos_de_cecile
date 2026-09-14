@@ -32,9 +32,10 @@ const {
     fields: ['nom', 'description', 'pack', 'ordre', 'documentId'],
     populate: {
       image: { fields: ['url', 'alternativeText'] },
-      Formule: { fields: ['nom', 'prix', 'acompte_pourcentage', 'id', 'ordre'] },
+      Formule: { fields: ['nom', 'prix', 'nombre_photos', 'duree', 'details', 'acompte_pourcentage', 'id', 'ordre'] },
     },
     sort: ['ordre:asc'],
+    pagination: { pageSize: 100 },
     filters: {
       actif: {
         $eq: true,

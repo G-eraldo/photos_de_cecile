@@ -46,10 +46,10 @@
           </cite>
         </blockquote>
 
-        <h1 class="font-playfair text-[clamp(2.1rem,4.4vw,3rem)] font-semibold tracking-[0.01em] text-[#5A3419]">
+        <h1 class="font-playfair text-[clamp(1.35rem,2.6vw,1.85rem)] tracking-[0.01em] text-[#5A3419]">
           Photographe à Amiens
         </h1>
-        <p class="mt-4 font-playfair text-[clamp(1.35rem,2.6vw,1.85rem)] text-[#5A3419]">
+        <p class="mt-4 font-playfair text-[clamp(2.1rem,4.4vw,3rem)] font-semibold text-[#5A3419]">
           Bienvenue dans mon univers
         </p>
 

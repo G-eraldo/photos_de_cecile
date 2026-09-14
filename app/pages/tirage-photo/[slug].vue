@@ -38,7 +38,7 @@ const apiProduct = computed(() => {
   return Array.isArray(response) ? response[0] : response
 })
 
-const siteUrl = useSiteConfig().url || 'https://lesphotodececile.fr'
+const siteUrl = useSiteConfig().url || 'https://lesphotosdececile.fr'
 const product = computed(() => {
   const source = apiProduct.value
   if (!source) return null

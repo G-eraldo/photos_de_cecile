@@ -551,3 +551,14 @@ Revue : `NuxtImg` est conservé avec une sortie WebP de 1 800 × 900 et le point
 Plan : ajouter une énumération `type_commande` avec les valeurs `bon_cadeau` et `tirage`, puis l'envoyer explicitement depuis chacun des deux endpoints de paiement. Les autres données de commande restent inchangées.
 
 Revue : la collection `commande` expose désormais l'énumération obligatoire `type_commande`. Les nouveaux bons cadeaux enregistrent `bon_cadeau`, les commandes de photos enregistrent `tirage`, et le bootstrap Strapi reclasse les anciennes commandes d'après `details.type`. Les tests isolés du schéma, des deux créations et de la reprise historique passent, tout comme les builds Nuxt et Strapi et `git diff --check`. Le démarrage Strapi local n'a pas pu atteindre le bootstrap car le binaire `better-sqlite3` installé cible une autre version de Node (`NODE_MODULE_VERSION 127` au lieu de `147`).
+
+## Réservation, accueil et domaines — 14 septembre 2026
+
+- [x] Récupérer les détails des forfaits dans la fenêtre et éviter le partage de cache avec le formulaire.
+- [x] Réduire « Photographe à Amiens » et agrandir « Bienvenue dans mon univers ».
+- [x] Remplacer les domaines du site et de Strapi dans les sources et environnements concernés.
+- [x] Vérifier les tests, le build et les différences.
+
+Plan : utiliser les champs existants du CMS ; appliquer la demande explicite de changement des URL aux configurations et aux `.env`, sans modifier les secrets ni les domaines des médias.
+
+Revue : les champs `nombre_photos`, `duree` et `details` sont récupérés pour la fenêtre existante. Le formulaire utilise une clé de cache distincte. Les tailles des titres sont inversées. Les domaines sont remplacés dans les configurations, les replis SEO, les `.env.example` et les `.env` locaux (site, Strapi, retour OAuth Google, origine frontend Strapi). Les domaines des médias et les rapports historiques sont conservés. Contrôles ciblés des champs/schéma/affichage et environnements réussis ; build Nuxt et `git diff --check` des deux dépôts réussis. `npm test` se termine sans échec mais découvre zéro test (dossier tests absent). Pas de validation visuelle ni de déploiement effectué. Pour la production, synchroniser les variables chez l’hébergeur et autoriser la nouvelle URI de retour OAuth dans Google avant redéploiement.

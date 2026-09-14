@@ -31,7 +31,7 @@ const featuredPhotos = computed(() => data.value?.featured || []);
 const displayedAlbumPhotos = computed(() => data.value?.photos || []);
 const pageCount = computed(() => Number(data.value?.pageCount || 1));
 const photosCount = computed(() => Number(data.value?.total || 0));
-const siteUrl = useSiteConfig().url || 'https://lesphotodececile.fr';
+const siteUrl = useSiteConfig().url || 'https://lesphotosdececile.fr';
 const portfolioUrl = (page) => page === 1 ? '/portfolio' : `/portfolio?page=${page}`;
 useHead(() => ({
   link: [{ rel: 'canonical', href: new URL(portfolioUrl(currentPage.value), siteUrl).href }],

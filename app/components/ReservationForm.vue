@@ -183,7 +183,7 @@ const submit = async () => {
 const {
   data: prestations,
   error,
-} = await useAsyncData('prestations', () =>
+} = await useAsyncData('reservation-prestations', () =>
   find('prestations', {
     fields: ['nom', 'documentId'],
     populate: {
