@@ -44,7 +44,7 @@ const products = computed(() => {
 
 <template>
   <div class="overflow-hidden text-[#503d30]">
-    <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/4_da7bfa672c.png"
+    <EditorialPhotoBanner src="https://media-photodececile.lafabriqueducode.fr/site_3c9f061714.png"
       alt="La patte d’un chien reposant dans des mains" position="center 50%" />
     <section class="pb-16 pt-10 sm:pt-16 md:pb-24">
       <EditorialPageHeader eyebrow="La boutique" title="Tirages photo"
