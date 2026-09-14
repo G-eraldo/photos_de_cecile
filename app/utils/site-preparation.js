@@ -1,16 +1,11 @@
 /**
- * Écran public « site en cours de finalisation ».
- * Passer à `false` puis redéployer le frontend pour rétablir le site.
+ * Écran de maintenance sur l’accueil seulement.
+ * Passer à `false` puis redéployer le frontend pour rétablir l’accueil.
  */
 export const SITE_PREPARATION = true
 
-const ALLOWED_PATHS = [
-  "/reservation/confirmation",
-  "/tirage-photo/confirmation",
-  "/offrir/confirmation",
-  "/connexion-agenda",
-]
-
-export function isPreparationAllowedPath(path) {
-  return ALLOWED_PATHS.includes(path)
+export function isHomePreparation(path) {
+  if (!SITE_PREPARATION) return false
+  const normalized = (path || "/").replace(/\/+$/, "") || "/"
+  return normalized === "/"
 }

@@ -1,10 +1,10 @@
 <script setup>
 import { Toaster } from '@/components/ui/sonner';
 import 'vue-sonner/style.css';
-import { SITE_PREPARATION, isPreparationAllowedPath } from '~/utils/site-preparation';
+import { isHomePreparation } from '~/utils/site-preparation';
 
 const route = useRoute()
-const showPreparation = computed(() => SITE_PREPARATION && !isPreparationAllowedPath(route.path))
+const showHomePreparation = computed(() => isHomePreparation(route.path))
 
 const siteUrl = useSiteConfig().url
 const ogImage = 'https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788172116/DSC_01869_a27295b7c4.jpg'
@@ -66,12 +66,11 @@ useHead({
 </script>
 
 <template>
-  <SitePreparationScreen v-if="showPreparation" />
-  <div v-else>
+  <div>
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    <CookieBanner />
+    <CookieBanner v-if="!showHomePreparation" />
     <Toaster />
   </div>
 </template>

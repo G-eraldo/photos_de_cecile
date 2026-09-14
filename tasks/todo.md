@@ -577,3 +577,22 @@ Résultat : Strapi renvoie exactement « 15€ par photo supplémentaire. » et 
 - [x] Consigner la revue.
 
 Revue : les deux anciennes URLs sont redirigées en 301 vers `/prestations` par le middleware Nitro déjà utilisé pour `/tirages-photo`. Les slashs finaux et les paramètres d’URL sont conservés. Contrôles isolés : `/tarifs` et `/prestations-1` → 301 `/prestations` ; `/tirages-photo` reste 301 `/tirage-photo`. En production actuelle, `/tarifs` et `/prestations-1` répondent encore 404 jusqu’au redéploiement du frontend.
+
+## Écran public — site en cours de finalisation
+
+- [x] Ajouter un interrupteur unique pour masquer le site public.
+- [x] Afficher la carte de la page d’erreur, sans navbar ni boutons.
+- [x] Laisser accessibles les retours de paiement et la connexion agenda.
+- [x] Vérifier le HTML servi et consigner la revue.
+
+Plan : un booléen `SITE_PREPARATION` dans `app/utils/site-preparation.js`. À `true`, l’accueil et les pages publiques montrent uniquement la carte « Site en cours de finalisation ». Passer à `false` puis redéployer rétablit le site.
+
+Revue : `/` et `/prestations` répondent 200 avec le titre demandé, sans navigation, sans boutons et sans bandeau cookies. Une URL inconnue (`/prout`) montre le même écran. `/connexion-agenda` et `/reservation/confirmation` restent accessibles. `npm run build` passe. Pour rétablir le site : `SITE_PREPARATION = false` puis redéploiement du frontend.
+
+## Écran de maintenance — accueil seulement
+
+- [x] Limiter l’écran à `/`.
+- [x] Rétablir les autres pages, la 404 et le bandeau cookies hors accueil.
+- [x] Vérifier `/` vs `/prestations`.
+
+Revue : `/` sert la carte « Site en cours de maintenance » sans navbar ni boutons. `/prestations` et `/portfolio` restent le site normal. `/prout` redevient une 404 classique. Le titre SEO de l’accueil (« Photographe à Amiens ») est conservé. `npm run build` passe. Pour rétablir l’accueil : `SITE_PREPARATION = false` puis redéployer.
