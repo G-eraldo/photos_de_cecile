@@ -187,7 +187,7 @@ const {
   find('prestations', {
     fields: ['nom', 'documentId'],
     populate: {
-      Formule: { fields: ['nom', 'prix', 'acompte_pourcentage', 'id', 'ordre'] },
+      Formule: { fields: ['nom', 'prix', 'details', 'acompte_pourcentage', 'id', 'ordre'] },
     },
     sort: ['ordre:asc'],
     filters: {
@@ -274,7 +274,8 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="grid gap-2"><Label for="reservation-forfait">Votre formule</Label>
           <Select v-model="forfait" :disabled="!formules.length">
-            <SelectTrigger class="w-full">
+            <SelectTrigger id="reservation-forfait" class="w-full"
+              :aria-describedby="formuleSelectionnee?.details ? 'reservation-forfait-details' : undefined">
               <SelectValue :placeholder="formules.length ? 'Sélectionner une formule' : 'Aucune formule disponible'" />
             </SelectTrigger>
             <SelectContent>
@@ -289,6 +290,14 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
         <div class="grid gap-2"><Label for="reservation-phone">Votre téléphone</Label><Input id="reservation-phone"
             v-model="phone" type="tel" required /></div>
       </div>
+      <section v-if="formuleSelectionnee?.details" id="reservation-forfait-details"
+        aria-live="polite" aria-labelledby="reservation-forfait-details-title"
+        class="rounded-lg border border-[#E6DFDD] bg-[#FAF8F7] p-4">
+        <h3 id="reservation-forfait-details-title" class="mb-2 font-playfair text-lg font-semibold text-[#613213]">
+          {{ formuleSelectionnee.nom }} — Détails du forfait
+        </h3>
+        <p class="whitespace-pre-line break-words text-sm leading-6 text-[#676463]">{{ formuleSelectionnee.details }}</p>
+      </section>
       <div class="grid gap-2 ">
         <Label for="reservation-lieu">Lieu de prise de vue</Label>
         <Select v-model="lieu">

@@ -1,5 +1,7 @@
 # Lessons
 
+- Quand des détails sont demandés dans la réservation, vérifier le formulaire `ReservationForm.vue` lui-même : corriger uniquement la popup des prestations ne couvre pas ce parcours. Afficher le champ `details` de la formule sélectionnée en conservant ses retours à la ligne.
+
 - Quand une référence demande explicitement une image à gauche et le texte à droite, respecter cet ordre à la fois visuellement et dans le DOM ; ne pas conserver l’ordre d’une itération précédente.
 - Lors d’une refonte de disposition d’un bloc existant, préserver sa couleur de fond et son encombrement tant que l’utilisateur ne demande que de déplacer ou remplacer les visuels ; contrôler la hauteur finale par rapport à la capture précédente.
 
