@@ -1,5 +1,6 @@
 <script setup>
 import { Button } from '@/components/ui/button'
+import { SITE_PREPARATION } from '~/utils/site-preparation'
 
 const props = defineProps({
   error: { type: Object, required: true },
@@ -7,17 +8,20 @@ const props = defineProps({
 
 const isNotFound = computed(() => props.error?.statusCode === 404)
 
-useSeoMeta({
-  title: () => (isNotFound.value ? 'Page introuvable' : 'Erreur du serveur'),
-  description: 'Cette page des Photos de Cécile est introuvable ou temporairement indisponible.',
-  robots: 'noindex, nofollow',
-})
+if (!SITE_PREPARATION) {
+  useSeoMeta({
+    title: () => (isNotFound.value ? 'Page introuvable' : 'Erreur du serveur'),
+    description: 'Cette page des Photos de Cécile est introuvable ou temporairement indisponible.',
+    robots: 'noindex, nofollow',
+  })
+}
 
 const handleError = () => clearError({ redirect: '/' })
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col bg-[#E6DFDD] px-6 py-24 font-poppins text-[#503d30]">
+  <SitePreparationScreen v-if="SITE_PREPARATION" />
+  <div v-else class="flex min-h-screen flex-col bg-[#E6DFDD] px-6 py-24 font-poppins text-[#503d30]">
     <div class="mx-auto w-full max-w-xl rounded-2xl bg-white px-8 py-12 text-center shadow-sm">
       <p class="text-xs font-semibold uppercase tracking-[0.3em] text-[#786b68]">Les Photos de Cécile</p>
       <h1 class="mt-4 font-playfair text-4xl text-[#613213]">
