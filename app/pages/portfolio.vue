@@ -128,7 +128,7 @@ const loadedPhotoKeys = computed(() => {
   return keys
 })
 
-const loadMorePhotos = async () => {
+const loadMorePhotos = async (event) => {
   if (
     loadingMore.value ||
     !hasMorePhotos.value
@@ -136,7 +136,7 @@ const loadMorePhotos = async () => {
     return
   }
 
-  const scrollTop = window.scrollY
+  event?.currentTarget?.blur()
 
   loadingMore.value = true
   loadMoreError.value = false
@@ -195,8 +195,6 @@ const loadMorePhotos = async () => {
     hasMorePhotos.value =
       response?.hasMore === true || remaining > 0
 
-    await nextTick()
-    window.scrollTo(0, scrollTop)
   }
   catch (err) {
     console.error(
@@ -377,7 +375,7 @@ const featuredLayouts = [
           v-if="photoBatches.length"
           aria-label="Toutes les photos"
           :aria-busy="loadingMore"
-          class="mx-auto mt-5 max-w-7xl px-5 sm:mt-6 sm:px-8 lg:px-12"
+          class="mx-auto mt-5 max-w-7xl px-5 [overflow-anchor:none] sm:mt-6 sm:px-8 lg:px-12"
         >
           <div
             v-for="batch in photoBatches"
@@ -485,7 +483,7 @@ const featuredLayouts = [
               variant="outline"
               size="lg"
               :disabled="loadingMore"
-              @click="loadMorePhotos"
+              @click="loadMorePhotos($event)"
             >
               {{
                 loadingMore
