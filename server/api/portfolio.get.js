@@ -4,6 +4,11 @@ import {
   isPortfolioPhoto,
 } from '../utils/portfolio-photos.js'
 
+const STRAPI_PAGE_SIZE = 100
+const FEATURED_COUNT = 6
+const INITIAL_ALBUM_COUNT = 8
+const ALBUM_BATCH_SIZE = 12
+
 const getStrapiConfig = () => {
   const strapiUrl = process.env.STRAPI_URL
   const strapiToken = process.env.STRAPI_API_TOKEN
@@ -203,6 +208,91 @@ const toPublicPhoto = (
   }
 }
 
+const extractFiles = (response) => {
+  if (Array.isArray(response)) {
+    return response
+  }
+
+  if (Array.isArray(response?.data)) {
+    return response.data
+  }
+
+  if (Array.isArray(response?.results)) {
+    return response.results
+  }
+
+  return []
+}
+
+const getStrapiPageCount = (response, batchLength) => {
+  const pagination =
+    response?.meta?.pagination ||
+    response?.pagination ||
+    null
+
+  if (pagination?.pageCount) {
+    return Number(pagination.pageCount)
+  }
+
+  if (pagination?.total && pagination?.pageSize) {
+    return Math.ceil(
+      Number(pagination.total) / Number(pagination.pageSize),
+    )
+  }
+
+  return batchLength < STRAPI_PAGE_SIZE ? 1 : null
+}
+
+const fetchAllUploadFiles = async (strapiUrl, strapiToken) => {
+  const files = []
+  let page = 1
+  let pageCount = null
+
+  while (pageCount === null || page <= pageCount) {
+    const response = await $fetch(
+      `${strapiUrl}/api/upload/files`,
+      {
+        headers: {
+          Authorization: `Bearer ${strapiToken}`,
+        },
+        query: {
+          'pagination[page]': page,
+          'pagination[pageSize]': STRAPI_PAGE_SIZE,
+          'pagination[withCount]': true,
+          populate: 'folder',
+        },
+      },
+    )
+
+    const batch = extractFiles(response)
+    files.push(...batch)
+
+    const detectedPageCount = getStrapiPageCount(
+      response,
+      batch.length,
+    )
+
+    if (detectedPageCount !== null) {
+      pageCount = detectedPageCount
+    }
+    else if (batch.length < STRAPI_PAGE_SIZE) {
+      break
+    }
+
+    if (!batch.length) {
+      break
+    }
+
+    page += 1
+
+    if (page > 50) {
+      break
+    }
+  }
+
+  return files
+}
+
 export default defineEventHandler(async (event) => {
   await enforceRateLimit(event, {
     scope: 'portfolio',
@@ -232,18 +322,10 @@ export default defineEventHandler(async (event) => {
   const imageDeliveryOrigin =
     getImageDeliveryOrigin()
 
-  const response = await $fetch(
-    `${strapiUrl}/api/upload/files`,
-    {
-      headers: {
-        Authorization: `Bearer ${strapiToken}`,
-      },
-    },
+  const files = await fetchAllUploadFiles(
+    strapiUrl,
+    strapiToken,
   )
-
-  const files = Array.isArray(response)
-    ? response
-    : response?.data || []
 
   const portfolioFiles = files.filter(
     (file) =>
@@ -268,11 +350,8 @@ export default defineEventHandler(async (event) => {
     )
     .filter(Boolean)
 
-  const featured = photos.slice(0, 6)
-  const album = photos.slice(6)
-
-  const initialAlbumCount = 20
-  const albumBatchSize = 12
+  const featured = photos.slice(0, FEATURED_COUNT)
+  const album = photos.slice(FEATURED_COUNT)
 
   const pageCount = Math.max(
     1,
@@ -280,8 +359,8 @@ export default defineEventHandler(async (event) => {
       Math.ceil(
         Math.max(
           0,
-          album.length - initialAlbumCount,
-        ) / albumBatchSize,
+          album.length - INITIAL_ALBUM_COUNT,
+        ) / ALBUM_BATCH_SIZE,
       ),
   )
 
@@ -295,18 +374,20 @@ export default defineEventHandler(async (event) => {
   const start =
     page === 1
       ? 0
-      : initialAlbumCount +
-        (page - 2) * albumBatchSize
+      : INITIAL_ALBUM_COUNT +
+        (page - 2) * ALBUM_BATCH_SIZE
 
   const limit =
     page === 1
-      ? initialAlbumCount
-      : albumBatchSize
+      ? INITIAL_ALBUM_COUNT
+      : ALBUM_BATCH_SIZE
 
   const pagePhotos = album.slice(
     start,
     start + limit,
   )
+
+  const hasMore = page < pageCount
 
   return {
     featured:
@@ -314,11 +395,8 @@ export default defineEventHandler(async (event) => {
     photos: pagePhotos,
     page,
     pageCount,
-    hasMore: page < pageCount,
-    nextPage:
-      page < pageCount
-        ? page + 1
-        : null,
+    hasMore,
+    nextPage: hasMore ? page + 1 : null,
     total: photos.length,
     albumTotal: album.length,
   }
