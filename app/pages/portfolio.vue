@@ -8,104 +8,69 @@ import EditorialPhotoBanner from '~/components/EditorialPhotoBanner.vue';
 
 definePageMeta({ layout: 'default' });
 
-const route = useRoute();
-
-const initialPage = computed(() => {
-  const value = Number(route.query.page || 1);
-  return Number.isSafeInteger(value) && value > 0 ? value : 1;
-});
-
 const {
   data,
   error,
   pending,
 } = await useAsyncData(
-  () => `portfolio-photos-${initialPage.value}`,
-  () =>
-    $fetch('/api/portfolio', {
-      query: {
-        page: initialPage.value,
-      },
-    }),
+  'portfolio-photos',
+  () => $fetch('/api/portfolio', {
+    query: { page: 1 },
+  }),
 );
 
 if (error.value?.statusCode === 404) {
   throw createError({
     statusCode: 404,
-    statusMessage: 'Page du portfolio introuvable',
+    statusMessage: 'Portfolio introuvable',
   });
 }
 
-const currentPage = ref(initialPage.value);
-
-const displayedAlbumPhotos = ref([
-  ...(data.value?.photos || []),
-]);
-
 const featuredPhotos = computed(() => data.value?.featured || []);
+const pageCount = computed(() => Number(data.value?.pageCount || 1));
+const photosCount = computed(() => Number(data.value?.total || 0));
 
-const pageCount = computed(() =>
-  Number(data.value?.pageCount || 1),
+const currentPage = ref(1);
+const loadingMore = ref(false);
+const loadMoreError = ref(false);
+
+const photoBatches = ref(
+  data.value?.photos?.length
+    ? [
+        {
+          page: 1,
+          photos: [...data.value.photos],
+        },
+      ]
+    : [],
 );
 
-const photosCount = computed(() =>
-  Number(data.value?.total || 0),
+const hasMorePhotos = computed(
+  () => currentPage.value < pageCount.value,
 );
 
 const siteUrl =
   useSiteConfig().url || 'https://lesphotosdececile.fr';
 
-const loadedPageSizes = ref([
-  displayedAlbumPhotos.value.length,
-]);
-
-const loadingMore = ref(false);
-const loadMoreError = ref(false);
-
-const portfolioUrl = (page) =>
-  page === 1
-    ? '/portfolio'
-    : `/portfolio?page=${page}`;
-
 useHead(() => ({
   link: [
     {
       rel: 'canonical',
-      href: new URL(
-        portfolioUrl(currentPage.value),
-        siteUrl,
-      ).href,
+      href: new URL('/portfolio', siteUrl).href,
     },
   ],
 }));
 
 useSeoMeta({
-  title: () =>
-    currentPage.value > 1
-      ? `Portfolio — page ${currentPage.value}`
-      : 'Portfolio',
+  title: 'Portfolio',
   description:
     'Découvrez une sélection de photos de couples, familles, bébés, animaux et mariages réalisées à Amiens et en Picardie par Les Photos de Cécile.',
 });
 
-const updateBrowserUrl = (page) => {
-  if (!import.meta.client) return;
-
-  const url =
-    page === 1
-      ? '/portfolio'
-      : `/portfolio?page=${page}`;
-
-  window.history.replaceState(
-    window.history.state,
-    '',
-    url,
-  );
-};
-
-const loadNextPage = async () => {
-  if (loadingMore.value) return;
-  if (currentPage.value >= pageCount.value) return;
+const loadMorePhotos = async () => {
+  if (loadingMore.value || !hasMorePhotos.value) {
+    return;
+  }
 
   loadingMore.value = true;
   loadMoreError.value = false;
@@ -119,17 +84,22 @@ const loadNextPage = async () => {
       },
     });
 
-    const newPhotos = response?.photos || [];
+    const newPhotos = Array.isArray(response?.photos)
+      ? response.photos
+      : [];
 
-    displayedAlbumPhotos.value.push(...newPhotos);
-    loadedPageSizes.value.push(newPhotos.length);
+    if (newPhotos.length) {
+      photoBatches.value.push({
+        page: nextPage,
+        photos: newPhotos,
+      });
+    }
+
     currentPage.value = nextPage;
-
-    updateBrowserUrl(nextPage);
   }
   catch (err) {
     console.error(
-      'Impossible de charger les photos suivantes :',
+      'Impossible de charger davantage de photos :',
       err,
     );
 
@@ -140,35 +110,7 @@ const loadNextPage = async () => {
   }
 };
 
-const loadPreviousPage = () => {
-  if (loadingMore.value) return;
-
-  if (loadedPageSizes.value.length <= 1) {
-    if (currentPage.value <= 1) return;
-
-    const previousPage = currentPage.value - 1;
-
-    return navigateTo(
-      portfolioUrl(previousPage),
-    );
-  }
-
-  const lastPageSize =
-    loadedPageSizes.value.pop() || 0;
-
-  if (lastPageSize > 0) {
-    displayedAlbumPhotos.value.splice(
-      displayedAlbumPhotos.value.length - lastPageSize,
-      lastPageSize,
-    );
-  }
-
-  currentPage.value -= 1;
-
-  updateBrowserUrl(currentPage.value);
-};
-
-const albumColumns = computed(() => {
+const buildColumns = (photos) => {
   const columns = Array.from(
     { length: 3 },
     () => ({
@@ -177,7 +119,7 @@ const albumColumns = computed(() => {
     }),
   );
 
-  displayedAlbumPhotos.value.forEach((photo) => {
+  photos.forEach((photo) => {
     const ratio =
       photo.width && photo.height
         ? photo.height / photo.width
@@ -195,7 +137,7 @@ const albumColumns = computed(() => {
   });
 
   return columns.map((column) => column.photos);
-});
+};
 
 const featuredLayouts = [
   'col-span-2 row-span-2 sm:col-span-3 sm:row-span-4',
@@ -267,131 +209,51 @@ const featuredLayouts = [
         Les premières photos du portfolio arrivent bientôt.
       </div>
 
-      <section
-        v-else-if="initialPage === 1 && featuredPhotos.length"
-        aria-label="Sélection mise en avant"
-        class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12"
-      >
-        <div class="mb-5 flex items-center justify-between">
-          <p class="font-playfair text-lg text-[#613213]">
-            Découvrez mon univers
-          </p>
-        </div>
-
-        <div
-          class="grid auto-rows-[42vw] grid-cols-2 gap-2 sm:auto-rows-[13vw] sm:grid-cols-6 sm:gap-3"
+      <template v-else>
+        <section
+          v-if="featuredPhotos.length"
+          aria-label="Sélection mise en avant"
+          class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12"
         >
-          <a
-            v-for="(photo, index) in featuredPhotos"
-            :key="photo.id"
-            :href="photo.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            :aria-label="`Ouvrir ${photo.alt} en grand format`"
-            :class="[
-              'group relative overflow-hidden rounded-xl bg-[#2c1b13] shadow-sm sm:rounded-2xl',
-              featuredLayouts[index],
-            ]"
-          >
-            <img
-              :src="photo.featuredUrl"
-              :srcset="photo.featuredSrcset"
-              sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 50vw"
-              :alt="photo.alt"
-              :width="photo.width"
-              :height="photo.height"
-              :loading="index === 0 ? 'eager' : 'lazy'"
-              :fetchpriority="index === 0 ? 'high' : 'auto'"
-              decoding="async"
-              class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-            >
+          <div class="mb-5 flex items-center justify-between">
+            <p class="font-playfair text-lg text-[#613213]">
+              Découvrez mon univers
+            </p>
+          </div>
 
-            <span
-              class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/45 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100"
-            >
-              <span
-                class="rounded-full bg-white/95 p-2 text-[#613213]"
-                aria-hidden="true"
-              >
-                <ExternalLink class="size-4" />
-              </span>
-            </span>
-          </a>
-        </div>
-      </section>
-
-      <section
-        v-if="displayedAlbumPhotos.length"
-        aria-label="Toutes les photos"
-        class="mx-auto mt-5 max-w-7xl px-5 sm:mt-6 sm:px-8 lg:px-12"
-      >
-        <div class="columns-1 gap-4 sm:hidden">
-          <a
-            v-for="photo in displayedAlbumPhotos"
-            :key="photo.id"
-            :href="photo.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            :aria-label="`Ouvrir ${photo.alt} en grand format`"
-            class="group relative mb-4 block break-inside-avoid overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-          >
-            <img
-              :src="photo.thumbnailUrl"
-              :srcset="photo.thumbnailSrcset"
-              sizes="(max-width: 639px) 100vw, 33vw"
-              :alt="photo.alt"
-              :width="photo.width"
-              :height="photo.height"
-              loading="lazy"
-              decoding="async"
-              class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]"
-            >
-
-            <span
-              class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/35 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100"
-            >
-              <span
-                class="rounded-full bg-white/90 p-2 text-[#613213]"
-                aria-hidden="true"
-              >
-                <ExternalLink class="size-4" />
-              </span>
-            </span>
-          </a>
-        </div>
-
-        <div class="hidden gap-5 sm:grid sm:grid-cols-3">
           <div
-            v-for="(column, columnIndex) in albumColumns"
-            :key="columnIndex"
-            class="space-y-5"
+            class="grid auto-rows-[42vw] grid-cols-2 gap-2 sm:auto-rows-[13vw] sm:grid-cols-6 sm:gap-3"
           >
             <a
-              v-for="photo in column"
+              v-for="(photo, index) in featuredPhotos"
               :key="photo.id"
               :href="photo.url"
               target="_blank"
               rel="noopener noreferrer"
               :aria-label="`Ouvrir ${photo.alt} en grand format`"
-              class="group relative block overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+              :class="[
+                'group relative overflow-hidden rounded-xl bg-[#2c1b13] shadow-sm sm:rounded-2xl',
+                featuredLayouts[index],
+              ]"
             >
               <img
-                :src="photo.thumbnailUrl"
-                :srcset="photo.thumbnailSrcset"
-                sizes="33vw"
+                :src="photo.featuredUrl"
+                :srcset="photo.featuredSrcset"
+                sizes="(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 50vw"
                 :alt="photo.alt"
                 :width="photo.width"
                 :height="photo.height"
-                loading="lazy"
+                :loading="index === 0 ? 'eager' : 'lazy'"
+                :fetchpriority="index === 0 ? 'high' : 'auto'"
                 decoding="async"
-                class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]"
+                class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
               >
 
               <span
-                class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/35 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100"
+                class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/45 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100"
               >
                 <span
-                  class="rounded-full bg-white/90 p-2 text-[#613213]"
+                  class="rounded-full bg-white/95 p-2 text-[#613213]"
                   aria-hidden="true"
                 >
                   <ExternalLink class="size-4" />
@@ -399,61 +261,139 @@ const featuredLayouts = [
               </span>
             </a>
           </div>
-        </div>
+        </section>
 
-        <Alert
-          v-if="loadMoreError"
-          variant="destructive"
-          class="mx-auto mt-8 max-w-xl"
+        <section
+          aria-label="Toutes les photos"
+          class="mx-auto mt-5 max-w-7xl px-5 sm:mt-6 sm:px-8 lg:px-12"
         >
-          <AlertTitle>
-            Impossible de charger les photos
-          </AlertTitle>
-
-          <AlertDescription>
-            Les photos suivantes n'ont pas pu être chargées.
-            Vous pouvez réessayer.
-          </AlertDescription>
-        </Alert>
-
-        <nav
-          v-if="pageCount > 1"
-          aria-label="Pagination du portfolio"
-          class="mt-10 flex items-center justify-center gap-4"
-        >
-          <Button
-            v-if="currentPage > 1"
-            variant="outline"
-            :disabled="loadingMore"
-            @click="loadPreviousPage"
+          <div
+            v-for="batch in photoBatches"
+            :key="batch.page"
           >
-            Photos précédentes
-          </Button>
+            <div class="columns-1 gap-4 sm:hidden">
+              <a
+                v-for="photo in batch.photos"
+                :key="photo.id"
+                :href="photo.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                :aria-label="`Ouvrir ${photo.alt} en grand format`"
+                class="group relative mb-4 block break-inside-avoid overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+              >
+                <img
+                  :src="photo.thumbnailUrl"
+                  :srcset="photo.thumbnailSrcset"
+                  sizes="100vw"
+                  :alt="photo.alt"
+                  :width="photo.width"
+                  :height="photo.height"
+                  loading="lazy"
+                  decoding="async"
+                  class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]"
+                >
 
-          <span class="text-center text-sm">
-            Page {{ currentPage }} sur {{ pageCount }}
+                <span
+                  class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/35 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100"
+                >
+                  <span
+                    class="rounded-full bg-white/90 p-2 text-[#613213]"
+                    aria-hidden="true"
+                  >
+                    <ExternalLink class="size-4" />
+                  </span>
+                </span>
+              </a>
+            </div>
+
+            <div class="mb-5 hidden gap-5 sm:grid sm:grid-cols-3">
+              <div
+                v-for="(column, columnIndex) in buildColumns(batch.photos)"
+                :key="`${batch.page}-${columnIndex}`"
+                class="space-y-5"
+              >
+                <a
+                  v-for="photo in column"
+                  :key="photo.id"
+                  :href="photo.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :aria-label="`Ouvrir ${photo.alt} en grand format`"
+                  class="group relative block overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                >
+                  <img
+                    :src="photo.thumbnailUrl"
+                    :srcset="photo.thumbnailSrcset"
+                    sizes="33vw"
+                    :alt="photo.alt"
+                    :width="photo.width"
+                    :height="photo.height"
+                    loading="lazy"
+                    decoding="async"
+                    class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]"
+                  >
+
+                  <span
+                    class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/35 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100"
+                  >
+                    <span
+                      class="rounded-full bg-white/90 p-2 text-[#613213]"
+                      aria-hidden="true"
+                    >
+                      <ExternalLink class="size-4" />
+                    </span>
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <Alert
+            v-if="loadMoreError"
+            variant="destructive"
+            class="mx-auto mt-8 max-w-xl"
+          >
+            <AlertTitle>
+              Impossible de charger les photos
+            </AlertTitle>
+
+            <AlertDescription>
+              Les photos suivantes n'ont pas pu être chargées.
+              Vous pouvez réessayer.
+            </AlertDescription>
+          </Alert>
+
+          <div
+            v-if="hasMorePhotos"
+            class="mt-10 flex justify-center"
+          >
+            <Button
+              variant="outline"
+              size="lg"
+              :disabled="loadingMore"
+              @click="loadMorePhotos"
+            >
+              {{ loadingMore ? 'Chargement…' : 'Afficher plus de photos' }}
+            </Button>
+          </div>
+
+          <p
+            v-else-if="photoBatches.length > 1"
+            class="mt-10 text-center text-sm text-[#9e8b8b]"
+          >
+            Vous avez découvert toutes les photos.
+          </p>
+        </section>
+
+        <p
+          class="mt-12 flex items-center justify-center gap-2 px-5 text-center text-sm text-[#9e8b8b]"
+        >
+          <Images class="size-4 shrink-0" />
+          <span>
+            Cliquez sur une photo pour l’ouvrir en grand format.
           </span>
-
-          <Button
-            v-if="currentPage < pageCount"
-            variant="outline"
-            :disabled="loadingMore"
-            @click="loadNextPage"
-          >
-            {{ loadingMore ? 'Chargement…' : 'Photos suivantes' }}
-          </Button>
-        </nav>
-      </section>
-
-      <p
-        v-if="photosCount"
-        class="mt-12 flex items-center justify-center gap-2 px-5 text-center text-sm text-[#9e8b8b]"
-      >
-        <Images class="size-4 shrink-0" />
-        <span>
-          Cliquez sur une photo pour l’ouvrir en grand format.
-        </span>
-      </p>
+        </p>
+      </template>
     </div>
   </div>
 </template>
