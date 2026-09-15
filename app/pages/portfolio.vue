@@ -8,26 +8,22 @@ import EditorialPhotoBanner from '~/components/EditorialPhotoBanner.vue';
 
 definePageMeta({ layout: 'default' });
 
+const INITIAL_COUNT = 20;
+const BATCH_SIZE = 12;
+
 const {
   data,
   error,
   pending,
 } = await useAsyncData(
   'portfolio-photos',
-  () => $fetch('/api/portfolio', {
-    query: { page: 1 },
-  }),
+  () =>
+    $fetch('/api/portfolio', {
+      query: { page: 1 },
+    }),
 );
 
-if (error.value?.statusCode === 404) {
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'Portfolio introuvable',
-  });
-}
-
 const featuredPhotos = computed(() => data.value?.featured || []);
-const pageCount = computed(() => Number(data.value?.pageCount || 1));
 const photosCount = computed(() => Number(data.value?.total || 0));
 
 const currentPage = ref(1);
@@ -45,8 +41,8 @@ const photoBatches = ref(
     : [],
 );
 
-const hasMorePhotos = computed(
-  () => currentPage.value < pageCount.value,
+const hasMorePhotos = ref(
+  (data.value?.photos?.length || 0) >= INITIAL_COUNT,
 );
 
 const siteUrl =
@@ -88,14 +84,19 @@ const loadMorePhotos = async () => {
       ? response.photos
       : [];
 
-    if (newPhotos.length) {
-      photoBatches.value.push({
-        page: nextPage,
-        photos: newPhotos,
-      });
+    if (!newPhotos.length) {
+      hasMorePhotos.value = false;
+      return;
     }
 
+    photoBatches.value.push({
+      page: nextPage,
+      photos: newPhotos,
+    });
+
     currentPage.value = nextPage;
+
+    hasMorePhotos.value = newPhotos.length >= BATCH_SIZE;
   }
   catch (err) {
     console.error(
@@ -264,6 +265,7 @@ const featuredLayouts = [
         </section>
 
         <section
+          v-if="photoBatches.length"
           aria-label="Toutes les photos"
           class="mx-auto mt-5 max-w-7xl px-5 sm:mt-6 sm:px-8 lg:px-12"
         >
@@ -363,11 +365,9 @@ const featuredLayouts = [
             </AlertDescription>
           </Alert>
 
-          <div
-            v-if="hasMorePhotos"
-            class="mt-10 flex justify-center"
-          >
+          <div class="mt-10 flex justify-center">
             <Button
+              v-if="hasMorePhotos"
               variant="outline"
               size="lg"
               :disabled="loadingMore"
@@ -375,20 +375,21 @@ const featuredLayouts = [
             >
               {{ loadingMore ? 'Chargement…' : 'Afficher plus de photos' }}
             </Button>
-          </div>
 
-          <p
-            v-else-if="photoBatches.length > 1"
-            class="mt-10 text-center text-sm text-[#9e8b8b]"
-          >
-            Vous avez découvert toutes les photos.
-          </p>
+            <p
+              v-else-if="currentPage > 1"
+              class="text-center text-sm text-[#9e8b8b]"
+            >
+              Vous avez découvert toutes les photos.
+            </p>
+          </div>
         </section>
 
         <p
           class="mt-12 flex items-center justify-center gap-2 px-5 text-center text-sm text-[#9e8b8b]"
         >
           <Images class="size-4 shrink-0" />
+
           <span>
             Cliquez sur une photo pour l’ouvrir en grand format.
           </span>
