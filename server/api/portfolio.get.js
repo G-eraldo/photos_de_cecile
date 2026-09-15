@@ -7,8 +7,8 @@ import {
 
 const STRAPI_PAGE_SIZE = 100
 const FEATURED_COUNT = 6
-const INITIAL_ALBUM_COUNT = 8
-const ALBUM_BATCH_SIZE = 12
+const INITIAL_ALBUM_COUNT = 6
+const ALBUM_BATCH_SIZE = 6
 
 const getStrapiConfig = () => {
   const strapiUrl = process.env.STRAPI_URL
