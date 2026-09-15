@@ -122,6 +122,8 @@ const loadMorePhotos = async () => {
     return
   }
 
+  const scrollTop = window.scrollY
+
   loadingMore.value = true
   loadMoreError.value = false
 
@@ -178,6 +180,9 @@ const loadMorePhotos = async () => {
 
     hasMorePhotos.value =
       response?.hasMore === true || remaining > 0
+
+    await nextTick()
+    window.scrollTo(0, scrollTop)
   }
   catch (err) {
     console.error(
