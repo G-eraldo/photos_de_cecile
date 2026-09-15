@@ -57,8 +57,23 @@ const photoBatches = ref(
     : [],
 )
 
+const loadedAlbumCount = computed(() =>
+  photoBatches.value.reduce(
+    (count, batch) => count + (batch.photos?.length || 0),
+    0,
+  ),
+)
+
+const albumTotal = computed(() =>
+  Number(data.value?.albumTotal || 0),
+)
+
 const hasMorePhotos = ref(
-  data.value?.hasMore === true,
+  data.value?.hasMore === true ||
+    (
+      albumTotal.value > 0 &&
+      loadedAlbumCount.value < albumTotal.value
+    ),
 )
 
 const siteUrl =
@@ -149,8 +164,20 @@ const loadMorePhotos = async () => {
     currentPage.value =
       Number(response?.page || nextPage)
 
+    if (typeof response?.albumTotal === 'number') {
+      if (data.value) {
+        data.value.albumTotal = response.albumTotal
+        data.value.total = response.total ?? data.value.total
+        data.value.pageCount = response.pageCount ?? data.value.pageCount
+      }
+    }
+
+    const remaining =
+      Number(response?.albumTotal ?? albumTotal.value) -
+      loadedAlbumCount.value
+
     hasMorePhotos.value =
-      response?.hasMore === true
+      response?.hasMore === true || remaining > 0
   }
   catch (err) {
     console.error(
