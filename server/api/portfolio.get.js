@@ -163,7 +163,17 @@ const toPublicPhoto = (
     imageDeliveryOrigin,
   )
 
-  if (!featuredUrl || !thumbnailUrl) {
+  const fullUrl = getOptimizedUrl(
+    file.url,
+    2000,
+    imageDeliveryOrigin,
+  )
+
+  if (
+    !featuredUrl ||
+    !thumbnailUrl ||
+    !fullUrl
+  ) {
     return null
   }
 
@@ -172,19 +182,23 @@ const toPublicPhoto = (
     alt: getAltText(file),
     height: file.height,
     name: file.name,
+
     featuredSrcset: getResponsiveSrcset(
       file.url,
       [800, 1200, 1600],
       imageDeliveryOrigin,
     ),
+
     featuredUrl,
+
     thumbnailSrcset: getResponsiveSrcset(
       file.url,
       [480, 800, 1200],
       imageDeliveryOrigin,
     ),
+
     thumbnailUrl,
-    url: featuredUrl,
+    fullUrl,
     width: file.width,
   }
 }
@@ -289,15 +303,23 @@ export default defineEventHandler(async (event) => {
       ? initialAlbumCount
       : albumBatchSize
 
+  const pagePhotos = album.slice(
+    start,
+    start + limit,
+  )
+
   return {
     featured:
       page === 1 ? featured : [],
-    photos: album.slice(
-      start,
-      start + limit,
-    ),
+    photos: pagePhotos,
     page,
     pageCount,
+    hasMore: page < pageCount,
+    nextPage:
+      page < pageCount
+        ? page + 1
+        : null,
     total: photos.length,
+    albumTotal: album.length,
   }
 })
