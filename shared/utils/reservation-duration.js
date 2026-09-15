@@ -17,8 +17,11 @@ const normalizeSessionName = (value) =>
     .trim()
     .toLowerCase();
 
-export const isThemedSession = (value) =>
-  normalizeSessionName(value) === normalizeSessionName(THEMED_SESSION_NAME);
+export const isThemedSession = (value) => {
+  const name = normalizeSessionName(value);
+
+  return name === normalizeSessionName(THEMED_SESSION_NAME) || /^seances? a themes?(?:\s*[-–—:]|$)/.test(name);
+};
 
 export const getReservationSessionType = (forfait) =>
   isThemedSession(forfait) ? SESSION_TYPES.THEMED : SESSION_TYPES.STANDARD;

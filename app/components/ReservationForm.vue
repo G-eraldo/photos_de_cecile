@@ -84,6 +84,13 @@ const selectDate = (value) => {
   date.value = value;
   heure.value = '';
 };
+const focusFirstAvailableMonth = (items) => {
+  const first = [...items].sort((a, b) => new Date(a.start) - new Date(b.start))[0];
+  if (!first) return;
+
+  const firstDate = new Date(first.start);
+  calendarMonth.value = new Date(firstDate.getFullYear(), firstDate.getMonth(), 1);
+};
 const availableSlots = computed(() => {
   if (!date.value) return [];
 
@@ -104,10 +111,7 @@ const loadAvailability = async () => {
   try {
     const data = await $fetch('/api/calendar/events');
     availability.value = data.availability || [];
-    if (availableDates.value.length) {
-      const [year, month] = availableDates.value[0].value.split('-').map(Number);
-      calendarMonth.value = new Date(year, month - 1, 1);
-    }
+    focusFirstAvailableMonth(availabilityForSelectedFormula.value);
   } catch {
     calendarError.value = true;
   } finally {
@@ -253,6 +257,10 @@ watch(forfait, () => {
 
 watch(prestation, () => {
   forfait.value = ''
+})
+
+watch(selectedSessionType, () => {
+  focusFirstAvailableMonth(availabilityForSelectedFormula.value)
 })
 const fraisKilometriquesSelectionnes = computed(() => fraisKilometriques[lieu.value] ?? 0)
 const montantAcompte = computed(() => {
