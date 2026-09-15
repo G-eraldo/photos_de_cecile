@@ -8,7 +8,7 @@ export const SESSION_TYPES = {
   THEMED: "themed",
 };
 
-export const THEMED_SESSION_NAME = "Séances à thèmes";
+export const THEMED_SESSION_NAME = "Séance à thème";
 
 const normalizeSessionName = (value) =>
   String(value || "")
