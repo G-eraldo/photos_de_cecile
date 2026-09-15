@@ -98,9 +98,23 @@ useSeoMeta({
     'Découvrez une sélection de photos de couples, familles, bébés, animaux et mariages réalisées à Amiens et en Picardie par Les Photos de Cécile.',
 })
 
-const getPhotoKey = (photo) =>
-  photo?.id ??
-  `${photo?.name || ''}-${photo?.width || ''}-${photo?.height || ''}`
+const getPhotoKey = (photo) => {
+  if (
+    photo?.name &&
+    photo?.width &&
+    photo?.height &&
+    photo?.size
+  ) {
+    return [
+      photo.name.toLowerCase(),
+      photo.width,
+      photo.height,
+      photo.size,
+    ].join('|')
+  }
+
+  return photo?.id ?? photo?.name ?? photo?.fullUrl
+}
 
 const loadedPhotoKeys = computed(() => {
   const keys = new Set()

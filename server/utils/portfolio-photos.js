@@ -55,6 +55,15 @@ const getFilename = (photo) =>
     .split('/')
     .pop()
 
+export function isCloudinaryPhoto(photo) {
+  try {
+    return /(^|\.)cloudinary\.com$/i.test(new URL(photo.url).hostname)
+  }
+  catch {
+    return false
+  }
+}
+
 const hasPortfolioLabel = (photo) => {
   const labels = [
     photo.alternativeText,

@@ -1,6 +1,7 @@
 import { enforceRateLimit } from '../utils/request-security.js'
 import {
   deduplicatePortfolioPhotos,
+  isCloudinaryPhoto,
   isPortfolioPhoto,
 } from '../utils/portfolio-photos.js'
 
@@ -187,6 +188,7 @@ const toPublicPhoto = (
     alt: getAltText(file),
     height: file.height,
     name: file.name,
+    size: file.size,
 
     featuredSrcset: getResponsiveSrcset(
       file.url,
@@ -357,6 +359,7 @@ export default defineEventHandler(async (event) => {
     (file) =>
       file?.mime?.startsWith('image/') &&
       file?.url &&
+      !isCloudinaryPhoto(file) &&
       isPortfolioPhoto(file),
   )
 
