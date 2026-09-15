@@ -45,6 +45,9 @@ const currentPage = ref(
 
 const loadingMore = ref(false)
 const loadMoreError = ref(false)
+const loadMoreTrigger = ref(null)
+const loadMoreMargin = 1200
+let loadMoreObserver
 
 const photoBatches = ref(
   data.value?.photos?.length
@@ -144,28 +147,13 @@ const preloadPhotos = (photos) =>
     ),
   )
 
-const restoreScrollPosition = async (scrollTop) => {
-  await nextTick()
-
-  const restore = () => {
-    if (Math.abs(window.scrollY - scrollTop) > 1) {
-      window.scrollTo(0, scrollTop)
-    }
-  }
-
-  restore()
-  requestAnimationFrame(restore)
-}
-
-const loadMorePhotos = async (event) => {
+const loadMorePhotos = async () => {
   if (
     loadingMore.value ||
     !hasMorePhotos.value
   ) {
     return
   }
-
-  event?.currentTarget?.blur()
 
   loadingMore.value = true
   loadMoreError.value = false
@@ -188,19 +176,25 @@ const loadMorePhotos = async (event) => {
         ? response.photos
         : []
 
-    const existingKeys =
-      loadedPhotoKeys.value
+    const existingKeys = new Set(
+      loadedPhotoKeys.value,
+    )
 
     const newPhotos =
       responsePhotos.filter(
-        (photo) =>
-          !existingKeys.has(
-            getPhotoKey(photo),
-          ),
+        (photo) => {
+          const key = getPhotoKey(photo)
+
+          if (existingKeys.has(key)) {
+            return false
+          }
+
+          existingKeys.add(key)
+          return true
+        },
       )
 
     await preloadPhotos(newPhotos)
-    const scrollTop = window.scrollY
 
     if (newPhotos.length) {
       photoBatches.value.push({
@@ -226,8 +220,6 @@ const loadMorePhotos = async (event) => {
 
     hasMorePhotos.value =
       response?.hasMore === true || remaining > 0
-
-    await restoreScrollPosition(scrollTop)
   }
   catch (err) {
     console.error(
@@ -239,8 +231,44 @@ const loadMorePhotos = async (event) => {
   }
   finally {
     loadingMore.value = false
+
+    await nextTick()
+    const triggerBounds = loadMoreTrigger.value?.getBoundingClientRect()
+    const triggerIsNearViewport =
+      triggerBounds &&
+      triggerBounds.top <= window.innerHeight + loadMoreMargin &&
+      triggerBounds.bottom >= -loadMoreMargin
+
+    if (
+      hasMorePhotos.value &&
+      !loadMoreError.value &&
+      triggerIsNearViewport
+    ) {
+      requestAnimationFrame(loadMorePhotos)
+    }
   }
 }
+
+onMounted(() => {
+  loadMoreObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (entry?.isIntersecting) {
+        loadMorePhotos()
+      }
+    },
+    {
+      rootMargin: `${loadMoreMargin}px 0px`,
+    },
+  )
+
+  if (loadMoreTrigger.value) {
+    loadMoreObserver.observe(loadMoreTrigger.value)
+  }
+})
+
+onBeforeUnmount(() => {
+  loadMoreObserver?.disconnect()
+})
 
 const buildColumns = (photos) => {
   const columns = Array.from(
@@ -509,24 +537,28 @@ const featuredLayouts = [
           </Alert>
 
           <div
-            class="mt-10 flex justify-center"
+            ref="loadMoreTrigger"
+            class="mt-10 flex min-h-12 items-center justify-center"
+            aria-live="polite"
           >
+            <p
+              v-if="loadingMore"
+              class="text-center text-sm text-[#9e8b8b]"
+            >
+              Chargement des photos…
+            </p>
+
             <Button
-              v-if="hasMorePhotos"
+              v-else-if="loadMoreError && hasMorePhotos"
               variant="outline"
               size="lg"
-              :disabled="loadingMore"
-              @click="loadMorePhotos($event)"
+              @click="loadMorePhotos"
             >
-              {{
-                loadingMore
-                  ? 'Chargement…'
-                  : 'Afficher plus de photos'
-              }}
+              Réessayer le chargement
             </Button>
 
             <p
-              v-else-if="currentPage > 1"
+              v-else-if="!hasMorePhotos && currentPage > 1"
               class="text-center text-sm text-[#9e8b8b]"
             >
               Vous avez découvert toutes les photos.

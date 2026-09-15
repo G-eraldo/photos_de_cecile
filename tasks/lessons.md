@@ -54,6 +54,7 @@
 
 - Pour les introductions sur mobile, prévoir un padding horizontal explicite sur le conteneur de texte même lorsqu’il possède un max-width.
 - Dans le portfolio, les réimportations Strapi ont des URL différentes : dédupliquer avec nom, dimensions et taille, après la priorité éditoriale ; ne jamais dédupliquer sur le nom seul.
+- Pour un portfolio paginé sur mobile, ajouter les nouveaux lots sous la position courante avec un déclencheur anticipé `IntersectionObserver` ; ne pas corriger le scroll manuellement après une mutation du DOM.
 
 - Pour l’accueil, suivre la référence validée : deux portraits latéraux à cheval sur les sections, texte des formules centré ; ne pas remplacer cette composition par des galeries.
 
