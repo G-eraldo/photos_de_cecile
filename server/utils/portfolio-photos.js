@@ -49,14 +49,13 @@ const giftCardFilenames = new Set([
   'DSC_01434_3ae18f4bf0.jpeg',
 ])
 
-function getFilename(photo) {
-  return String(photo.url || '')
+const getFilename = (photo) =>
+  String(photo.url || '')
     .split(/[?#]/)[0]
     .split('/')
     .pop()
-}
 
-function hasPortfolioLabel(photo) {
+const hasPortfolioLabel = (photo) => {
   const labels = [
     photo.alternativeText,
     photo.caption,
@@ -67,7 +66,7 @@ function hasPortfolioLabel(photo) {
   return /#portfolio(?:-une(?:-\d+)?)?\b/i.test(labels)
 }
 
-function isInPortfolioFolder(photo) {
+const isInPortfolioFolder = (photo) => {
   const folder = [
     photo.folderPath,
     photo.folder?.path,
