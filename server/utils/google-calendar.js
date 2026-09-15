@@ -1,8 +1,26 @@
-export const isAvailabilityEvent = (event) => event.summary
-  ?.normalize("NFD")
+import {
+  isThemedSession,
+  SESSION_TYPES,
+} from "../../shared/utils/reservation-duration.js";
+
+const normalizeSummary = (value) =>
+  String(value || "")
+  .normalize("NFD")
   .replace(/[\u0300-\u036f]/g, "")
+  .trim()
   .toLowerCase()
-  .includes("seance photo");
+;
+
+export const isAvailabilityEvent = (event) =>
+  normalizeSummary(event?.summary).includes("seance photo");
+
+export const getAvailabilitySessionType = (event) => {
+  if (isThemedSession(event?.summary)) return SESSION_TYPES.THEMED;
+  return isAvailabilityEvent(event) ? SESSION_TYPES.STANDARD : null;
+};
+
+export const isReservationAvailabilityEvent = (event) =>
+  getAvailabilitySessionType(event) !== null;
 
 export const getGoogleAccessToken = async (config) => {
   if (!config.googleClientId || !config.googleClientSecret || !config.googleRefreshToken) {
@@ -54,14 +72,14 @@ export const listCalendarEvents = async (config, start, end, accessToken) => {
   return items;
 };
 
-export const assertCalendarAvailability = async (config, start, end, reference) => {
+export const assertCalendarAvailability = async (config, start, end, reference, sessionType = SESSION_TYPES.STANDARD) => {
   const accessToken = await getGoogleAccessToken(config);
   const ownId = reference ? reservationCalendarId(reference) : null;
   const events = await listCalendarEvents(config, start, end, accessToken);
   const ownEvent = ownId && events.find((item) => item.id === ownId && item.status !== "cancelled");
   if (ownEvent) return { accessToken, existingEvent: ownEvent };
-  const available = events.some((item) => isAvailabilityEvent(item) && new Date(item.start?.dateTime || item.start?.date) <= start && new Date(item.end?.dateTime || item.end?.date) >= end);
-  const occupied = events.some((item) => item.status !== "cancelled" && !isAvailabilityEvent(item) && start < new Date(item.end?.dateTime || item.end?.date) && end > new Date(item.start?.dateTime || item.start?.date));
+  const available = events.some((item) => getAvailabilitySessionType(item) === sessionType && new Date(item.start?.dateTime || item.start?.date) <= start && new Date(item.end?.dateTime || item.end?.date) >= end);
+  const occupied = events.some((item) => item.status !== "cancelled" && !isReservationAvailabilityEvent(item) && start < new Date(item.end?.dateTime || item.end?.date) && end > new Date(item.start?.dateTime || item.start?.date));
   if (!available || occupied) throw createError({ statusCode: 409, statusMessage: "Ce créneau n’est plus disponible. Merci d’en choisir un autre." });
   return { accessToken, existingEvent: null };
 };

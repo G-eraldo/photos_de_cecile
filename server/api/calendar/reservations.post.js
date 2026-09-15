@@ -13,7 +13,10 @@ import {
   dateTimeInParis,
   formatParisTime,
 } from "../../utils/paris-date-time.js";
-import { RESERVATION_DURATION_MS } from "~~/shared/utils/reservation-duration.js";
+import {
+  getReservationDurationMs,
+  getReservationSessionType,
+} from "~~/shared/utils/reservation-duration.js";
 
 const escapeHtml = (value) =>
   String(value || "").replace(
@@ -86,7 +89,8 @@ export const completeReservation = async (
   }
 
   const start = dateTimeInParis(date, heure);
-  const end = new Date(start.getTime() + RESERVATION_DURATION_MS);
+  const sessionType = getReservationSessionType(forfait);
+  const end = new Date(start.getTime() + getReservationDurationMs(sessionType));
 
   if (Number.isNaN(start.getTime())) {
     throw createError({
@@ -100,6 +104,7 @@ export const completeReservation = async (
     start,
     end,
     reference,
+    sessionType,
   );
 
   if (!existingEvent) {

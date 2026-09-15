@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
 
-import { RESERVATION_DURATION_MS } from "../../../../shared/utils/reservation-duration.js";
+import {
+  getReservationDurationMs,
+  getReservationSessionType,
+} from "../../../../shared/utils/reservation-duration.js";
 import {
   getGoogleAccessToken,
   listCalendarEvents,
@@ -102,7 +105,19 @@ export default defineEventHandler(async (event) => {
   }
 
   const config = getMollieConfig();
-  const end = new Date(start.getTime() + RESERVATION_DURATION_MS);
+  const {
+    amount: formulaDeposit,
+    percentage,
+    formule,
+    prestation,
+  } = await findFormula(config, {
+    prestationId: details.prestationId,
+    prestationName: details.prestation.trim(),
+    formuleId: details.formuleId,
+    formuleName: details.forfait.trim(),
+  });
+  const sessionType = getReservationSessionType(formule.nom);
+  const end = new Date(start.getTime() + getReservationDurationMs(sessionType));
   const calendarConfig = useRuntimeConfig(event);
   const accessToken = await getGoogleAccessToken(calendarConfig);
   const events = await listCalendarEvents(
@@ -118,24 +133,13 @@ export default defineEventHandler(async (event) => {
     holds = [];
   }
   const slots = buildAvailabilitySlots({ events, now: new Date(), holds });
-  if (!isOfferedSlot(slots, start)) {
+  if (!isOfferedSlot(slots, start, sessionType)) {
     throw createError({
       statusCode: 409,
       statusMessage:
         "Ce créneau n’est plus disponible. Merci d’en choisir un autre.",
     });
   }
-  const {
-    amount: formulaDeposit,
-    percentage,
-    formule,
-    prestation,
-  } = await findFormula(config, {
-    prestationId: details.prestationId,
-    prestationName: details.prestation.trim(),
-    formuleId: details.formuleId,
-    formuleName: details.forfait.trim(),
-  });
   const fraisKilometriques = getTravelFee(details.lieu);
   const amount = (Number(formulaDeposit) + fraisKilometriques).toFixed(2);
   const reference = `r${randomUUID().replace(/-/g, "")}`;

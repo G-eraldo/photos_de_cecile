@@ -6,10 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { CalendarDays, Mail } from 'lucide-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 import { parisDate, parisTime } from '~/lib/paris-calendar.js';
-import { RESERVATION_DURATION_MS } from '~~/shared/utils/reservation-duration.js';
+import {
+  isThemedSession,
+  SESSION_TYPES,
+} from '~~/shared/utils/reservation-duration.js';
 import Select from './ui/select/Select.vue';
 import SelectContent from './ui/select/SelectContent.vue';
 import SelectGroup from './ui/select/SelectGroup.vue';
@@ -41,7 +44,7 @@ const weekDays = ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.', 'Dim.'];
 const availableDates = computed(() => {
   const dates = new Map();
 
-  availability.value.forEach((item) => {
+  availabilityForSelectedFormula.value.forEach((item) => {
     const start = new Date(item.start);
     const value = parisDate(start);
     if (!dates.has(value)) {
@@ -84,21 +87,16 @@ const selectDate = (value) => {
 const availableSlots = computed(() => {
   if (!date.value) return [];
 
-  return availability.value.flatMap((item) => {
+  return availabilityForSelectedFormula.value.flatMap((item) => {
     const start = new Date(item.start);
     const end = new Date(item.end);
     const itemDate = parisDate(start);
     if (itemDate !== date.value) return [];
 
-    const slots = [];
-    for (const slotStart = new Date(start); slotStart.getTime() + RESERVATION_DURATION_MS <= end.getTime(); slotStart.setTime(slotStart.getTime() + RESERVATION_DURATION_MS)) {
-      const slotEnd = new Date(slotStart.getTime() + RESERVATION_DURATION_MS);
-      slots.push({
-        value: parisTime(slotStart),
-        label: `${parisTime(slotStart)} – ${parisTime(slotEnd)}`,
-      });
-    }
-    return slots;
+    return [{
+      value: parisTime(start),
+      label: `${parisTime(start)} – ${parisTime(end)}`,
+    }];
   });
 });
 
@@ -222,6 +220,12 @@ const selectedPrestation = computed(() =>
 )
 
 const formules = computed(() => selectedPrestation.value?.formules || [])
+const hasThemedAvailability = computed(() =>
+  availability.value.some((item) => item.sessionType === SESSION_TYPES.THEMED)
+)
+const availableFormules = computed(() => formules.value.filter((formule) =>
+  !isThemedSession(formule.nom) || hasThemedAvailability.value
+))
 const fraisKilometriques = {
   amiens: 0,
   'bois-creuse': 5,
@@ -235,6 +239,21 @@ const fraisKilometriques = {
   autre: 0,
 }
 const formuleSelectionnee = computed(() => formules.value.find((item) => item.nom === forfait.value) || null)
+const selectedSessionType = computed(() =>
+  isThemedSession(forfait.value) ? SESSION_TYPES.THEMED : SESSION_TYPES.STANDARD
+)
+const availabilityForSelectedFormula = computed(() => availability.value.filter(
+  (item) => item.sessionType === selectedSessionType.value
+))
+
+watch(forfait, () => {
+  date.value = ''
+  heure.value = ''
+})
+
+watch(prestation, () => {
+  forfait.value = ''
+})
 const fraisKilometriquesSelectionnes = computed(() => fraisKilometriques[lieu.value] ?? 0)
 const montantAcompte = computed(() => {
   const prix = Number(formuleSelectionnee.value?.prix)
@@ -257,8 +276,7 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
       <CardTitle class="font-playfair text-2xl font-bold text-[#613213] md:text-3xl">Préparons votre séance</CardTitle>
     </div>
     <CardDescription class="mb-6 text-[#676463]">
-      Les créneaux affichés sont ceux définis par Cécile dans son agenda. Chaque rendez-vous dure une heure et sera
-      confirmé après vérification.
+      Les créneaux affichés sont ceux définis par Cécile dans son agenda et seront confirmés après vérification.
     </CardDescription>
 
     <form class="space-y-4 text-[#676463]" @submit.prevent="submit">
@@ -273,14 +291,14 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
           v-model="email" type="email" required /></div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="grid gap-2"><Label for="reservation-forfait">Votre formule</Label>
-          <Select v-model="forfait" :disabled="!formules.length">
+          <Select v-model="forfait" :disabled="!availableFormules.length">
             <SelectTrigger id="reservation-forfait" class="w-full"
               :aria-describedby="formuleSelectionnee?.details ? 'reservation-forfait-details' : undefined">
-              <SelectValue :placeholder="formules.length ? 'Sélectionner une formule' : 'Aucune formule disponible'" />
+              <SelectValue :placeholder="availableFormules.length ? 'Sélectionner une formule' : 'Aucune formule disponible'" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem v-for="formule in formules" :key="formule.id" :value="formule.nom">
+                <SelectItem v-for="formule in availableFormules" :key="formule.id" :value="formule.nom">
                   {{ formule.nom }} — {{ Number(formule.prix).toLocaleString('fr-FR') }} €
                 </SelectItem>
               </SelectGroup>
@@ -371,8 +389,7 @@ const formatPrice = (price) => Number(price).toLocaleString('fr-FR', {
             {{ slot.label }}
           </Button>
         </div>
-        <p v-if="date && !availableSlots.length" class="text-sm">Aucun créneau d’une heure n’est disponible ce
-          jour-là.</p>
+        <p v-if="date && !availableSlots.length" class="text-sm">Aucun créneau n’est disponible ce jour-là.</p>
       </div>
       <div class="grid gap-2"><Label for="reservation-message">Précisions (facultatif)</Label><Textarea
           id="reservation-message" v-model="message" placeholder="Lieu, formule choisie, vos disponibilités…" /></div>

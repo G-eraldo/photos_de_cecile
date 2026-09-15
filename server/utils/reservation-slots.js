@@ -1,5 +1,8 @@
-import { RESERVATION_DURATION_MS } from "../../shared/utils/reservation-duration.js";
-import { isAvailabilityEvent } from "./google-calendar.js";
+import { getReservationDurationMs } from "../../shared/utils/reservation-duration.js";
+import {
+  getAvailabilitySessionType,
+  isReservationAvailabilityEvent,
+} from "./google-calendar.js";
 
 const toInterval = (item) => ({
   start: new Date(item.start?.dateTime || item.start?.date || item.start),
@@ -17,33 +20,40 @@ export const buildAvailabilitySlots = ({ events, now, holds = [] }) => {
   const blockedIntervals = [
     ...(events || [])
       .filter(
-        (item) => item?.status !== "cancelled" && !isAvailabilityEvent(item),
+        (item) => item?.status !== "cancelled" && !isReservationAvailabilityEvent(item),
       )
       .map(toInterval),
     ...holds,
   ].filter(isValidInterval);
 
-  return (events || []).filter(isAvailabilityEvent).flatMap((item) => {
+  return (events || []).filter(isReservationAvailabilityEvent).flatMap((item) => {
     const interval = toInterval(item);
     if (!isValidInterval(interval)) return [];
+
+    const sessionType = getAvailabilitySessionType(item);
+    const durationMs = getReservationDurationMs(sessionType);
 
     const slots = [];
     for (
       const start = new Date(interval.start);
-      start.getTime() + RESERVATION_DURATION_MS <= interval.end.getTime();
-      start.setTime(start.getTime() + RESERVATION_DURATION_MS)
+      start.getTime() + durationMs <= interval.end.getTime();
+      start.setTime(start.getTime() + durationMs)
     ) {
       if (start < now) continue;
-      const end = new Date(start.getTime() + RESERVATION_DURATION_MS);
+      const end = new Date(start.getTime() + durationMs);
       const blocked = blockedIntervals.some(
         (other) => start < other.end && end > other.start,
       );
       if (!blocked)
-        slots.push({ start: start.toISOString(), end: end.toISOString() });
+        slots.push({ start: start.toISOString(), end: end.toISOString(), sessionType });
     }
     return slots;
   });
 };
 
-export const isOfferedSlot = (slots, start) =>
-  (slots || []).some((slot) => Date.parse(slot.start) === start.getTime());
+export const isOfferedSlot = (slots, start, sessionType) =>
+  (slots || []).some(
+    (slot) =>
+      Date.parse(slot.start) === start.getTime() &&
+      slot.sessionType === sessionType,
+  );
