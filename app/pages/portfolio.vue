@@ -128,6 +128,35 @@ const loadedPhotoKeys = computed(() => {
   return keys
 })
 
+const preloadPhotos = (photos) =>
+  Promise.all(
+    photos.map((photo) =>
+      new Promise((resolve) => {
+        const image = new Image()
+        image.onload = resolve
+        image.onerror = resolve
+        image.sizes = window.matchMedia('(min-width: 640px)').matches
+          ? '33vw'
+          : '100vw'
+        image.srcset = photo.thumbnailSrcset || ''
+        image.src = photo.thumbnailUrl
+      }),
+    ),
+  )
+
+const restoreScrollPosition = async (scrollTop) => {
+  await nextTick()
+
+  const restore = () => {
+    if (Math.abs(window.scrollY - scrollTop) > 1) {
+      window.scrollTo(0, scrollTop)
+    }
+  }
+
+  restore()
+  requestAnimationFrame(restore)
+}
+
 const loadMorePhotos = async (event) => {
   if (
     loadingMore.value ||
@@ -170,6 +199,9 @@ const loadMorePhotos = async (event) => {
           ),
       )
 
+    await preloadPhotos(newPhotos)
+    const scrollTop = window.scrollY
+
     if (newPhotos.length) {
       photoBatches.value.push({
         page: nextPage,
@@ -195,6 +227,7 @@ const loadMorePhotos = async (event) => {
     hasMorePhotos.value =
       response?.hasMore === true || remaining > 0
 
+    await restoreScrollPosition(scrollTop)
   }
   catch (err) {
     console.error(
