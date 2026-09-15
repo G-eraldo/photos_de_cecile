@@ -6,6 +6,7 @@ import {
 } from '../utils/portfolio-photos.js'
 
 const STRAPI_PAGE_SIZE = 100
+const STRAPI_FOLDER_PAGE_SIZE = 100
 const FEATURED_COUNT = 6
 const INITIAL_ALBUM_COUNT = 6
 const ALBUM_BATCH_SIZE = 6
@@ -260,6 +261,98 @@ const fetchUploadPage = async (
     },
   )
 
+const fetchUploadFolderPage = async (
+  strapiUrl,
+  strapiToken,
+  query,
+) =>
+  $fetch(
+    `${strapiUrl}/api/upload/folders`,
+    {
+      headers: {
+        Authorization: `Bearer ${strapiToken}`,
+      },
+      ...(query ? { query } : {}),
+    },
+  )
+
+const fetchAllUploadFolders = async (strapiUrl, strapiToken) => {
+  try {
+    const folders = []
+    let page = 1
+    let pageCount = null
+
+    while (pageCount === null || page <= pageCount) {
+      const response = await fetchUploadFolderPage(
+        strapiUrl,
+        strapiToken,
+        {
+          'pagination[page]': page,
+          'pagination[pageSize]': STRAPI_FOLDER_PAGE_SIZE,
+        },
+      )
+      const batch = extractFiles(response)
+      folders.push(...batch)
+
+      const detectedPageCount = getStrapiPageCount(
+        response,
+        batch.length,
+      )
+
+      if (detectedPageCount !== null) {
+        pageCount = detectedPageCount
+      }
+      else if (batch.length < STRAPI_FOLDER_PAGE_SIZE) {
+        break
+      }
+
+      if (!batch.length || page > 50) break
+      page += 1
+    }
+
+    return folders
+  }
+  catch (error) {
+    console.error(
+      'Hiérarchie des dossiers Strapi indisponible :',
+      error?.data?.error || error?.message || error,
+    )
+    return []
+  }
+}
+
+const getPortfolioFolderIds = (folders) => {
+  const portfolioIds = new Set(
+    folders
+      .filter((folder) => String(folder?.name || '').trim().toLowerCase() === 'portfolio')
+      .map((folder) => String(folder.id)),
+  )
+
+  let changed = true
+  while (changed) {
+    changed = false
+    for (const folder of folders) {
+      const parentId =
+        folder.parent?.id ??
+        folder.parent?.data?.id ??
+        folder.parentId ??
+        (typeof folder.parent === 'number' || typeof folder.parent === 'string'
+          ? folder.parent
+          : null) ??
+        null
+      if (parentId !== null && portfolioIds.has(String(parentId))) {
+        const folderId = String(folder.id)
+        if (!portfolioIds.has(folderId)) {
+          portfolioIds.add(folderId)
+          changed = true
+        }
+      }
+    }
+  }
+
+  return portfolioIds
+}
+
 const fetchAllUploadFiles = async (strapiUrl, strapiToken) => {
   try {
     const files = []
@@ -355,12 +448,16 @@ export default defineEventHandler(async (event) => {
     strapiToken,
   )
 
+  const portfolioFolderIds = getPortfolioFolderIds(
+    await fetchAllUploadFolders(strapiUrl, strapiToken),
+  )
+
   const portfolioFiles = files.filter(
     (file) =>
       file?.mime?.startsWith('image/') &&
       file?.url &&
       !isCloudinaryPhoto(file) &&
-      isPortfolioPhoto(file),
+      isPortfolioPhoto(file, portfolioFolderIds),
   )
 
   const uniqueFiles =

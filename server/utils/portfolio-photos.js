@@ -87,7 +87,7 @@ const isInPortfolioFolder = (photo) => {
   return /(?:^|[\/\s_-])portfolio(?:$|[\/\s_-])/i.test(folder)
 }
 
-export function isPortfolioPhoto(photo) {
+export function isPortfolioPhoto(photo, portfolioFolderIds = null) {
   if (!photo) return false
   if (!photo.url) return false
   if (!photo.mime?.startsWith('image/')) return false
@@ -97,5 +97,16 @@ export function isPortfolioPhoto(photo) {
   if (!filename) return false
   if (giftCardFilenames.has(filename)) return false
 
-  return hasPortfolioLabel(photo) || isInPortfolioFolder(photo)
+  const folderId =
+    photo.folder?.id ??
+    photo.folder?.data?.id ??
+    photo.folderId ??
+    (typeof photo.folder === 'number' || typeof photo.folder === 'string'
+      ? photo.folder
+      : null) ??
+    null
+  const isInPortfolioTree =
+    portfolioFolderIds?.has(String(folderId)) === true
+
+  return hasPortfolioLabel(photo) || isInPortfolioFolder(photo) || isInPortfolioTree
 }
