@@ -308,6 +308,16 @@ const buildColumns = (photos) => {
   )
 }
 
+const loadedPhotos = computed(() =>
+  photoBatches.value.flatMap(
+    (batch) => batch.photos,
+  ),
+)
+
+const desktopColumns = computed(() =>
+  buildColumns(loadedPhotos.value),
+)
+
 const featuredLayouts = [
   'col-span-2 row-span-2 sm:col-span-3 sm:row-span-4',
   'col-span-1 row-span-1 sm:col-span-3 sm:row-span-2',
@@ -438,11 +448,12 @@ const featuredLayouts = [
           :aria-busy="loadingMore"
           class="mx-auto mt-5 max-w-7xl px-5 [overflow-anchor:none] sm:mt-6 sm:px-8 lg:px-12"
         >
-          <div
-            v-for="batch in photoBatches"
-            :key="batch.page"
-          >
-            <div class="columns-1 gap-4 sm:hidden">
+          <div class="sm:hidden">
+            <div
+              v-for="batch in photoBatches"
+              :key="batch.page"
+              class="columns-1 gap-4"
+            >
               <a
                 v-for="photo in batch.photos"
                 :key="photo.id"
@@ -476,48 +487,48 @@ const featuredLayouts = [
                 </span>
               </a>
             </div>
+          </div>
 
+          <div
+            class="hidden items-start gap-5 sm:grid sm:grid-cols-3"
+          >
             <div
-              class="mb-5 hidden gap-5 sm:grid sm:grid-cols-3"
+              v-for="(column, columnIndex) in desktopColumns"
+              :key="columnIndex"
+              class="space-y-5"
             >
-              <div
-                v-for="(column, columnIndex) in buildColumns(batch.photos)"
-                :key="`${batch.page}-${columnIndex}`"
-                class="space-y-5"
+              <a
+                v-for="photo in column"
+                :key="photo.id"
+                :href="photo.fullUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                :aria-label="`Ouvrir ${photo.alt} en grand format`"
+                class="group relative block overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
-                <a
-                  v-for="photo in column"
-                  :key="photo.id"
-                  :href="photo.fullUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  :aria-label="`Ouvrir ${photo.alt} en grand format`"
-                  class="group relative block overflow-hidden rounded-2xl bg-[#2c1b13] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                <img
+                  :src="photo.thumbnailUrl"
+                  :srcset="photo.thumbnailSrcset"
+                  sizes="33vw"
+                  :alt="photo.alt"
+                  :width="photo.width"
+                  :height="photo.height"
+                  loading="lazy"
+                  decoding="async"
+                  class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]"
                 >
-                  <img
-                    :src="photo.thumbnailUrl"
-                    :srcset="photo.thumbnailSrcset"
-                    sizes="33vw"
-                    :alt="photo.alt"
-                    :width="photo.width"
-                    :height="photo.height"
-                    loading="lazy"
-                    decoding="async"
-                    class="block h-auto w-full transition duration-700 group-hover:scale-[1.03]"
-                  >
 
+                <span
+                  class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/35 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100"
+                >
                   <span
-                    class="absolute inset-0 flex items-end justify-end bg-linear-to-t from-black/35 via-transparent to-transparent p-3 opacity-0 transition duration-300 group-hover:opacity-100"
+                    class="rounded-full bg-white/90 p-2 text-[#613213]"
+                    aria-hidden="true"
                   >
-                    <span
-                      class="rounded-full bg-white/90 p-2 text-[#613213]"
-                      aria-hidden="true"
-                    >
-                      <ExternalLink class="size-4" />
-                    </span>
+                    <ExternalLink class="size-4" />
                   </span>
-                </a>
-              </div>
+                </span>
+              </a>
             </div>
           </div>
 
