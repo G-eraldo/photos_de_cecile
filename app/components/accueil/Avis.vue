@@ -5,7 +5,7 @@ const { consent } = useReviewsConsent()
 const reviewsEnabled = ref(false)
 const reviewsLoadFailed = ref(false)
 const reviewsHost = ref(null)
-const widgetClass = 'elfsight-app-0326db88-58c9-43ed-96ae-19c0ac181935'
+const widgetClass = 'elfsight-app-6824e3a9-2e0b-4827-b26a-c90a7507cf08'
 
 async function enableReviews() {
     if (reviewsEnabled.value) return
@@ -24,6 +24,7 @@ async function enableReviews() {
     script.async = true
     script.onerror = () => { reviewsLoadFailed.value = true }
     widget.className = widgetClass
+    widget.dataset.elfsightAppLazy = ''
 
     reviewsHost.value.replaceChildren(script, widget)
 }
