@@ -26,18 +26,16 @@ export default defineEventHandler(async (event) => {
 
   const query = getQuery(event);
   const now = new Date();
-  const maximumDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
   const requestedFrom =
     typeof query.from === "string" ? new Date(query.from) : now;
   const requestedTo =
-    typeof query.to === "string" ? new Date(query.to) : maximumDate;
+    typeof query.to === "string" ? new Date(query.to) : null;
   const from = requestedFrom < now ? now : requestedFrom;
-  const to = requestedTo > maximumDate ? maximumDate : requestedTo;
 
   if (
     Number.isNaN(from.getTime()) ||
-    Number.isNaN(to.getTime()) ||
-    from >= to
+    (requestedTo &&
+      (Number.isNaN(requestedTo.getTime()) || from >= requestedTo))
   ) {
     throw createError({
       statusCode: 400,
@@ -47,7 +45,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const accessToken = await getGoogleAccessToken(config);
-    const events = await listCalendarEvents(config, from, to, accessToken);
+    const events = await listCalendarEvents(config, from, requestedTo, accessToken);
     let holds = [];
     try {
       holds = await listActiveReservationHolds(getMollieConfig());

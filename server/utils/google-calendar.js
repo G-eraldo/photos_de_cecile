@@ -40,7 +40,13 @@ export const listCalendarEvents = async (config, start, end, accessToken) => {
   let pageToken;
   do {
     const url = new URL(calendarEventsUrl(config.googleCalendarId));
-    url.search = new URLSearchParams({ timeMin: start.toISOString(), timeMax: end.toISOString(), singleEvents: "true", maxResults: "2500", ...(pageToken ? { pageToken } : {}) }).toString();
+    url.search = new URLSearchParams({
+      timeMin: start.toISOString(),
+      singleEvents: "true",
+      maxResults: "2500",
+      ...(end ? { timeMax: end.toISOString() } : {}),
+      ...(pageToken ? { pageToken } : {}),
+    }).toString();
     const response = await $fetch(url.toString(), { headers: { Authorization: `Bearer ${accessToken}` } });
     items.push(...(response.items || []));
     pageToken = response.nextPageToken;
