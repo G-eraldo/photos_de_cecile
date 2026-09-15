@@ -243,54 +243,80 @@ const getStrapiPageCount = (response, batchLength) => {
   return batchLength < STRAPI_PAGE_SIZE ? 1 : null
 }
 
-const fetchAllUploadFiles = async (strapiUrl, strapiToken) => {
-  const files = []
-  let page = 1
-  let pageCount = null
+const fetchUploadPage = async (
+  strapiUrl,
+  strapiToken,
+  query,
+) =>
+  $fetch(
+    `${strapiUrl}/api/upload/files`,
+    {
+      headers: {
+        Authorization: `Bearer ${strapiToken}`,
+      },
+      ...(query ? { query } : {}),
+    },
+  )
 
-  while (pageCount === null || page <= pageCount) {
-    const response = await $fetch(
-      `${strapiUrl}/api/upload/files`,
-      {
-        headers: {
-          Authorization: `Bearer ${strapiToken}`,
-        },
-        query: {
+const fetchAllUploadFiles = async (strapiUrl, strapiToken) => {
+  try {
+    const files = []
+    let page = 1
+    let pageCount = null
+
+    while (pageCount === null || page <= pageCount) {
+      const response = await fetchUploadPage(
+        strapiUrl,
+        strapiToken,
+        {
           'pagination[page]': page,
           'pagination[pageSize]': STRAPI_PAGE_SIZE,
-          'pagination[withCount]': true,
-          populate: 'folder',
         },
-      },
-    )
+      )
 
-    const batch = extractFiles(response)
-    files.push(...batch)
+      const batch = extractFiles(response)
+      files.push(...batch)
 
-    const detectedPageCount = getStrapiPageCount(
-      response,
-      batch.length,
-    )
+      const detectedPageCount = getStrapiPageCount(
+        response,
+        batch.length,
+      )
 
-    if (detectedPageCount !== null) {
-      pageCount = detectedPageCount
+      if (detectedPageCount !== null) {
+        pageCount = detectedPageCount
+      }
+      else if (batch.length < STRAPI_PAGE_SIZE) {
+        break
+      }
+
+      if (!batch.length) {
+        break
+      }
+
+      page += 1
+
+      if (page > 50) {
+        break
+      }
     }
-    else if (batch.length < STRAPI_PAGE_SIZE) {
-      break
-    }
 
-    if (!batch.length) {
-      break
-    }
-
-    page += 1
-
-    if (page > 50) {
-      break
+    if (files.length) {
+      return files
     }
   }
+  catch (error) {
+    console.error(
+      'Pagination Strapi indisponible, fallback sans query :',
+      error?.data?.error || error?.message || error,
+    )
+  }
 
-  return files
+  const fallbackResponse = await fetchUploadPage(
+    strapiUrl,
+    strapiToken,
+  )
+
+  return extractFiles(fallbackResponse)
 }
 
 export default defineEventHandler(async (event) => {
