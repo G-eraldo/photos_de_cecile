@@ -69,7 +69,7 @@ const products = computed(() => {
           </a>
         </div>
         <div class="order-1 aspect-4/5 overflow-hidden md:order-2">
-          <NuxtImg src="https://media-photodececile.lafabriqueducode.fr/DSC_05692_f1f3b61b6e.jpg"
+          <NuxtImg src="https://media-photodececile.lafabriqueducode.fr/suijin_50252f2f86.png"
             alt="Tirages photo sur papier d'art" class="h-full w-full object-cover" sizes="sm:100vw md:50vw" />
         </div>
       </div>
