@@ -357,6 +357,7 @@ const featuredLayouts = [
         <section
           v-if="photoBatches.length"
           aria-label="Toutes les photos"
+          :aria-busy="loadingMore"
           class="mx-auto mt-5 max-w-7xl px-5 sm:mt-6 sm:px-8 lg:px-12"
         >
           <div
