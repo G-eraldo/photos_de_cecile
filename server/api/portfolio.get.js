@@ -39,18 +39,12 @@ const getImagePath = (url) => {
 
   try {
     const parsedUrl = new URL(url)
-
-    if (!parsedUrl.pathname) {
-      return null
-    }
-
-    return parsedUrl.pathname
-  } catch {
-    if (url.startsWith('/')) {
-      return url.split('?')[0].split('#')[0]
-    }
-
-    return null
+    return parsedUrl.pathname || null
+  }
+  catch {
+    return url.startsWith('/')
+      ? url.split('?')[0].split('#')[0]
+      : null
   }
 }
 
@@ -72,8 +66,8 @@ const getResponsiveSrcset = (
   sourceUrl,
   widths,
   imageDeliveryOrigin,
-) => {
-  const sources = widths
+) =>
+  widths
     .map((width) => {
       const url = getOptimizedUrl(
         sourceUrl,
@@ -81,14 +75,12 @@ const getResponsiveSrcset = (
         imageDeliveryOrigin,
       )
 
-      return url ? `${url} ${width}w` : null
+      return url
+        ? `${url} ${width}w`
+        : null
     })
     .filter(Boolean)
-
-  return sources.length
-    ? sources.join(', ')
-    : null
-}
+    .join(', ')
 
 const hashName = (name) => {
   let hash = 0
@@ -175,27 +167,24 @@ const toPublicPhoto = (
     return null
   }
 
-  const featuredSrcset = getResponsiveSrcset(
-    file.url,
-    [800, 1200, 1600],
-    imageDeliveryOrigin,
-  )
-
-  const thumbnailSrcset = getResponsiveSrcset(
-    file.url,
-    [480, 800, 1200],
-    imageDeliveryOrigin,
-  )
-
   return {
     id: file.id,
     alt: getAltText(file),
     height: file.height,
     name: file.name,
-    featuredSrcset,
+    featuredSrcset: getResponsiveSrcset(
+      file.url,
+      [800, 1200, 1600],
+      imageDeliveryOrigin,
+    ),
     featuredUrl,
-    thumbnailSrcset,
+    thumbnailSrcset: getResponsiveSrcset(
+      file.url,
+      [480, 800, 1200],
+      imageDeliveryOrigin,
+    ),
     thumbnailUrl,
+    url: featuredUrl,
     width: file.width,
   }
 }
@@ -217,8 +206,7 @@ export default defineEventHandler(async (event) => {
   ) {
     throw createError({
       statusCode: 404,
-      statusMessage:
-        'Page du portfolio introuvable',
+      statusMessage: 'Page du portfolio introuvable',
     })
   }
 
@@ -278,8 +266,7 @@ export default defineEventHandler(async (event) => {
       Math.ceil(
         Math.max(
           0,
-          album.length -
-            initialAlbumCount,
+          album.length - initialAlbumCount,
         ) / albumBatchSize,
       ),
   )
@@ -287,8 +274,7 @@ export default defineEventHandler(async (event) => {
   if (page > pageCount) {
     throw createError({
       statusCode: 404,
-      statusMessage:
-        'Page du portfolio introuvable',
+      statusMessage: 'Page du portfolio introuvable',
     })
   }
 
@@ -296,18 +282,19 @@ export default defineEventHandler(async (event) => {
     page === 1
       ? 0
       : initialAlbumCount +
-        (page - 2) *
-          albumBatchSize
+        (page - 2) * albumBatchSize
+
+  const limit =
+    page === 1
+      ? initialAlbumCount
+      : albumBatchSize
 
   return {
     featured:
       page === 1 ? featured : [],
     photos: album.slice(
       start,
-      start +
-        (page === 1
-          ? initialAlbumCount
-          : albumBatchSize),
+      start + limit,
     ),
     page,
     pageCount,
