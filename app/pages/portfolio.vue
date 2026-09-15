@@ -10,7 +10,7 @@ definePageMeta({ layout: 'default' });
 
 const route = useRoute();
 
-const currentPage = computed(() => {
+const initialPage = computed(() => {
   const value = Number(route.query.page || 1);
   return Number.isSafeInteger(value) && value > 0 ? value : 1;
 });
@@ -20,11 +20,11 @@ const {
   error,
   pending,
 } = await useAsyncData(
-  () => `portfolio-photos-${currentPage.value}`,
+  () => `portfolio-photos-${initialPage.value}`,
   () =>
     $fetch('/api/portfolio', {
       query: {
-        page: currentPage.value,
+        page: initialPage.value,
       },
     }),
 );
@@ -36,15 +36,36 @@ if (error.value?.statusCode === 404) {
   });
 }
 
-const featuredPhotos = computed(() => data.value?.featured || []);
-const displayedAlbumPhotos = computed(() => data.value?.photos || []);
-const pageCount = computed(() => Number(data.value?.pageCount || 1));
-const photosCount = computed(() => Number(data.value?.total || 0));
+const currentPage = ref(initialPage.value);
 
-const siteUrl = useSiteConfig().url || 'https://lesphotosdececile.fr';
+const displayedAlbumPhotos = ref([
+  ...(data.value?.photos || []),
+]);
+
+const featuredPhotos = computed(() => data.value?.featured || []);
+
+const pageCount = computed(() =>
+  Number(data.value?.pageCount || 1),
+);
+
+const photosCount = computed(() =>
+  Number(data.value?.total || 0),
+);
+
+const siteUrl =
+  useSiteConfig().url || 'https://lesphotosdececile.fr';
+
+const loadedPageSizes = ref([
+  displayedAlbumPhotos.value.length,
+]);
+
+const loadingMore = ref(false);
+const loadMoreError = ref(false);
 
 const portfolioUrl = (page) =>
-  page === 1 ? '/portfolio' : `/portfolio?page=${page}`;
+  page === 1
+    ? '/portfolio'
+    : `/portfolio?page=${page}`;
 
 useHead(() => ({
   link: [
@@ -67,22 +88,84 @@ useSeoMeta({
     'Découvrez une sélection de photos de couples, familles, bébés, animaux et mariages réalisées à Amiens et en Picardie par Les Photos de Cécile.',
 });
 
-/**
- * Change de page puis remonte automatiquement
- * au début des nouvelles photos.
- */
-const goToPortfolioPage = async (page) => {
-  await navigateTo({
-    path: '/portfolio',
-    query: page === 1 ? {} : { page },
-  });
+const updateBrowserUrl = (page) => {
+  if (!import.meta.client) return;
 
-  await nextTick();
+  const url =
+    page === 1
+      ? '/portfolio'
+      : `/portfolio?page=${page}`;
 
-  document.getElementById('photos')?.scrollIntoView({
-    behavior: 'smooth',
-    block: 'start',
-  });
+  window.history.replaceState(
+    window.history.state,
+    '',
+    url,
+  );
+};
+
+const loadNextPage = async () => {
+  if (loadingMore.value) return;
+  if (currentPage.value >= pageCount.value) return;
+
+  loadingMore.value = true;
+  loadMoreError.value = false;
+
+  const nextPage = currentPage.value + 1;
+
+  try {
+    const response = await $fetch('/api/portfolio', {
+      query: {
+        page: nextPage,
+      },
+    });
+
+    const newPhotos = response?.photos || [];
+
+    displayedAlbumPhotos.value.push(...newPhotos);
+    loadedPageSizes.value.push(newPhotos.length);
+    currentPage.value = nextPage;
+
+    updateBrowserUrl(nextPage);
+  }
+  catch (err) {
+    console.error(
+      'Impossible de charger les photos suivantes :',
+      err,
+    );
+
+    loadMoreError.value = true;
+  }
+  finally {
+    loadingMore.value = false;
+  }
+};
+
+const loadPreviousPage = () => {
+  if (loadingMore.value) return;
+
+  if (loadedPageSizes.value.length <= 1) {
+    if (currentPage.value <= 1) return;
+
+    const previousPage = currentPage.value - 1;
+
+    return navigateTo(
+      portfolioUrl(previousPage),
+    );
+  }
+
+  const lastPageSize =
+    loadedPageSizes.value.pop() || 0;
+
+  if (lastPageSize > 0) {
+    displayedAlbumPhotos.value.splice(
+      displayedAlbumPhotos.value.length - lastPageSize,
+      lastPageSize,
+    );
+  }
+
+  currentPage.value -= 1;
+
+  updateBrowserUrl(currentPage.value);
 };
 
 const albumColumns = computed(() => {
@@ -144,7 +227,6 @@ const featuredLayouts = [
         description="Des histoires, des regards et des éclats de vie."
       />
 
-      <!-- Chargement -->
       <div
         v-if="pending"
         class="columns-2 gap-4 sm:columns-3 lg:columns-4"
@@ -163,7 +245,6 @@ const featuredLayouts = [
         />
       </div>
 
-      <!-- Erreur -->
       <Alert
         v-else-if="error"
         variant="destructive"
@@ -179,7 +260,6 @@ const featuredLayouts = [
         </AlertDescription>
       </Alert>
 
-      <!-- Portfolio vide -->
       <div
         v-else-if="!photosCount"
         class="mx-auto max-w-xl rounded-2xl border border-[#e9ded8] bg-[#fdfaf8] px-6 py-10 text-center text-[#786b68]"
@@ -187,9 +267,8 @@ const featuredLayouts = [
         Les premières photos du portfolio arrivent bientôt.
       </div>
 
-      <!-- Sélection mise en avant -->
       <section
-        v-else-if="currentPage === 1 && featuredPhotos.length"
+        v-else-if="initialPage === 1 && featuredPhotos.length"
         aria-label="Sélection mise en avant"
         class="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12"
       >
@@ -241,14 +320,11 @@ const featuredLayouts = [
         </div>
       </section>
 
-      <!-- Toutes les photos -->
       <section
         v-if="displayedAlbumPhotos.length"
-        id="photos"
         aria-label="Toutes les photos"
-        class="mx-auto mt-5 max-w-7xl scroll-mt-28 px-5 sm:mt-6 sm:px-8 lg:px-12"
+        class="mx-auto mt-5 max-w-7xl px-5 sm:mt-6 sm:px-8 lg:px-12"
       >
-        <!-- Mobile -->
         <div class="columns-1 gap-4 sm:hidden">
           <a
             v-for="photo in displayedAlbumPhotos"
@@ -284,7 +360,6 @@ const featuredLayouts = [
           </a>
         </div>
 
-        <!-- Tablette / Desktop -->
         <div class="hidden gap-5 sm:grid sm:grid-cols-3">
           <div
             v-for="(column, columnIndex) in albumColumns"
@@ -326,7 +401,21 @@ const featuredLayouts = [
           </div>
         </div>
 
-        <!-- Pagination -->
+        <Alert
+          v-if="loadMoreError"
+          variant="destructive"
+          class="mx-auto mt-8 max-w-xl"
+        >
+          <AlertTitle>
+            Impossible de charger les photos
+          </AlertTitle>
+
+          <AlertDescription>
+            Les photos suivantes n'ont pas pu être chargées.
+            Vous pouvez réessayer.
+          </AlertDescription>
+        </Alert>
+
         <nav
           v-if="pageCount > 1"
           aria-label="Pagination du portfolio"
@@ -335,32 +424,35 @@ const featuredLayouts = [
           <Button
             v-if="currentPage > 1"
             variant="outline"
-            @click="goToPortfolioPage(currentPage - 1)"
+            :disabled="loadingMore"
+            @click="loadPreviousPage"
           >
             Photos précédentes
           </Button>
 
-          <span class="text-sm">
+          <span class="text-center text-sm">
             Page {{ currentPage }} sur {{ pageCount }}
           </span>
 
           <Button
             v-if="currentPage < pageCount"
             variant="outline"
-            @click="goToPortfolioPage(currentPage + 1)"
+            :disabled="loadingMore"
+            @click="loadNextPage"
           >
-            Photos suivantes
+            {{ loadingMore ? 'Chargement…' : 'Photos suivantes' }}
           </Button>
         </nav>
       </section>
 
-      <!-- Indication -->
       <p
         v-if="photosCount"
         class="mt-12 flex items-center justify-center gap-2 px-5 text-center text-sm text-[#9e8b8b]"
       >
-        <Images class="size-4" />
-        Cliquez sur une photo pour l’ouvrir en grand format.
+        <Images class="size-4 shrink-0" />
+        <span>
+          Cliquez sur une photo pour l’ouvrir en grand format.
+        </span>
       </p>
     </div>
   </div>
