@@ -1,15 +1,21 @@
 <script setup>
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { ExternalLink, Images } from 'lucide-vue-next';
-import EditorialPageHeader from '~/components/EditorialPageHeader.vue';
-import EditorialPhotoBanner from '~/components/EditorialPhotoBanner.vue';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  ExternalLink,
+  Images,
+} from 'lucide-vue-next'
+import EditorialPageHeader from '~/components/EditorialPageHeader.vue'
+import EditorialPhotoBanner from '~/components/EditorialPhotoBanner.vue'
 
-definePageMeta({ layout: 'default' });
-
-const INITIAL_COUNT = 20;
-const BATCH_SIZE = 12;
+definePageMeta({
+  layout: 'default',
+})
 
 const {
   data,
@@ -19,16 +25,26 @@ const {
   'portfolio-photos',
   () =>
     $fetch('/api/portfolio', {
-      query: { page: 1 },
+      query: {
+        page: 1,
+      },
     }),
-);
+)
 
-const featuredPhotos = computed(() => data.value?.featured || []);
-const photosCount = computed(() => Number(data.value?.total || 0));
+const featuredPhotos = computed(
+  () => data.value?.featured || [],
+)
 
-const currentPage = ref(1);
-const loadingMore = ref(false);
-const loadMoreError = ref(false);
+const photosCount = computed(
+  () => Number(data.value?.total || 0),
+)
+
+const currentPage = ref(
+  Number(data.value?.page || 1),
+)
+
+const loadingMore = ref(false)
+const loadMoreError = ref(false)
 
 const photoBatches = ref(
   data.value?.photos?.length
@@ -39,77 +55,115 @@ const photoBatches = ref(
         },
       ]
     : [],
-);
+)
 
 const hasMorePhotos = ref(
-  (data.value?.photos?.length || 0) >= INITIAL_COUNT,
-);
+  data.value?.hasMore === true,
+)
 
 const siteUrl =
-  useSiteConfig().url || 'https://lesphotosdececile.fr';
+  useSiteConfig().url ||
+  'https://lesphotosdececile.fr'
 
 useHead(() => ({
   link: [
     {
       rel: 'canonical',
-      href: new URL('/portfolio', siteUrl).href,
+      href: new URL(
+        '/portfolio',
+        siteUrl,
+      ).href,
     },
   ],
-}));
+}))
 
 useSeoMeta({
   title: 'Portfolio',
   description:
     'Découvrez une sélection de photos de couples, familles, bébés, animaux et mariages réalisées à Amiens et en Picardie par Les Photos de Cécile.',
-});
+})
 
-const loadMorePhotos = async () => {
-  if (loadingMore.value || !hasMorePhotos.value) {
-    return;
+const getPhotoKey = (photo) =>
+  photo?.id ??
+  `${photo?.name || ''}-${photo?.width || ''}-${photo?.height || ''}`
+
+const loadedPhotoKeys = computed(() => {
+  const keys = new Set()
+
+  for (const batch of photoBatches.value) {
+    for (const photo of batch.photos) {
+      keys.add(getPhotoKey(photo))
+    }
   }
 
-  loadingMore.value = true;
-  loadMoreError.value = false;
+  return keys
+})
 
-  const nextPage = currentPage.value + 1;
+const loadMorePhotos = async () => {
+  if (
+    loadingMore.value ||
+    !hasMorePhotos.value
+  ) {
+    return
+  }
+
+  loadingMore.value = true
+  loadMoreError.value = false
+
+  const nextPage =
+    currentPage.value + 1
 
   try {
-    const response = await $fetch('/api/portfolio', {
-      query: {
-        page: nextPage,
+    const response = await $fetch(
+      '/api/portfolio',
+      {
+        query: {
+          page: nextPage,
+        },
       },
-    });
+    )
 
-    const newPhotos = Array.isArray(response?.photos)
-      ? response.photos
-      : [];
+    const responsePhotos =
+      Array.isArray(response?.photos)
+        ? response.photos
+        : []
 
-    if (!newPhotos.length) {
-      hasMorePhotos.value = false;
-      return;
+    const existingKeys =
+      loadedPhotoKeys.value
+
+    const newPhotos =
+      responsePhotos.filter(
+        (photo) =>
+          !existingKeys.has(
+            getPhotoKey(photo),
+          ),
+      )
+
+    if (newPhotos.length) {
+      photoBatches.value.push({
+        page: nextPage,
+        photos: newPhotos,
+      })
     }
 
-    photoBatches.value.push({
-      page: nextPage,
-      photos: newPhotos,
-    });
+    currentPage.value =
+      Number(response?.page || nextPage)
 
-    currentPage.value = nextPage;
-
-    hasMorePhotos.value = newPhotos.length >= BATCH_SIZE;
+    hasMorePhotos.value =
+      response?.hasMore === true
   }
   catch (err) {
     console.error(
       'Impossible de charger davantage de photos :',
       err,
-    );
+    )
 
-    loadMoreError.value = true;
+    loadMoreError.value = true
   }
   finally {
-    loadingMore.value = false;
+    loadingMore.value = false
   }
-};
+}
 
 const buildColumns = (photos) => {
   const columns = Array.from(
@@ -118,27 +172,36 @@ const buildColumns = (photos) => {
       height: 0,
       photos: [],
     }),
-  );
+  )
 
   photos.forEach((photo) => {
     const ratio =
-      photo.width && photo.height
-        ? photo.height / photo.width
-        : 1.25;
+      photo.width &&
+      photo.height
+        ? photo.height /
+          photo.width
+        : 1.25
 
-    const shortestColumn = columns.reduce(
-      (shortest, column) =>
-        column.height < shortest.height
-          ? column
-          : shortest,
-    );
+    const shortestColumn =
+      columns.reduce(
+        (shortest, column) =>
+          column.height <
+          shortest.height
+            ? column
+            : shortest,
+      )
 
-    shortestColumn.photos.push(photo);
-    shortestColumn.height += ratio;
-  });
+    shortestColumn.photos.push(
+      photo,
+    )
 
-  return columns.map((column) => column.photos);
-};
+    shortestColumn.height += ratio
+  })
+
+  return columns.map(
+    (column) => column.photos,
+  )
+}
 
 const featuredLayouts = [
   'col-span-2 row-span-2 sm:col-span-3 sm:row-span-4',
@@ -153,7 +216,7 @@ const featuredLayouts = [
   'col-span-1 row-span-1 sm:col-span-2 sm:row-span-3',
   'col-span-2 row-span-1 sm:col-span-2 sm:row-span-3',
   'col-span-2 row-span-1 sm:col-span-6 sm:row-span-2',
-];
+]
 </script>
 
 <template>
@@ -228,7 +291,7 @@ const featuredLayouts = [
             <a
               v-for="(photo, index) in featuredPhotos"
               :key="photo.id"
-              :href="photo.url"
+              :href="photo.fullUrl"
               target="_blank"
               rel="noopener noreferrer"
               :aria-label="`Ouvrir ${photo.alt} en grand format`"
@@ -277,7 +340,7 @@ const featuredLayouts = [
               <a
                 v-for="photo in batch.photos"
                 :key="photo.id"
-                :href="photo.url"
+                :href="photo.fullUrl"
                 target="_blank"
                 rel="noopener noreferrer"
                 :aria-label="`Ouvrir ${photo.alt} en grand format`"
@@ -308,7 +371,9 @@ const featuredLayouts = [
               </a>
             </div>
 
-            <div class="mb-5 hidden gap-5 sm:grid sm:grid-cols-3">
+            <div
+              class="mb-5 hidden gap-5 sm:grid sm:grid-cols-3"
+            >
               <div
                 v-for="(column, columnIndex) in buildColumns(batch.photos)"
                 :key="`${batch.page}-${columnIndex}`"
@@ -317,7 +382,7 @@ const featuredLayouts = [
                 <a
                   v-for="photo in column"
                   :key="photo.id"
-                  :href="photo.url"
+                  :href="photo.fullUrl"
                   target="_blank"
                   rel="noopener noreferrer"
                   :aria-label="`Ouvrir ${photo.alt} en grand format`"
@@ -365,7 +430,9 @@ const featuredLayouts = [
             </AlertDescription>
           </Alert>
 
-          <div class="mt-10 flex justify-center">
+          <div
+            class="mt-10 flex justify-center"
+          >
             <Button
               v-if="hasMorePhotos"
               variant="outline"
@@ -373,7 +440,11 @@ const featuredLayouts = [
               :disabled="loadingMore"
               @click="loadMorePhotos"
             >
-              {{ loadingMore ? 'Chargement…' : 'Afficher plus de photos' }}
+              {{
+                loadingMore
+                  ? 'Chargement…'
+                  : 'Afficher plus de photos'
+              }}
             </Button>
 
             <p
