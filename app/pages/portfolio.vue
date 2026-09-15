@@ -165,8 +165,8 @@ const featuredLayouts = [
         </nav>
       </section>
 
-      <p v-if="photosCount">
-        class="mt-12 flex items-center justify-center gap-2 px-5 text-center text-sm text-[#9e8b8b]">
+      <p v-if="photosCount" class="mt-12 flex items-center justify-center gap-2 px-5 text-center text-sm text-[#9e8b8b]">
+        
         <Images class="size-4" /> Cliquez sur une photo pour l’ouvrir en grand format.
       </p>
     </div>
