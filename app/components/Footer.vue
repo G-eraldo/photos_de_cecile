@@ -8,7 +8,6 @@ const links = [
 
   { title: "Tirage photo", href: "/tirage-photo" },
   { title: "Offrir", href: "/offrir" },
-  { title: "Réserver", href: "/reservation" },
   { title: "Contact", href: "/contact" },
   { title: "Mentions légales", href: "/mentions-legales" },
   { title: "Conditions de vente", href: "/conditions-de-vente" },
