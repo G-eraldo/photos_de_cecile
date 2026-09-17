@@ -7,7 +7,6 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const mapContainer = ref(null);
 const unavailable = ref(false);
-const apiKey = useRuntimeConfig().public.maptilerApiKey;
 let map = null;
 let disposed = false;
 
@@ -17,19 +16,20 @@ onBeforeUnmount(() => {
   map = null;
 });
 onMounted(async () => {
-  if (!apiKey) { unavailable.value = true; return; }
   try {
     const L = (await import('leaflet')).default;
-    const { MaptilerLayer } = await import('@maptiler/leaflet-maptilersdk');
     if (disposed || !mapContainer.value) return;
     const center = [49.897287, 2.275627];
     map = L.map(mapContainer.value, { center, zoom: 14 });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+    }).addTo(map);
     // Le repère indique la zone d’Amiens déjà utilisée par la carte.
     L.marker(center, { icon: L.icon({
       iconUrl: markerIcon, iconRetinaUrl: markerIconRetina, shadowUrl: markerShadow,
       iconSize: [25, 41], iconAnchor: [12, 41], shadowSize: [41, 41],
     }) }).addTo(map).bindPopup('Les Photos de Cécile — Amiens');
-    new MaptilerLayer({ apiKey }).addTo(map);
   } catch {
     unavailable.value = true;
     map?.remove();

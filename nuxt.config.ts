@@ -11,7 +11,6 @@ const connectSources = [
   "'self'",
   strapiOrigin,
   r2Origin,
-  "https://*.maptiler.com",
   "https://static.elfsight.com",
   "https://*.elfsight.com",
   "https://*.elfsightcdn.com",
@@ -60,7 +59,7 @@ export default defineNuxtConfig({
     "/connexion-agenda": { robots: false, sitemap: false },
     "/**": {
       headers: {
-        "Content-Security-Policy": `default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' ${process.env.NODE_ENV === "production" ? "" : "'unsafe-inline'"} https://static.elfsight.com https://elfsightcdn.com https://*.elfsightcdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com https://*.maptiler.com https://media-photodececile.lafabriqueducode.fr https://images-photodececile.lafabriqueducode.fr; connect-src ${connectSources} https://elfsightcdn.com https://*.elfsightcdn.com; frame-src https://*.mollie.com https://*.elfsight.com; upgrade-insecure-requests`,
+        "Content-Security-Policy": `default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' ${process.env.NODE_ENV === "production" ? "" : "'unsafe-inline'"} https://static.elfsight.com https://elfsightcdn.com https://*.elfsightcdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https://res.cloudinary.com https://*.cloudinary.com https://*.tile.openstreetmap.org https://media-photodececile.lafabriqueducode.fr https://images-photodececile.lafabriqueducode.fr; connect-src ${connectSources} https://elfsightcdn.com https://*.elfsightcdn.com; frame-src https://*.mollie.com https://*.elfsight.com; upgrade-insecure-requests`,
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
@@ -109,7 +108,6 @@ export default defineNuxtConfig({
     googleRedirectUri: process.env.GOOGLE_REDIRECT_URI,
     googleRefreshToken: process.env.GOOGLE_REFRESH_TOKEN,
     public: {
-      maptilerApiKey: process.env.NUXT_PUBLIC_MAPTILER_API_KEY,
     },
     strapi: {
       url: strapiOrigin,

@@ -80,7 +80,7 @@ useSeoMeta({
             <p class="mt-3">Les données sont accessibles uniquement à Cécile DELLENBACH et, dans la limite de leurs
               missions, aux prestataires techniques : l’hébergement et le CMS, Resend pour l’envoi des e-mails, Mollie
               pour le paiement, Google Calendar pour le planning, Cloudflare R2 pour le stockage privé des photos de
-              commandes et MapTiler lorsque la carte est affichée. Les données ne sont ni vendues ni louées à des tiers.
+              commandes et OpenStreetMap lorsque la carte est affichée. Les données ne sont ni vendues ni louées à des tiers.
             </p>
             <p class="mt-3">Certains prestataires peuvent traiter des données hors de l’Espace économique européen. Ces
               transferts sont alors encadrés par les mécanismes prévus par le RGPD et les garanties de leurs contrats de
@@ -115,7 +115,7 @@ useSeoMeta({
               redemander à chaque visite. Vous pouvez le modifier ou le retirer à tout moment via « Gérer mes cookies »
               dans le pied de page. Le panier est conservé dans le stockage local du navigateur pour retrouver vos
               articles ; vous pouvez les supprimer depuis le panier ou les paramètres du navigateur. Ce service tiers
-              peut alors déposer ses propres traceurs selon sa politique. La carte MapTiler et le paiement Mollie
+              peut alors déposer ses propres traceurs selon sa politique. La carte OpenStreetMap et le paiement Mollie
               peuvent également entraîner des communications avec ces prestataires lorsque vous utilisez ces
               fonctionnalités.</p>
           </section>
