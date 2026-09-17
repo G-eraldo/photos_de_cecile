@@ -88,6 +88,7 @@ useSchemaOrg([computed(() => {
       availability: 'https://schema.org/InStock',
       lowPrice: Math.min(...prices),
       highPrice: Math.max(...prices),
+      offerCount: prices.length,
       url: new URL(`/tirage-photo/${route.params.slug}`, siteUrl).href,
     },
   }
