@@ -10,7 +10,7 @@ import { Card, CardContent, CardTitle } from '@/components/ui/card';
     <div class="flex flex-col md:flex-row gap-6">
       <div class="w-full md:w-1/2 aspect-3/4 md:aspect-video">
         <NuxtImg
-          src="https://res.cloudinary.com/dlnbsf2ed/image/upload/v1787854215/Les_photos_de_Ce%CC%81cile_sysncy.jpg"
+          src="https://media-photodececile.lafabriqueducode.fr/Les_photos_de_Cecile_sysncy_57d26849ce.jpg"
           class="w-full h-full object-cover object-top rounded-lg shadow-2xl" alt="Photo de profil" width="500"
           height="500" />
       </div>

@@ -3,7 +3,7 @@ import { Toaster } from '@/components/ui/sonner';
 import 'vue-sonner/style.css';
 
 const siteUrl = useSiteConfig().url
-const ogImage = 'https://res.cloudinary.com/dlnbsf2ed/image/upload/v1788172116/DSC_01869_a27295b7c4.jpg'
+const ogImage = 'https://media-photodececile.lafabriqueducode.fr/DSC_04131_b62ac39531.jpg'
 
 useSeoMeta({
   titleTemplate: '%s %separator %siteName',
