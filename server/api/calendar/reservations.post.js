@@ -162,6 +162,10 @@ export const completeReservation = async (
     socialUsage,
     issuedAt: body.paiementConfirmeLe,
   });
+  const contractAttachment = {
+    filename: `Contrat_${prenom.trim()}_${nom.trim()}.pdf`,
+    content: pdfBuffer,
+  };
 
   /*
    * Guide canin uniquement pour la prestation
@@ -209,8 +213,7 @@ export const completeReservation = async (
           content_type: "image/png",
         },
         {
-          filename: `Contrat_${prenom.trim()}_${nom.trim()}.pdf`,
-          content: pdfBuffer,
+          ...contractAttachment,
         },
       ];
 
@@ -503,6 +506,7 @@ export const completeReservation = async (
     type: "reservation",
     reference: reference || "Réservation",
     details: body,
+    attachments: [contractAttachment],
   });
 
   if (cecileEmailSent && onCecileSent) await onCecileSent();

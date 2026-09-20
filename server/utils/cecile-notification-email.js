@@ -40,6 +40,7 @@ export async function sendCecilePaymentNotification({
   reference,
   details,
   total,
+  attachments = [],
 }) {
   if (details.notificationCecileEnvoyee === true) return true;
   if (!process.env.RESEND_API_KEY) {
@@ -100,6 +101,7 @@ export async function sendCecilePaymentNotification({
       to: recipient,
       replyTo: details.email,
       subject,
+      attachments,
       html: `
         <div style="margin:0;padding:40px 20px;background:#E6DFDD;font-family:Arial,sans-serif;color:#676463;">
           <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;">
