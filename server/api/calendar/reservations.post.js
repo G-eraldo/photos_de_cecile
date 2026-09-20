@@ -34,7 +34,7 @@ const escapeHtml = (value) =>
 export const completeReservation = async (
   event,
   body,
-  { onCustomerSent, onCecileSent } = {},
+  { onCustomerSent, onCecileSent, reservationId, reservationDocumentId } = {},
 ) => {
   const config = useRuntimeConfig(event);
 
@@ -166,6 +166,28 @@ export const completeReservation = async (
     filename: `Contrat_${prenom.trim()}_${nom.trim()}.pdf`,
     content: pdfBuffer,
   };
+
+  const strapiUrl = process.env.STRAPI_URL?.replace(/\/$/, "");
+  const strapiToken = process.env.STRAPI_API_TOKEN;
+  if (!strapiUrl || !strapiToken || !reservationDocumentId || !Number.isInteger(reservationId)) {
+    throw new Error("Le contrat ne peut pas être enregistré dans la réservation Strapi.");
+  }
+
+  const contractForm = new FormData();
+  contractForm.append(
+    "files",
+    new Blob([pdfBuffer], { type: "application/pdf" }),
+    contractAttachment.filename,
+  );
+  contractForm.append("ref", "api::reservation.reservation");
+  contractForm.append("refId", String(reservationId));
+  contractForm.append("field", "contrat");
+
+  await $fetch(`${strapiUrl}/api/upload`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${strapiToken}` },
+    body: contractForm,
+  });
 
   /*
    * Guide canin uniquement pour la prestation

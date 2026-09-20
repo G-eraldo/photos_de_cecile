@@ -15,6 +15,8 @@ export const finalizePaidPayment = async ({ event, config, order, reservation })
   const callbacks = {
     onCustomerSent: () => checkpoint({ emailEnvoye: true }),
     onCecileSent: () => checkpoint({ notificationCecileEnvoyee: true }),
+    reservationId: record.id,
+    reservationDocumentId: record.documentId,
   };
   const finish = (state, patch) => paymentOperation(config, {
     operation: "finish", type, documentId: record.documentId,
