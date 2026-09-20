@@ -21,7 +21,39 @@ const escapeHtml = (value) =>
 const formatPrice = (value) =>
   `${Number(value).toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
 
-export async function sendOrderConfirmation({ reference, details, total }, { onCustomerSent, onCecileSent } = {}) {
+export async function sendOrderConfirmation({ reference, details, total }, { onCustomerSent, onCecileSent, orderId, orderDocumentId } = {}) {
+  const invoice = await generateOrderInvoicePdf({
+    reference,
+    details,
+    total,
+  });
+  const invoiceAttachment = {
+    filename: `Facture_${reference}.pdf`,
+    content: invoice,
+    contentType: "application/pdf",
+  };
+  const strapiUrl = process.env.STRAPI_URL?.replace(/\/$/, "");
+  const strapiToken = process.env.STRAPI_API_TOKEN;
+  if (!strapiUrl || !strapiToken || !orderDocumentId || !Number.isInteger(orderId)) {
+    throw new Error("La facture ne peut pas être enregistrée dans la commande Strapi.");
+  }
+
+  const invoiceForm = new FormData();
+  invoiceForm.append(
+    "files",
+    new Blob([invoice], { type: "application/pdf" }),
+    invoiceAttachment.filename,
+  );
+  invoiceForm.append("ref", "api::commande.commande");
+  invoiceForm.append("refId", String(orderId));
+  invoiceForm.append("field", "facture");
+
+  await $fetch(`${strapiUrl}/api/upload`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${strapiToken}` },
+    body: invoiceForm,
+  });
+
   if (!process.env.RESEND_API_KEY) {
     console.error(
       "RESEND_API_KEY est absente : la facture de commande ne peut pas être envoyée.",
@@ -35,11 +67,6 @@ export async function sendOrderConfirmation({ reference, details, total }, { onC
   let customerEmailSent = true;
   try {
     if (details.emailEnvoye !== true) {
-    const invoice = await generateOrderInvoicePdf({
-      reference,
-      details,
-      total,
-    });
     const voucher =
       isGift && !isCourierGift
         ? await generateGiftVoucherPdf({ details })
@@ -94,9 +121,7 @@ export async function sendOrderConfirmation({ reference, details, total }, { onC
           contentType: "image/png",
         },
         {
-          filename: `Facture_${reference}.pdf`,
-          content: invoice,
-          contentType: "application/pdf",
+          ...invoiceAttachment,
         },
         ...(voucher
           ? [
@@ -125,6 +150,7 @@ export async function sendOrderConfirmation({ reference, details, total }, { onC
     reference,
     details,
     total,
+    attachments: [invoiceAttachment],
   });
 
   if (cecileEmailSent && onCecileSent) await onCecileSent();
