@@ -138,7 +138,7 @@ const products = computed(() => {
     <section class="bg-[#E6DFDD] px-6 py-16 md:py-24">
       <Card class="mx-auto grid max-w-5xl gap-0! overflow-hidden! border-[#d8cec6]! bg-white! p-0! md:grid-cols-2">
         <div class="aspect-square overflow-hidden md:aspect-auto md:h-full">
-          <NuxtImg src="https://media-photodececile.lafabriqueducode.fr/DSC_01869_a27295b7c4_fcb28ae59b.jpg"
+          <NuxtImg src="https://media-photodececile.lafabriqueducode.fr/format_uj2t7c_b6af234f5a.webp"
             alt="Détail d'un tirage photo" class="h-full w-full object-cover" sizes="sm:100vw md:50vw" />
         </div>
         <div class="px-7 py-10 md:px-12 md:py-14">
