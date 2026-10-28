@@ -585,3 +585,11 @@ Revue : les deux anciennes URLs sont redirigées en 301 vers `/prestations` par 
 - [x] Vérifier l’absence de traces (`SITE_PREPARATION`, écran dédié, layout conditionnel).
 
 Revue : les commits `ajout page maintenance`, `maintenance 2` et `final` sont annulés. L’accueil, le layout, le bandeau cookies et les pages publiques reviennent au comportement du push `redirection`. `SitePreparationScreen.vue` et `site-preparation.js` sont supprimés. Redéploiement du frontend nécessaire pour retirer l’écran en production.
+
+## Mises à jour de sécurité CMS, site et Node — 28 octobre 2026
+
+- [x] Auditer les dépendances des deux applications et vérifier les versions maintenues.
+- [x] Mettre Strapi et Nuxt à jour et fixer Node sur la version LTS corrigée.
+- [x] Appliquer les correctifs transitifs compatibles et vérifier les builds.
+
+Revue : Strapi 5.60.0 et Nuxt 4.6.3 sont installés ; les deux projets demandent Node 24.22.1 via `.nvmrc` et `engines`. L’audit CMS passe de 51 alertes (8 critiques) à 32 (aucune critique) après `npm audit fix`. Les alertes restantes concernent surtout les dépendances Strapi sans correctif compatible ; ne pas lancer `npm audit fix --force`, qui propose notamment Strapi 4.26.2. Le site conserve 9 alertes faibles liées à `deepmerge` dans les dépendances Nuxt. Le test du site et les deux builds passent sous Node 24.22.1 ; la commande de test CMS ne découvre aucun test. Le build Nuxt local signale l’indisponibilité réseau des fournisseurs de polices.
