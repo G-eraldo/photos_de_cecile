@@ -53,6 +53,11 @@ export default defineNitroPlugin((nitroApp) => {
     for (const section of ["head", "bodyAppend"]) {
       html[section] = html[section].map((chunk) => nonceScripts(chunk, nonce));
     }
+    // nuxt-site-config ajoute __NUXT_SITE_CONFIG__ dans html.body après Unhead.
+    html.body = html.body.map((entry) =>
+      /^<script>window\.__NUXT_SITE_CONFIG__=[^<]*<\/script>$/.test(entry)
+        ? entry.replace("<script>", `<script nonce="${nonce}">`)
+        : entry);
     setResponseHeader(
       event,
       "content-security-policy",
