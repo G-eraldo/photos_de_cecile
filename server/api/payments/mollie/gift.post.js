@@ -1,3 +1,4 @@
+import { getGiftOffers } from '../../../../shared/utils/gift-offers.js';
 import { randomUUID } from "node:crypto";
 
 import {
@@ -11,14 +12,6 @@ import {
   enforceTrustedOrigin,
 } from "../../../utils/request-security.js";
 
-const giftOffers = {
-  animaux: { label: "Animaux", prices: { 5: 110, 10: 185, 15: 230 } },
-  famille: {
-    label: "Famille, couple, grossesse, portrait ou boudoir",
-    prices: { 10: 185, 15: 230 },
-  },
-  naissance: { label: "Naissance", prices: { 10: 250, 15: 295 } },
-};
 const isText = (value, maximum = 500) =>
   typeof value === "string" && value.trim() && value.trim().length <= maximum;
 const hasEmoji = (value) =>
@@ -42,7 +35,8 @@ export default defineEventHandler(async (event) => {
   const prestation = details?.prestation;
   const photos = Number(details?.photos);
   const delivery = details?.delivery;
-  const offer = giftOffers[prestation];
+  const offer = getGiftOffers().find((item) => item.value === prestation);
+  const choice = offer?.choices.find((item) => item.photos === photos);
 
   if (
     ![nom, prenom, email, beneficiaire].every((field) => isText(field)) ||
@@ -53,7 +47,7 @@ export default defineEventHandler(async (event) => {
       statusMessage: "Merci de renseigner vos coordonnées et le bénéficiaire.",
     });
   }
-  if (!offer || !Object.hasOwn(offer.prices, photos)) {
+  if (!choice) {
     throw createError({
       statusCode: 400,
       statusMessage: "La prestation ou le forfait choisi est invalide.",
@@ -90,7 +84,13 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const price = offer.prices[photos];
+  const price = choice.price;
+  if (details.expectedPrice !== undefined && details.expectedPrice !== price) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: "Le tarif a changé. Vérifiez le montant avant de payer.",
+    });
+  }
   const total = price + (delivery === "courrier" ? 5 : 0);
   const reference = `c${randomUUID().replace(/-/g, "")}`;
   const orderDetails = {

@@ -1,4 +1,5 @@
 <script setup>
+import { getGiftOffers, promotionStart, promotionEnd } from '#shared/utils/gift-offers.js'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -16,11 +17,24 @@ useSeoMeta({
   description: 'Offrez une séance photo à Amiens avec un bon cadeau personnalisé, envoyé par e-mail ou par courrier.',
 })
 
-const prestations = [
-  { value: 'animaux', label: 'Animaux', choices: [{ photos: 5, price: 110 }, { photos: 10, price: 185 }, { photos: 15, price: 230 }] },
-  { value: 'famille', label: 'Famille, couple, grossesse, portrait ou boudoir', choices: [{ photos: 10, price: 185 }, { photos: 15, price: 230 }] },
-  { value: 'naissance', label: 'Naissance', choices: [{ photos: 10, price: 250 }, { photos: 15, price: 295 }] },
-]
+const pricingTime = useState('gift-pricing-time', () => Date.now())
+const prestations = computed(() => getGiftOffers(pricingTime.value))
+let pricingTimer
+function refreshPricing() {
+  clearTimeout(pricingTimer)
+  pricingTime.value = Date.now()
+  const nextChange = [promotionStart, promotionEnd].find((time) => time > pricingTime.value)
+  if (nextChange) pricingTimer = setTimeout(refreshPricing, Math.min(nextChange - pricingTime.value, 2147483647))
+}
+onMounted(() => {
+  refreshPricing()
+  window.addEventListener('pageshow', refreshPricing)
+})
+onBeforeUnmount(() => {
+  clearTimeout(pricingTimer)
+  window.removeEventListener('pageshow', refreshPricing)
+})
+
 const deliveryChoices = [
   { value: 'email', label: 'Par e-mail', description: 'Le bon cadeau PDF personnalisé est envoyé après paiement.' },
   { value: 'courrier', label: 'Par courrier +5 €', description: "Je préparerai votre bon cadeau et vous l'enverrai par courrier. Une enveloppe est fourni lors de l’envoi " },
@@ -41,7 +55,7 @@ const ville = ref('')
 const paymentPending = ref(false)
 const conditionsAccepted = ref(false)
 
-const selectedPrestationData = computed(() => prestations.find((prestation) => prestation.value === selectedPrestation.value))
+const selectedPrestationData = computed(() => prestations.value.find((prestation) => prestation.value === selectedPrestation.value))
 const photoChoices = computed(() => selectedPrestationData.value?.choices || [])
 const selectedChoice = computed(() => photoChoices.value.find((choice) => choice.photos === selectedPhotos.value))
 const total = computed(() => (selectedChoice.value?.price || 0) + (delivery.value === 'courrier' ? 5 : 0))
@@ -86,12 +100,14 @@ async function submitGiftCard() {
         conditionsAccepted: conditionsAccepted.value,
         prestation: selectedPrestation.value,
         photos: selectedPhotos.value,
+        expectedPrice: selectedChoice.value.price,
         delivery: delivery.value,
       },
     })
     if (response.checkoutUrl) return window.location.assign(response.checkoutUrl)
     toast.error('Impossible de créer votre paiement.')
   } catch (error) {
+    refreshPricing()
     toast.error(error?.data?.statusMessage || error?.statusMessage || error?.message || 'Une erreur est survenue. Veuillez réessayer.')
   } finally {
     paymentPending.value = false
@@ -138,12 +154,15 @@ async function submitGiftCard() {
 
             <div class="mt-8">
               <p class="text-sm font-medium">Forfait</p>
+              <p v-if="photoChoices.some(choice => choice.regularPrice)" class="mt-2 text-sm">
+                Offre sur les 15 photos jusqu’au dimanche 22 novembre à 23 h 59.
+              </p>
               <div class="mt-3 flex flex-wrap gap-2">
                 <button v-for="choice in photoChoices" :key="choice.photos" type="button"
                   class="rounded-full border px-4 py-2 text-sm transition"
                   :class="selectedPhotos === choice.photos ? 'border-[#503d30] bg-[#503d30] text-white' : 'border-[#b9aa9c] hover:border-[#503d30]'"
                   @click="selectedPhotos = choice.photos">
-                  {{ choice.photos }} photos · {{ choice.price }} €
+                  {{ choice.photos }} photos · <s v-if="choice.regularPrice">{{ choice.regularPrice }} €</s> {{ choice.price }} €
                 </button>
               </div>
             </div>
