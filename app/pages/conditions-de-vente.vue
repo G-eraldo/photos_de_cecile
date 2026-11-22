@@ -664,3 +664,9 @@ useSeoMeta({
 
   </div>
 </template>
+
+<style scoped>
+.contract-text {
+  overflow-wrap: anywhere;
+}
+</style>
