@@ -147,7 +147,7 @@ const formatPrice = (price) => {
             format="webp"
             width="800"
             height="1200"
-            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+            sizes="sm:100vw md:50vw lg:400px"
             loading="lazy"
             decoding="async"
             class="w-full aspect-2/3 rounded-lg object-cover" />
