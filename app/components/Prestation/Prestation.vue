@@ -143,7 +143,14 @@ const formatPrice = (price) => {
           class="p-4 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-[#f8f4f1] flex flex-col">
           <!-- Image -->
           <NuxtImg v-if="getImageUrl(prestas.image)" :src="getImageUrl(prestas.image)"
-            :alt="prestas.image?.alternativeText || prestas.nom" class="w-full aspect-2/3 rounded-lg object-cover" />
+            :alt="prestas.image?.alternativeText || prestas.nom"
+            format="webp"
+            width="800"
+            height="1200"
+            sizes="sm:100vw md:50vw lg:400px"
+            loading="lazy"
+            decoding="async"
+            class="w-full aspect-2/3 rounded-lg object-cover" />
 
           <!-- Contenu -->
           <div class="flex flex-col flex-1 mt-4">
